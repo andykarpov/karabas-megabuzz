@@ -95,9 +95,18 @@ assign flash_mosi = 1'b1;
 assign flash_hold_n = 1'b1;
 assign flash_wp_n = 1'b1;
 
+// config bits expanded to named signals
+wire soundrive_en = cfg_n[0];
+wire beeper_en = cfg_n[0];
+wire saa_en = cfg_n[1];
+wire gs_en = cfg_n[2];
+wire turbosound_en = cfg_n[3];
+wire midi_en = cfg_n[3]; // depends on AY port
+wire opl3_en = cfg_n[4];
+
 // pll
 wire clk_bus, clk12, clk8, locked, areset;
-pll pll(
+pll pll_inst(
 	.CLK_IN1			(clk),
 	.CLK_OUT1		(clk_bus), // 28
 	.CLK_OUT2		(clk12),	  // 12
@@ -117,12 +126,31 @@ end
 
 assign midi_reset_n = ~reset;
 assign bus_wait_n = 1'bz;
-assign bus_iorqge_n = 1'bz;
+
+// bus_iorq_n is useless on zxevo :(
+// so we're detecting bus_iorq_n cycle by bus_rd_n/bus_wr_n signal asserted without bus_m1_n/bus_mreq_n
+reg ioreq, ioreq_prev;
+always @(negedge clk_bus) begin
+    ioreq_prev <= ioreq;
+    ioreq <= bus_m1_n && bus_mreq_n && (~bus_rd_n || ~bus_wr_n);
+end
+wire ioreq_rd = ioreq && ~bus_rd_n;
+wire ioreq_wr = ioreq && ~bus_wr_n;
+
+// bus_dos_n is useless on zxevo :(
+// so we're just lock some ports access when instruction has been fetched from rom
+reg rom_m1_access;
+always @(negedge clk_bus or posedge reset) begin
+    if (reset)
+        rom_m1_access <= 0;
+    else if (~bus_m1_n)
+        rom_m1_access <= bus_a[15:14] == 2'b00;
+end
 
 // ------- i2s DAC --------------
 wire signed [15:0] audio_mix_l, audio_mix_r;
 
-PCM5102 #(.DAC_CLK_DIV_BITS(2)) PCM5102(
+PCM5102 #(.DAC_CLK_DIV_BITS(2)) dac_inst(
 	.clk				(clk_bus),
 	.reset			(areset),
 	.left				(audio_mix_l),
@@ -135,7 +163,7 @@ PCM5102 #(.DAC_CLK_DIV_BITS(2)) PCM5102(
 // ------- PCM1808 ADC ---------
 wire signed [23:0] adc_l, adc_r;
 
-i2s_transceiver adc(
+i2s_transceiver adc_inst(
 	.reset_n			(~areset),
 	.mclk				(clk_bus),
 	.sclk				(adc_bck),
@@ -154,34 +182,42 @@ ODDR2 oddr_midi(.Q(midi_clk), .C0(clk12), .C1(~clk12), .CE(1'b1), .D0(1'b1), .D1
 // ------- SOUNDRIVE ----------
 wire [7:0] covox_a, covox_b, covox_c, covox_d, covox_fb;
 
-covox covox
-(
-	.I_RESET			(reset),
-	.I_CLK			(clk_bus),
-	.I_CS				(1'b1), // todo: cfg
-	.I_ADDR			(bus_a[7:0]),
-	.I_DATA			(bus_d),
-	.I_WR_N			(bus_wr_n),
-	.I_IORQ_N		(bus_iorq_n),
-	.I_DOS			(bus_dos_n), 
-	.O_A				(covox_a),
-	.O_B				(covox_b),
-	.O_C				(covox_c),
-	.O_D				(covox_d),
-	.O_FB				(covox_fb)
+soundrive soundrive_inst(
+	.clk				(clk_bus),
+	.reset			(reset),
+	.cs				(soundrive_en),
+	.a					(bus_a),
+	.d					(bus_d),
+	.ioreq_wr		(ioreq_wr),
+	.rom_m1_access (rom_m1_access),
+	.out_a			(covox_a),
+	.out_b			(covox_b),
+	.out_c			(covox_c),
+	.out_d			(covox_d),
+	.out_fb			(covox_fb)
+);
+
+// ------- BEEPER --------------
+wire beeper;
+beeper beeper_inst(
+	.clk				(clk_bus),
+	.reset			(reset),
+	.cs				(beeper_en),
+	.a					(bus_a),
+	.d					(bus_d),
+	.ioreq_wr		(ioreq_wr),
+	.out_beeper		(beeper)
 );
 
 // SAA1099
 
-wire saa_wr_n;
-wire [7:0] saa_out_l;
-wire [7:0] saa_out_r;
+wire [7:0] saa_out_l, saa_out_r;
+wire saa_wr_n = ~(ioreq_wr && bus_a[7:0] == 8'hFF && ~rom_m1_access);
 
-saa1099 saa1099
-(
+saa1099 saa1099_inst(
 	.clk				(clk8),
 	.rst_n			(~reset),
-	.cs_n				(1'b0), // todo: cfg
+	.cs_n				(saa_en),
 	.a0				(bus_a[8]),
 	.wr_n				(saa_wr_n),
 	.din				(bus_d),
@@ -189,17 +225,45 @@ saa1099 saa1099
 	.out_r			(saa_out_r)
 );
 
-assign saa_wr_n = bus_iorq_n || bus_wr_n || ~(bus_a[7:0] == 8'hFF);
+// turbosound fm
+wire ts_enable = turbosound_en & ioreq & bus_a[15] & (bus_a[3:0] == 4'b1101);
+wire ts_we     = ts_enable & ioreq_wr;
+wire [7:0] ts_do;
+wire [7:0] ts_ssg0_a, ts_ssg0_b, ts_ssg0_c, ts_ssg1_a, ts_ssg1_b, ts_ssg1_c;
+wire [15:0] ts_ssg0_fm, ts_ssg1_fm;
+wire ts_fm_ena;
 
-// beeper
-
-reg [7:0] port_xxfe_reg;
+reg ce_ym;
+reg [2:0] div;
 always @(posedge clk_bus) begin
-	if (reset) port_xxfe_reg <= 0;
-	else if (~bus_iorq_n && ~bus_wr_n && bus_a[7:0] == 8'hFE) port_xxfe_reg <= bus_d;
+	div <= div + 1'd1;
+	ce_ym <= !div[2] & !div[1] & !div[0]; // 3.5
 end
 
-wire beeper = port_xxfe_reg[4];
+turbosound turbosound_inst(
+	.CLK				(clk_bus),
+	.RESET			(reset),
+	.CE				(ce_ym),
+	.BDIR				(ts_we),
+	.BC				(bus_a[14]),
+	.DI				(bus_d),
+	.DO				(ts_do),
+	.AY_MODE			(1'b0), // ay / ym
+		
+	.SSG0_AUDIO_A	(ts_ssg0_a),
+	.SSG0_AUDIO_B	(ts_ssg0_b),
+	.SSG0_AUDIO_C	(ts_ssg0_c),
+
+	.SSG1_AUDIO_A	(ts_ssg1_a),
+	.SSG1_AUDIO_B	(ts_ssg1_b),
+	.SSG1_AUDIO_C	(ts_ssg1_c),
+	
+	.SSG0_AUDIO_FM	(ts_ssg0_fm),
+	.SSG1_AUDIO_FM	(ts_ssg1_fm),
+	
+	.SSG_FM_ENA		(ts_fm_ena),
+	.MIDI_TX			(midi_tx)
+);
 
 // ------- GS
 
@@ -216,8 +280,7 @@ wire gs_oe;
 wire [7:0] gs_do_bus;
 wire [14:0] gs_out_l, gs_out_r;
 
-gs_top gs_top
-(
+gs_top gs_inst(
     .clk_bus		(clk_bus),
 	 .ce				(ce_14m),
     .reset			(reset),
@@ -243,51 +306,10 @@ gs_top gs_top
     .out_r			(gs_out_r)    
 );
 
-// turbosound fm
-wire ts_enable = ~bus_iorq_n & bus_a[15] & (bus_a[3:0] == 4'b1101);
-wire ts_we     = ts_enable & ~bus_wr_n;
-wire [7:0] ts_do;
-wire [7:0] ts_ssg0_a, ts_ssg0_b, ts_ssg0_c, ts_ssg1_a, ts_ssg1_b, ts_ssg1_c;
-wire [15:0] ts_ssg0_fm, ts_ssg1_fm;
-wire ts_fm_ena;
-
-reg ce_ym;
-reg [2:0] div;
-always @(posedge clk_bus) begin
-	div <= div + 1'd1;
-	ce_ym <= !div[2] & !div[1] & !div[0]; // 3.5
-end
-
-turbosound turbosound
-(
-	.RESET			(reset),
-	.CLK				(clk_bus),
-	.CE				(ce_ym),
-	.BDIR				(ts_we),
-	.BC				(bus_a[14]),
-	.DI				(bus_d),
-	.DO				(ts_do),
-	.AY_MODE			(1'b0), // ay / ym
-		
-	.SSG0_AUDIO_A	(ts_ssg0_a),
-	.SSG0_AUDIO_B	(ts_ssg0_b),
-	.SSG0_AUDIO_C	(ts_ssg0_c),
-
-	.SSG1_AUDIO_A	(ts_ssg1_a),
-	.SSG1_AUDIO_B	(ts_ssg1_b),
-	.SSG1_AUDIO_C	(ts_ssg1_c),
-	
-	.SSG0_AUDIO_FM	(ts_ssg0_fm),
-	.SSG1_AUDIO_FM	(ts_ssg1_fm),
-	
-	.SSG_FM_ENA		(ts_fm_ena),
-	.MIDI_TX			(midi_tx)
-);
-
 // opl3
 wire signed [15:0] opl3_l, opl3_r;
 wire opl3_iorqge_n;
-opl3 opl3(
+opl3 opl3_inst(
 	.clk				(clk_bus),
 	.ce				(ce_14m),
 	.reset			(reset),
@@ -315,14 +337,21 @@ opl3 opl3(
 );
 
 // audio mixer
-audio_mixer audio_mixer
-(
+audio_mixer audio_mixer_inst(
 	.clk				(clk_bus),
 
 	.mute				(1'b0), // todo
 	.mode				(2'b00), // abc/acb/mono ? 
 	
-	.speaker			(port_xxfe_reg[4]),
+	.soundrive_en	(soundrive_en),
+	.beeper_en		(beeper_en),
+	.turbosound_en (turbosound_en),
+	.saa_en			(saa_en),
+	.gs_en			(gs_en),
+	.midi_en			(midi_en),
+	.opl3_en			(opl3_en),
+	
+	.speaker			(beeper),
 	.tape_in			(1'b0),
 	
 	.ssg0_a			(ts_ssg0_a),
@@ -360,23 +389,24 @@ audio_mixer audio_mixer
 
 // BUS
 assign bus_d = 
-    (ts_enable && ~bus_rd_n) ? ts_do : // TurboSound
-    (gs_oe) ? gs_do_bus : // gs
-    8'bZZZZZZZZ;
+    (ts_enable && ioreq_rd) ? ts_do : // TurboSound
+    (gs_oe && ioreq_rd) ? gs_do_bus : // gs
+    8'bzzzzzzzz;
 
-// todo: other bus signals (iorqge, ...) from multisound
+// IORQGE
+assign bus_iorqge_n = (bus_m1_n && (ts_enable || gs_oe || ~opl3_iorqge_n))? 1'b0 : 1'b1;
 
 // vu meter
-vu_meter vu_meter_l(
+vu_meter vu_meter_l_inst(
 	.clk				(clk_bus),
-	.sample_tick	(dac_bck),
+	.sample_tick	(dac_ws),
 	.audio_sample	(audio_mix_l),
 	.leds				(led_meter_l)
 );
 
-vu_meter vu_meter_r(
+vu_meter vu_meter_r_inst(
 	.clk				(clk_bus),
-	.sample_tick	(dac_bck),
+	.sample_tick	(dac_ws),
 	.audio_sample	(audio_mix_r),
 	.leds				(led_meter_r)
 );

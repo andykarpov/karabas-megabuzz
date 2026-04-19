@@ -4,6 +4,14 @@ module audio_mixer (
 	input wire mute,
 	input wire [1:0] mode,
 	
+	input wire soundrive_en,
+	input wire beeper_en,
+	input wire turbosound_en,
+	input wire saa_en,
+	input wire gs_en,
+	input wire midi_en,
+	input wire opl3_en,
+	
 	input wire speaker,
 	input wire tape_in,
 	
@@ -63,21 +71,21 @@ always @(posedge clk) begin
 	covox_r <= $signed({2'b00, covox_c, 2'b00}) + $signed({2'b00, covox_d, 2'b00}) + $signed({3'b000, covox_fb, 1'b0});
 end
 
-wire signed [15:0] mix_l = 	$signed({tsfm_l[11:0], 4'b0000}) + 
-										$signed({gs_l[14],gs_l[14:0]}) + 
-										$signed(adc_l[15:0]) +
-										$signed(opl3_l[15:0]) +
-										$signed({2'b00, saa_l, 6'b000000}) +
-										$signed({covox_l[11:0], 4'b0000}) + 
-										$signed({2'b00, speaker, 7'b0000000, 6'b0000});
+wire signed [15:0] mix_l = 	((turbosound_en) ? $signed({tsfm_l[11:0], 4'b0000}) : $signed({16'b0})) + 
+										((gs_en) ? $signed({gs_l[14],gs_l[14:0]}) : $signed({16'b0})) + 
+										((midi_en) ? $signed(adc_l[15:0]) : $signed({16'b0})) +
+										((opl3_en) ? $signed(opl3_l[15:0]) : $signed({16'b0})) +
+										((saa_en) ? $signed({2'b00, saa_l, 6'b000000}) : $signed({16'b0})) +
+										((soundrive_en) ? $signed({covox_l[11:0], 4'b0000}) : $signed({16'b0})) + 
+										((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b0000}) : $signed({16'b0}));
 
-wire signed [15:0] mix_r = 	$signed({tsfm_r[11:0], 4'b0000}) + 
-										$signed({gs_r[14], gs_r[14:0]}) + 
-										$signed(adc_r[15:0]) +
-										$signed(opl3_r[15:0]) +
-										$signed({2'b00, saa_r, 6'b000000}) +										
-										$signed({covox_r[11:0], 4'b0000}) + 
-										$signed({2'b00, speaker, 7'b0000000, 6'b000000});
+wire signed [15:0] mix_r = 	((turbosound_en) ? $signed({tsfm_r[11:0], 4'b0000}) : $signed({16'b0})) + 
+										((gs_en) ? $signed({gs_r[14], gs_r[14:0]}) : $signed({16'b0})) + 
+										((midi_en) ? $signed(adc_r[15:0]) : $signed({16'b0})) +
+										((opl3_en) ? $signed(opl3_r[15:0]) : $signed({16'b0})) +
+										((saa_en) ? $signed({2'b00, saa_r, 6'b000000}) : $signed({16'b0})) +				
+										((soundrive_en) ? $signed({covox_r[11:0], 4'b0000}) : $signed({16'b0})) + 
+										((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
 
 assign audio_l = mix_l;
 assign audio_r = mix_r;
