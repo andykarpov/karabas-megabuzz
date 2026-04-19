@@ -1,0 +1,1083 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "eff1afb7-47ba-46af-a815-4a07fb8d674b")
+	(paper "A4")
+	(title_block
+		(title "karabas-Megasound")
+		(date "2026-04-02")
+		(rev "B")
+		(company "Andy Karpov")
+		(comment 1 "Sound card for ZX Spectrum (NemoBus)")
+	)
+	(lib_symbols
+		(symbol "my:logo"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "LOGO"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "logo"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0.762 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "symbol logo"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "logo_0_1"
+				(polyline
+					(pts
+						(xy -5.08 -5.08) (xy 5.08 -5.08) (xy 0 3.81) (xy -5.08 -5.08)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(rectangle
+		(start 110.49 40.64)
+		(end 273.05 154.94)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "1b64f655-7e23-41ed-aff0-a29b1e473744")
+	)
+	(rectangle
+		(start 217.17 102.87)
+		(end 232.41 107.95)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "1c55a5ba-75d2-4f64-88be-48de87881d29")
+	)
+	(rectangle
+		(start 181.61 132.08)
+		(end 181.6354 134.62)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "2aba6cc9-e7a0-414e-a845-f49fd5e21aee")
+	)
+	(rectangle
+		(start 194.31 67.31)
+		(end 194.31 71.12)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "2b2f2ef0-80b0-4583-aa26-7ce2509debc5")
+	)
+	(rectangle
+		(start 201.93 74.93)
+		(end 217.17 74.9554)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "30acd469-7315-43d4-bc60-fb930e6f806b")
+	)
+	(rectangle
+		(start 217.17 82.55)
+		(end 232.41 87.63)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "315a7e8f-26dd-483b-a303-2e558ddf7602")
+	)
+	(rectangle
+		(start 186.69 62.23)
+		(end 201.93 67.31)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "338bf5ba-47d6-44d9-97cc-b40a7efec730")
+	)
+	(rectangle
+		(start 167.6146 67.31)
+		(end 167.64 71.12)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "4c874422-d033-4e52-9d25-2df419a5e0cc")
+	)
+	(rectangle
+		(start 181.61 116.84)
+		(end 181.6354 127)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "5c9cc3d7-8c50-42d6-84be-a95a2b8b6b72")
+	)
+	(rectangle
+		(start 217.17 92.71)
+		(end 232.41 97.79)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "5edcab94-fe1e-4b7b-8dc8-83d9fbe816da")
+	)
+	(rectangle
+		(start 119.38 106.68)
+		(end 134.62 113.03)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "6a2a49e1-5a75-401c-b552-f3bc77e1ee16")
+	)
+	(rectangle
+		(start 201.93 95.25)
+		(end 217.17 95.2754)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "71caad9d-d5dc-41d5-b6f7-85ab4471f314")
+	)
+	(rectangle
+		(start 161.29 127)
+		(end 201.93 132.08)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "7864e5d6-9467-402e-9202-a97d99d0efe4")
+	)
+	(rectangle
+		(start 162.56 62.23)
+		(end 172.72 67.31)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "797b0bd7-6a34-4391-b98f-fc4ec290a0ec")
+	)
+	(rectangle
+		(start 241.3 72.39)
+		(end 255.27 77.47)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "797ea670-9eca-4aa2-8dfb-9780a43e6fe2")
+	)
+	(rectangle
+		(start 224.7646 87.63)
+		(end 224.79 92.71)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "8ad6f907-64d7-4e79-82e5-b10d7d96e156")
+	)
+	(rectangle
+		(start 217.17 72.39)
+		(end 232.41 77.47)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "8e7a6606-b9b8-46aa-af90-e851908c3a69")
+	)
+	(rectangle
+		(start 161.29 134.62)
+		(end 201.93 140.97)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "8fae7138-2267-46f5-9924-c17fb267c172")
+	)
+	(rectangle
+		(start 232.41 74.93)
+		(end 241.3 74.9554)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "93fb51a7-a362-4739-b0a5-5663f93ee517")
+	)
+	(rectangle
+		(start 134.62 100.3046)
+		(end 160.02 100.33)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "9835be41-037d-4b03-8c3f-7cb0303b70be")
+	)
+	(rectangle
+		(start 119.38 97.79)
+		(end 134.62 102.87)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "990000f2-671b-4eeb-8cb3-7e29f7b81a54")
+	)
+	(rectangle
+		(start 201.93 85.09)
+		(end 217.17 85.1154)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "9cee1cf7-aa4f-48b6-9cb1-e164ae0d1516")
+	)
+	(rectangle
+		(start 160.02 71.12)
+		(end 201.93 116.84)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "ac220bf7-e226-44d5-920d-c6eca29b4c5b")
+	)
+	(rectangle
+		(start 201.93 105.41)
+		(end 217.17 105.4354)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "e52ff4dd-fbfd-4589-8f3d-6753d3652690")
+	)
+	(rectangle
+		(start 134.62 109.22)
+		(end 160.02 109.2454)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "f7c0550c-9713-4cb8-8eac-ea5d6cfe3c7a")
+	)
+	(text "PCM5102A"
+		(exclude_from_sim no)
+		(at 219.71 76.2 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0d433ce6-de07-4ddb-8874-8339ecdfeec2")
+	)
+	(text "XC6SLX25\nFPGA"
+		(exclude_from_sim no)
+		(at 177.8 95.25 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0f1d13e0-cad7-4317-a1a6-9d3233f92427")
+	)
+	(text "PCM1808A"
+		(exclude_from_sim no)
+		(at 219.71 96.52 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "271409d0-310f-4e2e-8dbe-09480682927f")
+	)
+	(text "Parallel"
+		(exclude_from_sim no)
+		(at 141.986 109.22 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3979033e-2383-4e9a-b1b4-84af17d688f3")
+	)
+	(text "YMF262-M"
+		(exclude_from_sim no)
+		(at 219.71 106.426 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3c387d71-b36b-4c64-b6c7-e5a5777aa997")
+	)
+	(text "NEMOBUS"
+		(exclude_from_sim no)
+		(at 177.292 138.938 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "465fdf21-6ce8-4a7d-b9ea-e5f5587ea034")
+	)
+	(text "Audio Out"
+		(exclude_from_sim no)
+		(at 243.84 75.946 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "69d09a14-dc02-475f-9ed1-f5ae1c25de3f")
+	)
+	(text "JTAG"
+		(exclude_from_sim no)
+		(at 165.608 65.786 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "880399e2-ae8d-427a-b479-bf5d6baefaa6")
+	)
+	(text "QSPI"
+		(exclude_from_sim no)
+		(at 142.24 100.33 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8b520789-2aab-4aa9-a8dd-2b69f4c38fc2")
+	)
+	(text "50 MHz clk"
+		(exclude_from_sim no)
+		(at 189.23 66.04 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8d674f01-1587-4a53-ae58-330cc55917ca")
+	)
+	(text "Flash"
+		(exclude_from_sim no)
+		(at 121.92 101.6 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8f16c7f8-8c55-4ec7-ad99-126345f43a7e")
+	)
+	(text "SRAM\n2MB"
+		(exclude_from_sim no)
+		(at 124.46 112.014 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9d7d8a3e-5547-408c-b3eb-3285d9fc43bb")
+	)
+	(text "Level shifters"
+		(exclude_from_sim no)
+		(at 175.768 130.556 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a9d9bec8-a395-420b-8e10-432b3c6f5e73")
+	)
+	(text "SAM2695"
+		(exclude_from_sim no)
+		(at 219.71 86.106 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e95ce950-8bac-43ba-8c55-8fb60be07357")
+	)
+	(text "Functional schematics"
+		(exclude_from_sim no)
+		(at 113.03 45.72 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f32eda08-afb7-4ee5-ab86-1d67238acc6f")
+	)
+	(symbol
+		(lib_id "my:logo")
+		(at 163.83 170.18 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "00000000-0000-0000-0000-00005e51c621")
+		(property "Reference" "LOGO2"
+			(at 163.83 165.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "graphic"
+			(at 163.83 176.53 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" "footprints:andy_karpov_logo4_silk"
+			(at 163.83 175.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 164.592 175.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 163.83 170.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Desc" "Logo"
+			(at 163.83 172.085 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
+					(reference "LOGO2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "my:logo")
+		(at 151.13 170.18 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "324ea932-56aa-49d6-aaa4-59e61e6468cd")
+		(property "Reference" "LOGO1"
+			(at 151.13 165.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "graphic"
+			(at 151.13 176.53 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" "footprints:opl3"
+			(at 151.13 175.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 151.892 175.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 151.13 170.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Desc" "Logo"
+			(at 151.13 172.085 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
+					(reference "LOGO1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(sheet
+		(at 44.45 111.76)
+		(size 34.29 6.35)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "13ede702-d735-4dea-a3c9-12f9e8dd6d62")
+		(property "Sheetname" "VU"
+			(at 44.45 111.1881 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "vu.kicad_sch"
+			(at 44.45 118.5828 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
+					(page "8")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 44.45 76.2)
+		(size 34.29 6.35)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "1e8895c3-e3b5-42cc-af15-9e85b0da5705")
+		(property "Sheetname" "Audio"
+			(at 44.45 75.6281 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "audio.kicad_sch"
+			(at 44.45 83.0228 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 44.45 87.63)
+		(size 34.29 6.35)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "1ef77d13-3c60-4080-9817-a45398794587")
+		(property "Sheetname" "Memory"
+			(at 44.45 87.0581 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "memory.kicad_sch"
+			(at 44.45 94.4528 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 44.45 40.64)
+		(size 34.29 6.35)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "338c6fab-4b19-4839-a5d3-260e091aa8ad")
+		(property "Sheetname" "FPGA1"
+			(at 44.45 40.0681 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "fpga1.kicad_sch"
+			(at 44.45 47.4628 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 44.45 99.06)
+		(size 34.29 6.35)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "786b5896-1a2c-495c-8014-c32a320e74a8")
+		(property "Sheetname" "Power"
+			(at 44.45 98.4881 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "power.kicad_sch"
+			(at 44.45 105.8828 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 44.45 64.77)
+		(size 34.29 6.35)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "a77194fc-ca19-4517-bedf-8e23f2668329")
+		(property "Sheetname" "Interfaces"
+			(at 44.45 64.1981 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "interfaces.kicad_sch"
+			(at 44.45 71.5928 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 44.45 53.34)
+		(size 34.29 6.35)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "e7252a15-61a8-4bf7-9e14-907719ec721b")
+		(property "Sheetname" "FPGA2"
+			(at 44.45 52.7681 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "fpga2.kicad_sch"
+			(at 44.45 60.1628 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)
