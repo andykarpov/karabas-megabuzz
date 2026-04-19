@@ -51,7 +51,7 @@
         "silk_text_upright": true,
         "zones": {
           "45_degree_only": false,
-          "min_clearance": 0.254
+          "min_clearance": 0.5
         }
       },
       "diff_pair_dimensions": [
@@ -61,7 +61,40 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "courtyards_overlap|118925000|97505000|6195ada3-6f14-46ba-8af9-956f471593bd|a1619b16-4e55-4784-9b58-04603df25d0a",
+          ""
+        ],
+        [
+          "courtyards_overlap|119105000|97505000|9386f5ca-3d6f-4096-b38b-3a008fe1d2d6|a1619b16-4e55-4784-9b58-04603df25d0a",
+          ""
+        ],
+        [
+          "starved_thermal|123537500|110750000|9a9978d2-26c7-4bcc-af0e-f9b1ab355eef|95471652-e907-4357-9829-d5a4bf33d6d1|B.Cu",
+          ""
+        ],
+        [
+          "starved_thermal|123587500|107750000|9a9978d2-26c7-4bcc-af0e-f9b1ab355eef|66d4abeb-0318-4ce3-b260-2eda2b8065fe|B.Cu",
+          ""
+        ],
+        [
+          "starved_thermal|137715000|114492500|18b5961d-b2ef-4d79-8dab-929b6eba49b1|b6bc146d-6b93-40f4-b2f4-b4e83a1923a7|F.Cu",
+          ""
+        ],
+        [
+          "starved_thermal|146687500|123450000|18b5961d-b2ef-4d79-8dab-929b6eba49b1|0314966b-4f9a-4a5a-9d42-7748bc416c9b|B.Cu",
+          ""
+        ],
+        [
+          "starved_thermal|151820000|105052500|18b5961d-b2ef-4d79-8dab-929b6eba49b1|fe8b7673-63f0-41de-b6a8-1dea2b55068f|B.Cu",
+          ""
+        ],
+        [
+          "starved_thermal|155475000|124625000|18b5961d-b2ef-4d79-8dab-929b6eba49b1|0b2c7381-00f8-44fc-b4ac-1ec0eabb4f83|F.Cu",
+          ""
+        ]
+      ],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -266,7 +299,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": "B"
+      "sch_revision": "A"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -286,7 +319,16 @@
     "equivalence_files": []
   },
   "erc": {
-    "erc_exclusions": [],
+    "erc_exclusions": [
+      [
+        "power_pin_not_driven|2120900|1460500|cc1ec8da-09dc-4452-81fe-0bfb03b80117|00000000-0000-0000-0000-000000000000|/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705|/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705|",
+        ""
+      ],
+      [
+        "power_pin_not_driven|2209800|292100|222b2191-2e1c-42b8-aeaf-6952067c841f|00000000-0000-0000-0000-000000000000|/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705|/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705|",
+        ""
+      ]
+    ],
     "meta": {
       "version": 0
     },
@@ -707,7 +749,7 @@
         "uuid": "eff1afb7-47ba-46af-a815-4a07fb8d674b"
       }
     ],
-    "used_designators": "",
+    "used_designators": "TP9-18",
     "variants": []
   },
   "sheets": [

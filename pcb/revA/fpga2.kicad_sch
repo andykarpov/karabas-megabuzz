@@ -5,12 +5,135 @@
 	(uuid "9b5e49b5-3051-4a51-b160-174e8c41119e")
 	(paper "A4")
 	(title_block
-		(title "karabas-Megasound")
-		(date "2026-04-02")
-		(rev "B")
+		(title "Karabas-MegaBuzz")
+		(date "2026-04-18")
+		(rev "A")
 		(company "Andy Karpov")
 	)
 	(lib_symbols
+		(symbol "Connector:TestPoint"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.762)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "TP"
+				(at 0 6.858 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TestPoint"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 5.08 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 5.08 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "test point"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "test point tp"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Pin* Test*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "TestPoint_0_1"
+				(circle
+					(center 0 3.302)
+					(radius 0.762)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "TestPoint_1_1"
+				(pin passive line
+					(at 0 0 90)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Connector_Generic:Conn_02x05_Odd_Even"
 			(pin_names
 				(offset 1.016)
@@ -6286,7 +6409,7 @@
 		)
 	)
 	(rectangle
-		(start 201.93 109.22)
+		(start 201.93 114.3)
 		(end 279.4 161.29)
 		(stroke
 			(width 0)
@@ -6299,10 +6422,10 @@
 	)
 	(rectangle
 		(start 238.76 68.58)
-		(end 278.13 96.52)
+		(end 278.13 102.87)
 		(stroke
 			(width 0)
-			(type default)
+			(type dash)
 		)
 		(fill
 			(type none)
@@ -6321,27 +6444,47 @@
 		)
 		(uuid "f4dca30f-3680-4b7a-8633-b76da29e539b")
 	)
-	(text "Master Clock"
+	(text "CONF FLASH"
 		(exclude_from_sim no)
-		(at 215.9 73.66 0)
+		(at 201.93 112.776 0)
 		(effects
 			(font
-				(size 1.27 1.27)
+				(size 2 2)
+				(thickness 0.4)
+				(bold yes)
+				(italic yes)
 			)
 			(justify left bottom)
 		)
-		(uuid "7f5d22b7-6c5f-4bcd-91e1-0e74417efee4")
+		(uuid "0db84d8c-c23f-4fec-9032-3ca6fd5125c2")
 	)
 	(text "JTAG"
 		(exclude_from_sim no)
-		(at 241.3 72.39 0)
+		(at 238.76 67.564 0)
 		(effects
 			(font
-				(size 1.27 1.27)
+				(size 2 2)
+				(thickness 0.4)
+				(bold yes)
+				(italic yes)
 			)
 			(justify left bottom)
 		)
-		(uuid "b6de65e5-6bf0-40c9-b737-6ebd4e315ef6")
+		(uuid "de784327-56c3-4eab-b7cf-03bd1a3f4127")
+	)
+	(text "MASTER CLOCK"
+		(exclude_from_sim no)
+		(at 173.736 67.564 0)
+		(effects
+			(font
+				(size 2 2)
+				(thickness 0.4)
+				(bold yes)
+				(italic yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "e581f80c-0c0f-4210-9b92-b30e1ce71632")
 	)
 	(junction
 		(at 128.27 25.4)
@@ -6380,7 +6523,7 @@
 		(uuid "9ec06cca-b01f-4d98-9cab-03f7a8d8b5e3")
 	)
 	(junction
-		(at 220.98 116.84)
+		(at 220.98 123.19)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a3125e2b-412f-40a4-96b2-59b228ae36de")
@@ -6410,30 +6553,114 @@
 		(uuid "d8072630-7ad0-4ed0-99cc-940d73f6564a")
 	)
 	(junction
-		(at 264.16 127)
+		(at 264.16 133.35)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "df84bf1f-48f1-48c6-8f9e-8ce150df5a74")
 	)
 	(junction
-		(at 220.98 127)
+		(at 220.98 133.35)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e1ceab83-3480-46da-a83c-f12aca6d825c")
 	)
 	(junction
-		(at 233.68 116.84)
+		(at 233.68 123.19)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "fed4d5cf-c14d-4e3d-b6b4-9b0ceaadd063")
+	)
+	(no_connect
+		(at 143.51 170.18)
+		(uuid "08b44cc3-7ac2-4610-a822-daee344fb26c")
+	)
+	(no_connect
+		(at 41.91 86.36)
+		(uuid "170461eb-89fc-4ae2-ae03-a04a9fe61f02")
+	)
+	(no_connect
+		(at 41.91 83.82)
+		(uuid "1ca85a6f-5b2b-4514-94bd-1587a33f735b")
+	)
+	(no_connect
+		(at 143.51 177.8)
+		(uuid "541893a2-b746-4a33-a9da-a5a813e7a471")
+	)
+	(no_connect
+		(at 41.91 124.46)
+		(uuid "55d81c6b-b996-46a2-9c9b-18ab9974caa9")
+	)
+	(no_connect
+		(at 143.51 157.48)
+		(uuid "56b6201d-4f66-4319-9d17-c39e76c7ca17")
+	)
+	(no_connect
+		(at 143.51 137.16)
+		(uuid "5ea9a253-5f4f-4ed2-82b7-db097f8c4e55")
+	)
+	(no_connect
+		(at 41.91 101.6)
+		(uuid "65f3f1e3-a964-481a-a3f1-bd88e2481a8a")
 	)
 	(no_connect
 		(at 266.7 87.63)
 		(uuid "7974a899-de41-4011-ade5-0bde0d4b46e7")
 	)
 	(no_connect
+		(at 41.91 119.38)
+		(uuid "7c25f4c8-833b-43c9-98f2-9c228c8c694e")
+	)
+	(no_connect
+		(at 143.51 121.92)
+		(uuid "885eeae2-23c0-43af-b4f9-8851c9afd6ca")
+	)
+	(no_connect
+		(at 41.91 78.74)
+		(uuid "8af2fc6e-c435-453f-9f33-14697e16cc53")
+	)
+	(no_connect
+		(at 143.51 68.58)
+		(uuid "a5802742-1774-4ca6-8d71-c11b662c6c6b")
+	)
+	(no_connect
+		(at 143.51 109.22)
+		(uuid "a5a7f681-85fd-4beb-b033-7bc76941f816")
+	)
+	(no_connect
 		(at 254 87.63)
 		(uuid "bbf03c19-ac4d-4022-be11-70f1ee0b48af")
+	)
+	(no_connect
+		(at 143.51 55.88)
+		(uuid "bbf5d743-e7b3-422a-b421-dea229b4e165")
+	)
+	(no_connect
+		(at 41.91 127)
+		(uuid "c8383cdd-8496-48a1-ba05-3b7b5d34e5e5")
+	)
+	(no_connect
+		(at 41.91 55.88)
+		(uuid "c8b569cb-0b39-4098-ac3b-da1f42db24f8")
+	)
+	(no_connect
+		(at 143.51 154.94)
+		(uuid "cc3067c9-18d0-4d4b-baa2-beaef6aa6503")
+	)
+	(no_connect
+		(at 41.91 137.16)
+		(uuid "da4d1663-94ef-4056-a154-096d16322ccb")
+	)
+	(no_connect
+		(at 143.51 53.34)
+		(uuid "dc89216e-df46-4ce9-86bc-8d3a2615e96e")
+	)
+	(no_connect
+		(at 143.51 175.26)
+		(uuid "de73802e-bdd6-4386-82a6-ff021463cf5a")
+	)
+	(no_connect
+		(at 41.91 134.62)
+		(uuid "e7deb707-421c-4e6a-ad5c-6e7d93425ce6")
 	)
 	(no_connect
 		(at 243.84 55.88)
@@ -6442,6 +6669,14 @@
 	(no_connect
 		(at 266.7 85.09)
 		(uuid "ef12c720-aef7-46fa-b18b-6e10bea33d4c")
+	)
+	(no_connect
+		(at 143.51 124.46)
+		(uuid "ff0acc93-fcc3-4f11-9717-3b04e1040f4b")
+	)
+	(no_connect
+		(at 143.51 83.82)
+		(uuid "ffaea1d8-141f-4cb1-8f77-bbda4b18af45")
 	)
 	(wire
 		(pts
@@ -6485,7 +6720,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 134.62) (xy 223.52 134.62)
+			(xy 218.44 140.97) (xy 223.52 140.97)
 		)
 		(stroke
 			(width 0)
@@ -6495,7 +6730,17 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 116.84) (xy 220.98 118.11)
+			(xy 185.42 133.35) (xy 187.96 133.35)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "089acb29-d067-4d97-8c07-1a79232d1935")
+	)
+	(wire
+		(pts
+			(xy 220.98 123.19) (xy 220.98 124.46)
 		)
 		(stroke
 			(width 0)
@@ -6532,6 +6777,16 @@
 			(type default)
 		)
 		(uuid "0c538e7a-0575-4995-ab9b-43848dc4c6ad")
+	)
+	(wire
+		(pts
+			(xy 185.42 143.51) (xy 187.96 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0d3b1f8a-211c-4c39-b71e-7e3202c0b75c")
 	)
 	(wire
 		(pts
@@ -6595,7 +6850,7 @@
 	)
 	(wire
 		(pts
-			(xy 264.16 127) (xy 264.16 129.54)
+			(xy 264.16 133.35) (xy 264.16 135.89)
 		)
 		(stroke
 			(width 0)
@@ -6635,7 +6890,7 @@
 	)
 	(wire
 		(pts
-			(xy 233.68 116.84) (xy 233.68 121.92)
+			(xy 233.68 123.19) (xy 233.68 128.27)
 		)
 		(stroke
 			(width 0)
@@ -6665,7 +6920,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 116.84) (xy 233.68 116.84)
+			(xy 220.98 123.19) (xy 233.68 123.19)
 		)
 		(stroke
 			(width 0)
@@ -6685,6 +6940,16 @@
 	)
 	(wire
 		(pts
+			(xy 143.51 127) (xy 146.05 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "28e6faad-7463-4488-86a8-4c77b2d170ae")
+	)
+	(wire
+		(pts
 			(xy 123.19 27.94) (xy 123.19 25.4)
 		)
 		(stroke
@@ -6692,6 +6957,16 @@
 			(type default)
 		)
 		(uuid "29c379f3-4a8a-44b5-b478-6956184960d0")
+	)
+	(wire
+		(pts
+			(xy 185.42 120.65) (xy 187.96 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2b08b30f-5fa4-4bc0-80cd-48a18d12c663")
 	)
 	(wire
 		(pts
@@ -6722,6 +6997,16 @@
 			(type default)
 		)
 		(uuid "2d981c1c-c21b-4fc9-9d67-a0d678305383")
+	)
+	(wire
+		(pts
+			(xy 185.42 140.97) (xy 187.96 140.97)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2ec3dbb3-a961-49b8-bb23-90b2b007fcb3")
 	)
 	(wire
 		(pts
@@ -6825,7 +7110,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 137.16) (xy 223.52 137.16)
+			(xy 218.44 143.51) (xy 223.52 143.51)
 		)
 		(stroke
 			(width 0)
@@ -6955,7 +7240,17 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 127) (xy 220.98 125.73)
+			(xy 185.42 135.89) (xy 187.96 135.89)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "62c45294-4085-4112-bb62-ebcbdacf366e")
+	)
+	(wire
+		(pts
+			(xy 220.98 133.35) (xy 220.98 132.08)
 		)
 		(stroke
 			(width 0)
@@ -7015,6 +7310,16 @@
 	)
 	(wire
 		(pts
+			(xy 185.42 123.19) (xy 187.96 123.19)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6f94a031-8c00-49b0-a70d-f044e7c2ab2d")
+	)
+	(wire
+		(pts
 			(xy 143.51 149.86) (xy 146.05 149.86)
 		)
 		(stroke
@@ -7035,7 +7340,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 139.7) (xy 223.52 139.7)
+			(xy 218.44 146.05) (xy 223.52 146.05)
 		)
 		(stroke
 			(width 0)
@@ -7045,7 +7350,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 129.54) (xy 223.52 129.54)
+			(xy 218.44 135.89) (xy 223.52 135.89)
 		)
 		(stroke
 			(width 0)
@@ -7065,7 +7370,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 127) (xy 220.98 127)
+			(xy 218.44 133.35) (xy 220.98 133.35)
 		)
 		(stroke
 			(width 0)
@@ -7095,7 +7400,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 132.08) (xy 223.52 132.08)
+			(xy 218.44 138.43) (xy 223.52 138.43)
 		)
 		(stroke
 			(width 0)
@@ -7105,7 +7410,7 @@
 	)
 	(wire
 		(pts
-			(xy 264.16 127) (xy 264.16 125.73)
+			(xy 264.16 133.35) (xy 264.16 132.08)
 		)
 		(stroke
 			(width 0)
@@ -7125,7 +7430,7 @@
 	)
 	(wire
 		(pts
-			(xy 223.52 127) (xy 220.98 127)
+			(xy 223.52 133.35) (xy 220.98 133.35)
 		)
 		(stroke
 			(width 0)
@@ -7295,7 +7600,7 @@
 	)
 	(wire
 		(pts
-			(xy 260.35 127) (xy 264.16 127)
+			(xy 260.35 133.35) (xy 264.16 133.35)
 		)
 		(stroke
 			(width 0)
@@ -7325,6 +7630,16 @@
 	)
 	(wire
 		(pts
+			(xy 185.42 130.81) (xy 187.96 130.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c0ddcb66-494f-4dcc-b31d-56561f916ff4")
+	)
+	(wire
+		(pts
 			(xy 212.09 86.36) (xy 214.63 86.36)
 		)
 		(stroke
@@ -7332,6 +7647,16 @@
 			(type default)
 		)
 		(uuid "c1c83440-8628-47e3-bbd6-408495056cb5")
+	)
+	(wire
+		(pts
+			(xy 185.42 128.27) (xy 187.96 128.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c31f05e8-076d-4573-a748-72ff8752dbce")
 	)
 	(wire
 		(pts
@@ -7455,6 +7780,16 @@
 	)
 	(wire
 		(pts
+			(xy 185.42 125.73) (xy 187.96 125.73)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d5b9e9bc-ec94-4089-91b5-5577a5d62b95")
+	)
+	(wire
+		(pts
 			(xy 143.51 88.9) (xy 146.05 88.9)
 		)
 		(stroke
@@ -7482,6 +7817,16 @@
 			(type default)
 		)
 		(uuid "d840ab7e-2131-40c3-807b-91e7b0739d40")
+	)
+	(wire
+		(pts
+			(xy 185.42 138.43) (xy 187.96 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d8a74dc4-13af-4d66-9752-4eb1ef5fcca5")
 	)
 	(wire
 		(pts
@@ -7525,6 +7870,16 @@
 	)
 	(wire
 		(pts
+			(xy 39.37 53.34) (xy 41.91 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e439b844-05f2-4237-8f3e-51f7428811c9")
+	)
+	(wire
+		(pts
 			(xy 57.15 25.4) (xy 57.15 27.94)
 		)
 		(stroke
@@ -7565,7 +7920,7 @@
 	)
 	(wire
 		(pts
-			(xy 218.44 116.84) (xy 220.98 116.84)
+			(xy 218.44 123.19) (xy 220.98 123.19)
 		)
 		(stroke
 			(width 0)
@@ -7827,7 +8182,7 @@
 	)
 	(global_label "CONF_IO0"
 		(shape input)
-		(at 218.44 132.08 180)
+		(at 218.44 138.43 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7837,7 +8192,7 @@
 		)
 		(uuid "1e6fe982-7518-4467-8504-b5c226404d73")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 206.3228 132.08 0)
+			(at 206.3228 138.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7862,6 +8217,30 @@
 		(uuid "20ab377f-04d1-4a93-9f12-f98744d68137")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 32.958 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "CONF_IO1"
+		(shape input)
+		(at 185.42 135.89 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "249658df-7b8f-496e-9db9-7b4915c60063")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 173.3028 135.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8211,7 +8590,7 @@
 	)
 	(global_label "CONF_M1"
 		(shape input)
-		(at 260.35 127 180)
+		(at 260.35 133.35 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -8221,7 +8600,7 @@
 		)
 		(uuid "4e531622-495a-4286-a708-4471a9d545e8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 248.7167 127 0)
+			(at 248.7167 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8235,7 +8614,7 @@
 	)
 	(global_label "~{CONF_CS}"
 		(shape input)
-		(at 218.44 127 180)
+		(at 218.44 133.35 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -8245,7 +8624,7 @@
 		)
 		(uuid "4f4dda41-66ac-4828-87f3-467bb1cc12cb")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 206.9881 127 0)
+			(at 206.9881 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8425,6 +8804,54 @@
 			)
 		)
 	)
+	(global_label "CONF_PRG_B"
+		(shape input)
+		(at 185.42 125.73 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "6c5053ee-61bb-49e0-abf6-4fea7245b8cd")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 170.3049 125.73 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "CONF_INIT_B"
+		(shape input)
+		(at 185.42 120.65 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "78f00ae2-38c3-47df-bacc-151fe136a967")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 170.7023 120.65 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "~{IORQGE}"
 		(shape input)
 		(at 146.05 144.78 0)
@@ -8449,6 +8876,30 @@
 			)
 		)
 	)
+	(global_label "CONF_M1"
+		(shape input)
+		(at 185.42 143.51 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7c77fce2-4490-4ab8-b1d1-edab1e098363")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 173.7867 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "xA11"
 		(shape input)
 		(at 39.37 111.76 180)
@@ -8462,6 +8913,30 @@
 		(uuid "7dc49a1d-1c4e-4044-8645-eb0872fd1cef")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 33.4297 111.76 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "CONF_IO2"
+		(shape input)
+		(at 185.42 138.43 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "8e4f7c9e-2172-4aa0-bf1f-26fb8aac0e4c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 173.3028 138.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8569,6 +9044,30 @@
 			)
 		)
 	)
+	(global_label "CONF_CLK"
+		(shape input)
+		(at 185.42 130.81 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "95820b93-b8f3-4f24-9fcb-42f2942b175d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 172.8795 130.81 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "xA0"
 		(shape input)
 		(at 39.37 76.2 180)
@@ -8590,6 +9089,30 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
+			)
+		)
+	)
+	(global_label "~{xRST}"
+		(shape input)
+		(at 146.05 127 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify left)
+		)
+		(uuid "9d97301c-ba97-464b-b0aa-2d90de13dceb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 151.9431 127 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 			)
 		)
 	)
@@ -8710,6 +9233,30 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+			)
+		)
+	)
+	(global_label "~{CONF_CS}"
+		(shape input)
+		(at 185.42 128.27 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "a5fe2b7c-308e-409a-adc0-68ceb91bf972")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 173.9681 128.27 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 			)
 		)
 	)
@@ -8881,7 +9428,7 @@
 			)
 		)
 	)
-	(global_label "VCC3_3"
+	(global_label "+3V3"
 		(shape input)
 		(at 39.37 50.8 180)
 		(fields_autoplaced yes)
@@ -8893,7 +9440,7 @@
 		)
 		(uuid "b806c2fb-c0e6-4a03-8f2e-64895e8e15e6")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 29.3696 50.8 0)
+			(at 31.2097 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9073,6 +9620,30 @@
 			)
 		)
 	)
+	(global_label "CONF_IO0"
+		(shape input)
+		(at 185.42 133.35 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c32ffab3-de85-4247-964c-14d6525ba69d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 173.3028 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "TDI"
 		(shape input)
 		(at 248.92 90.17 180)
@@ -9110,6 +9681,30 @@
 		(uuid "c774e64a-686d-4068-bf13-ac18da837aac")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 34.3731 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "CONF_DONE"
+		(shape output)
+		(at 185.42 123.19 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c80c3ef6-6d35-4428-a386-eae7cb338def")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 171.2725 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9195,7 +9790,7 @@
 	)
 	(global_label "CONF_IO2"
 		(shape input)
-		(at 218.44 137.16 180)
+		(at 218.44 143.51 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9205,7 +9800,7 @@
 		)
 		(uuid "d08bb575-5256-45b1-a957-a174d2577260")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 206.3228 137.16 0)
+			(at 206.3228 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9243,7 +9838,7 @@
 	)
 	(global_label "CONF_IO3"
 		(shape input)
-		(at 218.44 139.7 180)
+		(at 218.44 146.05 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9253,7 +9848,7 @@
 		)
 		(uuid "d134e262-6ab2-4d3f-8ac0-be60411bf237")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 206.3228 139.7 0)
+			(at 206.3228 146.05 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9315,7 +9910,7 @@
 	)
 	(global_label "CONF_CLK"
 		(shape input)
-		(at 218.44 129.54 180)
+		(at 218.44 135.89 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9325,7 +9920,7 @@
 		)
 		(uuid "d507f76b-bb0e-44a9-a46d-b781c1d12f4a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 205.8995 129.54 0)
+			(at 205.8995 135.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9339,7 +9934,7 @@
 	)
 	(global_label "CONF_IO1"
 		(shape input)
-		(at 218.44 134.62 180)
+		(at 218.44 140.97 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9349,7 +9944,7 @@
 		)
 		(uuid "d58932cd-df6d-475b-91c7-e25773a54e67")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 206.3228 134.62 0)
+			(at 206.3228 140.97 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9422,6 +10017,30 @@
 		(uuid "d7bd90e1-79f5-4384-85af-e628ad087e50")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 34.3731 104.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "CONF_IO3"
+		(shape input)
+		(at 185.42 140.97 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "db9f0481-a382-4b78-82dd-0b29bb2fb219")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 173.3028 140.97 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9684,7 +10303,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "042b4fbf-042a-4059-baff-3caad467d96a")
-		(property "Reference" "#PWR070"
+		(property "Reference" "#PWR012"
 			(at 133.35 29.21 0)
 			(hide yes)
 			(show_name no)
@@ -9744,7 +10363,163 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR070")
+					(reference "#PWR012")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 187.96 120.65 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "09a122a4-f474-44e2-9a1a-21c138202c07")
+		(property "Reference" "TP9"
+			(at 194.31 120.65 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 189.9921 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 125.73 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 187.96 125.73 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 120.65 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b968dd7d-3c2b-4392-9c36-d55824088c08")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 187.96 140.97 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "14fd4cf6-98f8-460e-9036-af35c390e3fe")
+		(property "Reference" "TP17"
+			(at 194.31 140.97 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 189.9921 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 146.05 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 187.96 146.05 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "114f4b3c-7d26-44f7-9708-b189167f4f2c")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP17")
 					(unit 1)
 				)
 			)
@@ -9761,7 +10536,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1e22ec48-a497-4b20-89ac-1e4fcd85b646")
-		(property "Reference" "#PWR074"
+		(property "Reference" "#PWR015"
 			(at 191.77 100.33 0)
 			(hide yes)
 			(show_name no)
@@ -9820,7 +10595,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR074")
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -9837,7 +10612,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "23a032a8-7ec7-441d-8b8f-417d55d00508")
-		(property "Reference" "#PWR073"
+		(property "Reference" "#PWR014"
 			(at 191.77 80.01 0)
 			(hide yes)
 			(show_name no)
@@ -9897,7 +10672,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR073")
+					(reference "#PWR014")
 					(unit 1)
 				)
 			)
@@ -9915,7 +10690,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "34e39b50-10c7-460f-b8cf-addaba8ce890")
-		(property "Reference" "R17"
+		(property "Reference" "R3"
 			(at 260.35 43.18 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9976,7 +10751,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "R17")
+					(reference "R3")
 					(unit 1)
 				)
 			)
@@ -9994,7 +10769,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "4146c0ee-8b05-4c6d-94fd-ca000d914f04")
-		(property "Reference" "U7"
+		(property "Reference" "U1"
 			(at 205.74 22.86 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10816,7 +11591,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "U7")
+					(reference "U1")
 					(unit 3)
 				)
 			)
@@ -10834,7 +11609,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "44607fca-b79c-4ba2-bf9d-013d9d380ef8")
-		(property "Reference" "#PWR042"
+		(property "Reference" "#PWR025"
 			(at 273.05 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -10893,7 +11668,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR042")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -10910,7 +11685,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "46f788b3-4d00-49fc-a2f3-b5720fba583b")
-		(property "Reference" "#PWR039"
+		(property "Reference" "#PWR024"
 			(at 262.89 82.55 0)
 			(hide yes)
 			(show_name no)
@@ -10970,7 +11745,85 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR039")
+					(reference "#PWR024")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 187.96 128.27 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "4c551dc5-bc0f-4e3d-b902-9ca740abd351")
+		(property "Reference" "TP12"
+			(at 194.31 128.27 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 189.9921 130.81 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 187.96 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 128.27 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b77c8fff-a290-4096-bf2b-30ddb79cc6c0")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP12")
 					(unit 1)
 				)
 			)
@@ -10988,7 +11841,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4fab34ff-5cf0-4757-847a-683006e637ee")
-		(property "Reference" "#PWR038"
+		(property "Reference" "#PWR023"
 			(at 273.05 80.01 0)
 			(hide yes)
 			(show_name no)
@@ -11047,7 +11900,85 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR038")
+					(reference "#PWR023")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 187.96 138.43 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "68144cb3-4eda-4016-b981-970d8755dbef")
+		(property "Reference" "TP16"
+			(at 194.31 138.43 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 189.9921 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 187.96 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 138.43 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "45f506ef-80ea-400e-84e6-9efdabab9e91")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP16")
 					(unit 1)
 				)
 			)
@@ -11064,7 +11995,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6f3f31f4-9096-4f83-b2e9-b66771c26c4c")
-		(property "Reference" "#PWR064"
+		(property "Reference" "#PWR011"
 			(at 52.07 29.21 0)
 			(hide yes)
 			(show_name no)
@@ -11124,7 +12055,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR064")
+					(reference "#PWR011")
 					(unit 1)
 				)
 			)
@@ -11141,7 +12072,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7e73323d-c553-4e3c-8394-e9b1d1ed1e47")
-		(property "Reference" "R15"
+		(property "Reference" "R1"
 			(at 208.28 81.1022 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11202,15 +12133,15 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "R15")
+					(reference "R1")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
-		(at 233.68 116.84 0)
+		(lib_id "Connector:TestPoint")
+		(at 187.96 125.73 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11218,10 +12149,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "8ed2182e-2bdb-4eb6-8584-e8a38cae8ed7")
-		(property "Reference" "#PWR076"
-			(at 233.68 120.65 0)
-			(hide yes)
+		(uuid "888e5375-ebab-4497-a050-6d076cfa4b8c")
+		(property "Reference" "TP11"
+			(at 194.31 125.73 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -11230,18 +12160,20 @@
 				)
 			)
 		)
-		(property "Value" "+3V3"
-			(at 233.68 113.03 0)
+		(property "Value" "TestPoint"
+			(at 189.9921 128.27 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1 1)
+					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
-		(property "Footprint" ""
-			(at 233.68 116.84 0)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 130.81 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11252,7 +12184,162 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 233.68 116.84 0)
+			(at 187.96 130.81 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 125.73 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "14319ea9-6741-4d5f-bfe5-61ba9cd27b6d")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 39.37 53.34 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "8d3e2b62-a10a-4395-8532-8786519c5f32")
+		(property "Reference" "TP8"
+			(at 33.02 53.34 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 37.3379 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 39.37 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 39.37 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 39.37 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "5b9a0dd5-5a84-48f0-b77c-ed21d1ced1e9")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 233.68 123.19 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "8ed2182e-2bdb-4eb6-8584-e8a38cae8ed7")
+		(property "Reference" "#PWR017"
+			(at 233.68 127 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 233.68 119.38 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 233.68 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 233.68 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11263,7 +12350,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 233.68 116.84 0)
+			(at 233.68 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11279,7 +12366,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR076")
+					(reference "#PWR017")
 					(unit 1)
 				)
 			)
@@ -11296,7 +12383,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "99344952-8714-4a80-b299-6af8fcef5704")
-		(property "Reference" "#PWR072"
+		(property "Reference" "#PWR013"
 			(at 182.88 100.33 0)
 			(hide yes)
 			(show_name no)
@@ -11355,7 +12442,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR072")
+					(reference "#PWR013")
 					(unit 1)
 				)
 			)
@@ -11372,7 +12459,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9a065cfc-7a4b-42f5-84c4-53f31270f11f")
-		(property "Reference" "#PWR075"
+		(property "Reference" "#PWR019"
 			(at 254 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -11431,15 +12518,15 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR075")
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 264.16 139.7 0)
+		(lib_id "Connector:TestPoint")
+		(at 187.96 133.35 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11447,9 +12534,19 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "a915213a-74b5-4383-ab00-7102af7c0c14")
-		(property "Reference" "#PWR0133"
-			(at 264.16 146.05 0)
+		(uuid "9e0485b6-4151-4f7e-af0a-fcea7fe2a2e3")
+		(property "Reference" "TP14"
+			(at 194.31 133.35 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 189.9921 135.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11457,20 +12554,11 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
-		(property "Value" "GND"
-			(at 264.287 144.0942 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 264.16 139.7 0)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 138.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11481,7 +12569,84 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 264.16 139.7 0)
+			(at 187.96 138.43 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 133.35 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "beeaf997-73a1-4532-8261-5e1c0e3c31fb")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 264.16 146.05 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "a915213a-74b5-4383-ab00-7102af7c0c14")
+		(property "Reference" "#PWR022"
+			(at 264.16 152.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 264.287 150.4442 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 264.16 146.05 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 264.16 146.05 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11492,7 +12657,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 264.16 139.7 0)
+			(at 264.16 146.05 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11508,15 +12673,15 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR0133")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 214.63 116.84 270)
+		(lib_id "Connector:TestPoint")
+		(at 187.96 143.51 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11524,9 +12689,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "b2a4b269-fb79-4cfb-87a2-99cdf1716081")
-		(property "Reference" "C75"
-			(at 210.82 110.49 90)
+		(uuid "abd2ae1c-64f3-4b94-bfa7-3816703e937c")
+		(property "Reference" "TP18"
+			(at 194.31 143.51 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -11535,18 +12700,20 @@
 				)
 			)
 		)
-		(property "Value" "100n"
-			(at 210.82 113.03 90)
+		(property "Value" "TestPoint"
+			(at 189.9921 146.05 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
-			(at 210.82 117.8052 0)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 148.59 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11557,7 +12724,83 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 214.63 116.84 0)
+			(at 187.96 148.59 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f00c0ee6-0233-46df-bd2e-c24619cf422a")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 214.63 123.19 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "b2a4b269-fb79-4cfb-87a2-99cdf1716081")
+		(property "Reference" "C15"
+			(at 210.82 116.84 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100n"
+			(at 210.82 119.38 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
+			(at 210.82 124.1552 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 214.63 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11568,7 +12811,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 214.63 116.84 0)
+			(at 214.63 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11587,7 +12830,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "C75")
+					(reference "C15")
 					(unit 1)
 				)
 			)
@@ -11604,7 +12847,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b38c138d-e0db-4aa2-8488-b41450a66550")
-		(property "Reference" "X2"
+		(property "Reference" "X1"
 			(at 194.31 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11673,15 +12916,15 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "X2")
+					(reference "X1")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "Jumper:Jumper_2_Open")
-		(at 264.16 134.62 90)
+		(lib_id "Connector:TestPoint")
+		(at 187.96 130.81 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11689,9 +12932,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "b9cc932a-5f46-43b0-9ccc-a98e6542aca7")
-		(property "Reference" "JP1"
-			(at 258.191 134.62 0)
+		(uuid "b696c4dc-bc52-4998-b507-d45428922aae")
+		(property "Reference" "TP13"
+			(at 194.31 130.81 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -11700,18 +12943,20 @@
 				)
 			)
 		)
-		(property "Value" "Flash"
-			(at 260.5024 134.62 0)
+		(property "Value" "TestPoint"
+			(at 189.9921 133.35 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
-		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm"
-			(at 264.16 134.62 0)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 135.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11722,7 +12967,161 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 264.16 134.62 0)
+			(at 187.96 135.89 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 130.81 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "bf744139-8310-4601-9553-0d1d833f2f82")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 187.96 123.19 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "b8577640-efc0-4596-a674-3afeeea8b17c")
+		(property "Reference" "TP10"
+			(at 194.31 123.19 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 189.9921 125.73 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 128.27 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 187.96 128.27 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 123.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "1ae09eea-5d5e-4f0b-882f-e73af3d14166")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Jumper:Jumper_2_Open")
+		(at 264.16 140.97 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "b9cc932a-5f46-43b0-9ccc-a98e6542aca7")
+		(property "Reference" "JP1"
+			(at 258.191 140.97 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Flash"
+			(at 260.5024 140.97 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm"
+			(at 264.16 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 264.16 140.97 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11733,7 +13132,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 264.16 134.62 0)
+			(at 264.16 140.97 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11770,7 +13169,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "becfe591-712a-457c-863e-acdfd4ab5989")
-		(property "Reference" "U7"
+		(property "Reference" "U1"
 			(at 92.71 187.96 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12592,7 +13991,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "U7")
+					(reference "U1")
 					(unit 2)
 				)
 			)
@@ -12600,7 +13999,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 210.82 116.84 270)
+		(at 210.82 123.19 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -12609,8 +14008,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "bf4be686-f247-4005-b284-c9e282869663")
-		(property "Reference" "#PWR0211"
-			(at 204.47 116.84 0)
+		(property "Reference" "#PWR016"
+			(at 204.47 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12621,7 +14020,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 206.4258 116.967 0)
+			(at 206.4258 123.317 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -12631,7 +14030,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 210.82 116.84 0)
+			(at 210.82 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12642,7 +14041,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 210.82 116.84 0)
+			(at 210.82 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12653,7 +14052,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 210.82 116.84 0)
+			(at 210.82 123.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12669,7 +14068,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR0211")
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)
@@ -12677,7 +14076,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 264.16 118.11 0)
+		(at 264.16 124.46 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -12686,8 +14085,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "cb2b68c6-8fb2-4e31-979f-471ea610b7c1")
-		(property "Reference" "#PWR077"
-			(at 264.16 121.92 0)
+		(property "Reference" "#PWR021"
+			(at 264.16 128.27 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12698,7 +14097,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 264.16 114.3 0)
+			(at 264.16 120.65 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -12708,7 +14107,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 264.16 118.11 0)
+			(at 264.16 124.46 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12719,7 +14118,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 264.16 118.11 0)
+			(at 264.16 124.46 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12730,7 +14129,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 264.16 118.11 0)
+			(at 264.16 124.46 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12746,7 +14145,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR077")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -12763,7 +14162,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "cbfa78c3-77fb-46eb-8254-4392806acd69")
-		(property "Reference" "C40"
+		(property "Reference" "C14"
 			(at 176.53 93.98 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12824,7 +14223,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "C40")
+					(reference "C14")
 					(unit 1)
 				)
 			)
@@ -12832,7 +14231,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 264.16 121.92 0)
+		(at 264.16 128.27 0)
 		(mirror x)
 		(unit 1)
 		(body_style 1)
@@ -12842,8 +14241,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "cd7e4d57-7393-4a7e-8079-8ee2980ee50c")
-		(property "Reference" "R18"
-			(at 261.62 124.46 90)
+		(property "Reference" "R4"
+			(at 261.62 130.81 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -12853,7 +14252,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 261.62 120.65 90)
+			(at 261.62 127 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -12863,7 +14262,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
-			(at 262.382 121.92 90)
+			(at 262.382 128.27 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12874,7 +14273,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 264.16 121.92 0)
+			(at 264.16 128.27 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12885,7 +14284,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 264.16 121.92 0)
+			(at 264.16 128.27 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12904,7 +14303,85 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "R18")
+					(reference "R4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 187.96 135.89 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "de4b2c12-c180-49bc-8815-c8197f8e229c")
+		(property "Reference" "TP15"
+			(at 194.31 135.89 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 189.9921 138.43 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 187.96 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 187.96 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 187.96 135.89 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f0ca233d-406d-4c2e-9b17-34c787cc395c")
+		)
+		(instances
+			(project "karabas-megasound"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "TP15")
 					(unit 1)
 				)
 			)
@@ -12921,7 +14398,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e1684a2c-2052-49f1-936d-b7051fa4dd7b")
-		(property "Reference" "#PWR071"
+		(property "Reference" "#PWR020"
 			(at 262.89 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -12981,7 +14458,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR071")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -12989,7 +14466,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 220.98 121.92 0)
+		(at 220.98 128.27 0)
 		(mirror x)
 		(unit 1)
 		(body_style 1)
@@ -12999,8 +14476,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e1f43a5a-68e8-4697-b322-4e11ff4ef6bf")
-		(property "Reference" "R10"
-			(at 218.44 124.46 90)
+		(property "Reference" "R2"
+			(at 218.44 130.81 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -13010,7 +14487,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 218.44 120.65 90)
+			(at 218.44 127 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -13020,7 +14497,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
-			(at 219.202 121.92 90)
+			(at 219.202 128.27 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13031,7 +14508,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 220.98 121.92 0)
+			(at 220.98 128.27 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13042,7 +14519,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 220.98 121.92 0)
+			(at 220.98 128.27 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13061,7 +14538,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "R10")
+					(reference "R2")
 					(unit 1)
 				)
 			)
@@ -13069,7 +14546,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 233.68 147.32 0)
+		(at 233.68 153.67 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -13078,8 +14555,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e7f7ac74-58fa-4af9-8236-829561fc4f71")
-		(property "Reference" "#PWR0128"
-			(at 233.68 153.67 0)
+		(property "Reference" "#PWR018"
+			(at 233.68 160.02 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13090,7 +14567,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 233.807 151.7142 0)
+			(at 233.807 158.0642 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -13100,7 +14577,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 233.68 147.32 0)
+			(at 233.68 153.67 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13111,7 +14588,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 233.68 147.32 0)
+			(at 233.68 153.67 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13122,7 +14599,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 233.68 147.32 0)
+			(at 233.68 153.67 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13138,7 +14615,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "#PWR0128")
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -13155,7 +14632,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f76558fe-eb65-4d8c-b551-2c2c723d61ae")
-		(property "Reference" "J6"
+		(property "Reference" "J1"
 			(at 259.08 74.93 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13240,7 +14717,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "J6")
+					(reference "J1")
 					(unit 1)
 				)
 			)
@@ -13248,7 +14725,7 @@
 	)
 	(symbol
 		(lib_id "Memory_Flash:W25Q128JVS")
-		(at 233.68 134.62 0)
+		(at 233.68 140.97 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -13257,8 +14734,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f9688331-14d6-47c9-af43-77358620036e")
-		(property "Reference" "U12"
-			(at 236.22 119.38 0)
+		(property "Reference" "U2"
+			(at 236.22 125.73 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -13269,7 +14746,7 @@
 			)
 		)
 		(property "Value" "W25Q128JVS"
-			(at 236.22 121.92 0)
+			(at 236.22 128.27 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -13280,7 +14757,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
-			(at 233.68 134.62 0)
+			(at 233.68 140.97 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13291,7 +14768,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.winbond.com/resource-files/w25q128jv_dtr%20revc%2003272018%20plus.pdf"
-			(at 233.68 134.62 0)
+			(at 233.68 140.97 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13302,7 +14779,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 233.68 134.62 0)
+			(at 233.68 140.97 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13339,7 +14816,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
-					(reference "U12")
+					(reference "U2")
 					(unit 1)
 				)
 			)

@@ -5,9 +5,9 @@
 	(uuid "97ed7a5c-26c3-45c5-a30b-a03a476db7a1")
 	(paper "A4")
 	(title_block
-		(title "karabas-Megasound")
-		(date "2026-04-02")
-		(rev "B")
+		(title "Karabas-MegaBuzz")
+		(date "2026-04-18")
+		(rev "A")
 		(company "Andy Karpov")
 	)
 	(lib_symbols
@@ -1457,7 +1457,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "02ee71a5-2b6b-4c8b-a08d-d7159e362f76")
-		(property "Reference" "D3"
+		(property "Reference" "D2"
 			(at 49.53 29.718 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1530,7 +1530,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D3")
+					(reference "D2")
 					(unit 1)
 				)
 			)
@@ -1548,7 +1548,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "07bf0b40-89e3-4922-8a8e-39e840ad09f7")
-		(property "Reference" "R22"
+		(property "Reference" "R31"
 			(at 57.15 32.385 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1610,7 +1610,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R22")
+					(reference "R31")
 					(unit 1)
 				)
 			)
@@ -1628,7 +1628,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "099043eb-14aa-4e5d-96c2-0fddf4e9b467")
-		(property "Reference" "R31"
+		(property "Reference" "R40"
 			(at 57.15 109.855 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1690,7 +1690,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R31")
+					(reference "R40")
 					(unit 1)
 				)
 			)
@@ -1707,7 +1707,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0fc0eccc-2cd7-4b51-9847-43073b3f85d2")
-		(property "Reference" "D16"
+		(property "Reference" "D15"
 			(at 49.53 137.668 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1780,7 +1780,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D16")
+					(reference "D15")
 					(unit 1)
 				)
 			)
@@ -1798,7 +1798,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "16b266d2-2e97-4060-a962-a05d8512e5f6")
-		(property "Reference" "R29"
+		(property "Reference" "R38"
 			(at 57.15 94.615 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1860,7 +1860,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R29")
+					(reference "R38")
 					(unit 1)
 				)
 			)
@@ -1878,7 +1878,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1cbf9694-928f-4ae6-abc4-f735650a3673")
-		(property "Reference" "R25"
+		(property "Reference" "R34"
 			(at 57.15 55.245 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1940,7 +1940,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R25")
+					(reference "R34")
 					(unit 1)
 				)
 			)
@@ -1958,7 +1958,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1d5dfb23-bebd-47cd-a861-b3766fae4d13")
-		(property "Reference" "R36"
+		(property "Reference" "R45"
 			(at 57.15 147.955 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2020,7 +2020,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R36")
+					(reference "R45")
 					(unit 1)
 				)
 			)
@@ -2037,7 +2037,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2822c1aa-27e0-40b5-aeae-2f4dab09e55a")
-		(property "Reference" "D2"
+		(property "Reference" "D1"
 			(at 49.53 22.098 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2110,7 +2110,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D2")
+					(reference "D1")
 					(unit 1)
 				)
 			)
@@ -2127,7 +2127,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2e895f33-9681-44a4-ab62-3ee6b6b63440")
-		(property "Reference" "D8"
+		(property "Reference" "D7"
 			(at 49.53 67.818 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2200,7 +2200,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D8")
+					(reference "D7")
 					(unit 1)
 				)
 			)
@@ -2217,7 +2217,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2e9c3050-28aa-42de-ae8e-4d9d472bef9c")
-		(property "Reference" "#PWR097"
+		(property "Reference" "#PWR0131"
 			(at 66.04 26.67 0)
 			(hide yes)
 			(show_name no)
@@ -2277,7 +2277,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "#PWR097")
+					(reference "#PWR0131")
 					(unit 1)
 				)
 			)
@@ -2294,7 +2294,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2f479fc7-6cb0-49b4-aeae-2eb3426c14ad")
-		(property "Reference" "D6"
+		(property "Reference" "D5"
 			(at 49.53 52.578 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2367,7 +2367,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D6")
+					(reference "D5")
 					(unit 1)
 				)
 			)
@@ -2384,7 +2384,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "350bfdad-7d03-4f09-95d0-7cfc095fc8d4")
-		(property "Reference" "D13"
+		(property "Reference" "D12"
 			(at 49.53 114.808 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2457,7 +2457,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D13")
+					(reference "D12")
 					(unit 1)
 				)
 			)
@@ -2474,7 +2474,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "45b6f247-6732-4847-9f99-81fbfffa3dd0")
-		(property "Reference" "D4"
+		(property "Reference" "D3"
 			(at 49.53 37.338 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2547,7 +2547,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D4")
+					(reference "D3")
 					(unit 1)
 				)
 			)
@@ -2564,7 +2564,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "49b51565-f643-4522-8b5e-b8e3ae7e0ddc")
-		(property "Reference" "D12"
+		(property "Reference" "D11"
 			(at 49.53 107.188 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2637,7 +2637,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D12")
+					(reference "D11")
 					(unit 1)
 				)
 			)
@@ -2655,7 +2655,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4b970e8d-6c87-4b19-9b64-8c2a18a4a97f")
-		(property "Reference" "R27"
+		(property "Reference" "R36"
 			(at 57.15 70.485 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2717,7 +2717,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R27")
+					(reference "R36")
 					(unit 1)
 				)
 			)
@@ -2735,7 +2735,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "53f8400d-2c21-4d3b-a349-170e2326bf1c")
-		(property "Reference" "R35"
+		(property "Reference" "R44"
 			(at 57.15 140.335 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2797,7 +2797,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R35")
+					(reference "R44")
 					(unit 1)
 				)
 			)
@@ -2815,7 +2815,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6973491b-5a8d-410a-b741-5e3bba0935a8")
-		(property "Reference" "R28"
+		(property "Reference" "R37"
 			(at 57.15 78.105 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2877,7 +2877,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R28")
+					(reference "R37")
 					(unit 1)
 				)
 			)
@@ -2894,7 +2894,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6e0dc67e-bb3e-4e28-9f4a-2e3b91db8d65")
-		(property "Reference" "D9"
+		(property "Reference" "D8"
 			(at 49.53 75.438 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2967,7 +2967,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D9")
+					(reference "D8")
 					(unit 1)
 				)
 			)
@@ -2985,7 +2985,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "77c488b8-ebe8-40d5-a6d1-aa55b0fb826b")
-		(property "Reference" "R33"
+		(property "Reference" "R42"
 			(at 57.15 125.095 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3047,7 +3047,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R33")
+					(reference "R42")
 					(unit 1)
 				)
 			)
@@ -3065,7 +3065,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9b2d570d-5282-4959-960b-16d7bf61214f")
-		(property "Reference" "R23"
+		(property "Reference" "R32"
 			(at 57.15 40.005 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3127,7 +3127,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R23")
+					(reference "R32")
 					(unit 1)
 				)
 			)
@@ -3144,7 +3144,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a1e47ac4-97ff-49b2-8cc4-81df5f6e1182")
-		(property "Reference" "D15"
+		(property "Reference" "D14"
 			(at 49.53 130.048 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3217,7 +3217,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D15")
+					(reference "D14")
 					(unit 1)
 				)
 			)
@@ -3235,7 +3235,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "ada4b765-95b9-4cef-a582-6213e6204a61")
-		(property "Reference" "R32"
+		(property "Reference" "R41"
 			(at 57.15 117.475 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3297,7 +3297,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R32")
+					(reference "R41")
 					(unit 1)
 				)
 			)
@@ -3314,7 +3314,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b5013a8d-f67c-417c-9095-6d23ccf7577e")
-		(property "Reference" "D14"
+		(property "Reference" "D13"
 			(at 49.53 122.428 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3387,7 +3387,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D14")
+					(reference "D13")
 					(unit 1)
 				)
 			)
@@ -3404,7 +3404,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b80e9e4a-5b3f-4dd1-8b5f-cb009b51f492")
-		(property "Reference" "D17"
+		(property "Reference" "D16"
 			(at 49.53 145.288 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3477,7 +3477,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D17")
+					(reference "D16")
 					(unit 1)
 				)
 			)
@@ -3495,7 +3495,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "be489d80-4e36-4341-b116-4d2d2c81e23a")
-		(property "Reference" "R26"
+		(property "Reference" "R35"
 			(at 57.15 62.865 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3557,7 +3557,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R26")
+					(reference "R35")
 					(unit 1)
 				)
 			)
@@ -3574,7 +3574,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c1af0a6c-f26f-405e-a808-c451cef766ab")
-		(property "Reference" "D11"
+		(property "Reference" "D10"
 			(at 49.53 99.568 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3647,7 +3647,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D11")
+					(reference "D10")
 					(unit 1)
 				)
 			)
@@ -3664,7 +3664,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c2d1aedd-a865-46f4-8f0d-c05d1a62e008")
-		(property "Reference" "D10"
+		(property "Reference" "D9"
 			(at 49.53 91.948 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3737,7 +3737,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D10")
+					(reference "D9")
 					(unit 1)
 				)
 			)
@@ -3755,7 +3755,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "d2aa6187-58d6-4ffa-9618-dddf2bc2e714")
-		(property "Reference" "R30"
+		(property "Reference" "R39"
 			(at 57.15 102.235 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3817,7 +3817,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R30")
+					(reference "R39")
 					(unit 1)
 				)
 			)
@@ -3834,7 +3834,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "dc1e863a-4b4b-40c8-a5a7-94bfd1c139c8")
-		(property "Reference" "D7"
+		(property "Reference" "D6"
 			(at 49.53 60.198 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3907,7 +3907,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D7")
+					(reference "D6")
 					(unit 1)
 				)
 			)
@@ -3924,7 +3924,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "dda76bb1-85dc-440b-a990-11eef2311758")
-		(property "Reference" "D5"
+		(property "Reference" "D4"
 			(at 49.53 44.958 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3997,7 +3997,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "D5")
+					(reference "D4")
 					(unit 1)
 				)
 			)
@@ -4015,7 +4015,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f32d6585-1abe-4e12-ad89-3ba3a5fabb0f")
-		(property "Reference" "R24"
+		(property "Reference" "R33"
 			(at 57.15 47.625 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4077,7 +4077,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R24")
+					(reference "R33")
 					(unit 1)
 				)
 			)
@@ -4095,7 +4095,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f86eb855-5a47-4200-a02e-fca85947f3da")
-		(property "Reference" "R21"
+		(property "Reference" "R30"
 			(at 57.15 24.765 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4157,7 +4157,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R21")
+					(reference "R30")
 					(unit 1)
 				)
 			)
@@ -4175,7 +4175,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "fd7af13c-9937-43aa-8cc2-c2a0580192d9")
-		(property "Reference" "R34"
+		(property "Reference" "R43"
 			(at 57.15 132.715 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4237,7 +4237,7 @@
 		(instances
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R34")
+					(reference "R43")
 					(unit 1)
 				)
 			)

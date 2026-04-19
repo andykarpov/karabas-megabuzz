@@ -5,9 +5,9 @@
 	(uuid "eff1afb7-47ba-46af-a815-4a07fb8d674b")
 	(paper "A4")
 	(title_block
-		(title "karabas-Megasound")
-		(date "2026-04-02")
-		(rev "B")
+		(title "Karabas-MegaBuzz")
+		(date "2026-04-18")
+		(rev "A")
 		(company "Andy Karpov")
 		(comment 1 "Sound card for ZX Spectrum (NemoBus)")
 	)
@@ -106,8 +106,8 @@
 		)
 	)
 	(rectangle
-		(start 110.49 40.64)
-		(end 273.05 154.94)
+		(start 100.33 39.624)
+		(end 262.89 153.924)
 		(stroke
 			(width 0)
 			(type dash)
@@ -118,8 +118,8 @@
 		(uuid "1b64f655-7e23-41ed-aff0-a29b1e473744")
 	)
 	(rectangle
-		(start 217.17 102.87)
-		(end 232.41 107.95)
+		(start 207.01 101.854)
+		(end 222.25 106.68)
 		(stroke
 			(width 0)
 			(type default)
@@ -131,8 +131,8 @@
 		(uuid "1c55a5ba-75d2-4f64-88be-48de87881d29")
 	)
 	(rectangle
-		(start 181.61 132.08)
-		(end 181.6354 134.62)
+		(start 171.45 131.064)
+		(end 171.4754 133.604)
 		(stroke
 			(width 0)
 			(type default)
@@ -143,8 +143,8 @@
 		(uuid "2aba6cc9-e7a0-414e-a845-f49fd5e21aee")
 	)
 	(rectangle
-		(start 194.31 67.31)
-		(end 194.31 71.12)
+		(start 184.15 66.294)
+		(end 184.15 70.104)
 		(stroke
 			(width 0)
 			(type default)
@@ -155,8 +155,8 @@
 		(uuid "2b2f2ef0-80b0-4583-aa26-7ce2509debc5")
 	)
 	(rectangle
-		(start 201.93 74.93)
-		(end 217.17 74.9554)
+		(start 191.77 73.914)
+		(end 207.01 73.9394)
 		(stroke
 			(width 0)
 			(type default)
@@ -167,8 +167,8 @@
 		(uuid "30acd469-7315-43d4-bc60-fb930e6f806b")
 	)
 	(rectangle
-		(start 217.17 82.55)
-		(end 232.41 87.63)
+		(start 207.01 81.534)
+		(end 222.25 86.614)
 		(stroke
 			(width 0)
 			(type default)
@@ -180,8 +180,8 @@
 		(uuid "315a7e8f-26dd-483b-a303-2e558ddf7602")
 	)
 	(rectangle
-		(start 186.69 62.23)
-		(end 201.93 67.31)
+		(start 176.53 61.214)
+		(end 191.77 66.294)
 		(stroke
 			(width 0)
 			(type default)
@@ -193,8 +193,8 @@
 		(uuid "338bf5ba-47d6-44d9-97cc-b40a7efec730")
 	)
 	(rectangle
-		(start 167.6146 67.31)
-		(end 167.64 71.12)
+		(start 157.4546 66.294)
+		(end 157.48 70.104)
 		(stroke
 			(width 0)
 			(type default)
@@ -205,8 +205,8 @@
 		(uuid "4c874422-d033-4e52-9d25-2df419a5e0cc")
 	)
 	(rectangle
-		(start 181.61 116.84)
-		(end 181.6354 127)
+		(start 171.45 115.824)
+		(end 171.4754 125.984)
 		(stroke
 			(width 0)
 			(type default)
@@ -217,8 +217,8 @@
 		(uuid "5c9cc3d7-8c50-42d6-84be-a95a2b8b6b72")
 	)
 	(rectangle
-		(start 217.17 92.71)
-		(end 232.41 97.79)
+		(start 207.01 91.694)
+		(end 222.25 96.774)
 		(stroke
 			(width 0)
 			(type default)
@@ -230,8 +230,8 @@
 		(uuid "5edcab94-fe1e-4b7b-8dc8-83d9fbe816da")
 	)
 	(rectangle
-		(start 119.38 106.68)
-		(end 134.62 113.03)
+		(start 109.22 105.664)
+		(end 124.46 112.014)
 		(stroke
 			(width 0)
 			(type default)
@@ -243,8 +243,8 @@
 		(uuid "6a2a49e1-5a75-401c-b552-f3bc77e1ee16")
 	)
 	(rectangle
-		(start 201.93 95.25)
-		(end 217.17 95.2754)
+		(start 191.77 94.234)
+		(end 207.01 94.2594)
 		(stroke
 			(width 0)
 			(type default)
@@ -255,8 +255,8 @@
 		(uuid "71caad9d-d5dc-41d5-b6f7-85ab4471f314")
 	)
 	(rectangle
-		(start 161.29 127)
-		(end 201.93 132.08)
+		(start 151.13 125.984)
+		(end 191.77 131.064)
 		(stroke
 			(width 0)
 			(type default)
@@ -268,8 +268,8 @@
 		(uuid "7864e5d6-9467-402e-9202-a97d99d0efe4")
 	)
 	(rectangle
-		(start 162.56 62.23)
-		(end 172.72 67.31)
+		(start 152.4 61.214)
+		(end 162.56 66.294)
 		(stroke
 			(width 0)
 			(type default)
@@ -281,8 +281,8 @@
 		(uuid "797b0bd7-6a34-4391-b98f-fc4ec290a0ec")
 	)
 	(rectangle
-		(start 241.3 72.39)
-		(end 255.27 77.47)
+		(start 231.14 71.374)
+		(end 245.11 76.454)
 		(stroke
 			(width 0)
 			(type default)
@@ -294,8 +294,8 @@
 		(uuid "797ea670-9eca-4aa2-8dfb-9780a43e6fe2")
 	)
 	(rectangle
-		(start 224.7646 87.63)
-		(end 224.79 92.71)
+		(start 214.6046 86.614)
+		(end 214.63 91.694)
 		(stroke
 			(width 0)
 			(type default)
@@ -306,8 +306,8 @@
 		(uuid "8ad6f907-64d7-4e79-82e5-b10d7d96e156")
 	)
 	(rectangle
-		(start 217.17 72.39)
-		(end 232.41 77.47)
+		(start 207.01 71.374)
+		(end 222.25 76.454)
 		(stroke
 			(width 0)
 			(type default)
@@ -319,8 +319,8 @@
 		(uuid "8e7a6606-b9b8-46aa-af90-e851908c3a69")
 	)
 	(rectangle
-		(start 161.29 134.62)
-		(end 201.93 140.97)
+		(start 151.13 133.604)
+		(end 191.77 139.954)
 		(stroke
 			(width 0)
 			(type default)
@@ -332,8 +332,8 @@
 		(uuid "8fae7138-2267-46f5-9924-c17fb267c172")
 	)
 	(rectangle
-		(start 232.41 74.93)
-		(end 241.3 74.9554)
+		(start 222.25 73.914)
+		(end 231.14 73.9394)
 		(stroke
 			(width 0)
 			(type default)
@@ -344,8 +344,8 @@
 		(uuid "93fb51a7-a362-4739-b0a5-5663f93ee517")
 	)
 	(rectangle
-		(start 134.62 100.3046)
-		(end 160.02 100.33)
+		(start 124.46 99.2886)
+		(end 149.86 99.314)
 		(stroke
 			(width 0)
 			(type default)
@@ -356,8 +356,8 @@
 		(uuid "9835be41-037d-4b03-8c3f-7cb0303b70be")
 	)
 	(rectangle
-		(start 119.38 97.79)
-		(end 134.62 102.87)
+		(start 109.22 96.774)
+		(end 124.46 101.854)
 		(stroke
 			(width 0)
 			(type default)
@@ -369,8 +369,8 @@
 		(uuid "990000f2-671b-4eeb-8cb3-7e29f7b81a54")
 	)
 	(rectangle
-		(start 201.93 85.09)
-		(end 217.17 85.1154)
+		(start 191.77 84.074)
+		(end 207.01 84.0994)
 		(stroke
 			(width 0)
 			(type default)
@@ -381,8 +381,20 @@
 		(uuid "9cee1cf7-aa4f-48b6-9cb1-e164ae0d1516")
 	)
 	(rectangle
-		(start 160.02 71.12)
-		(end 201.93 116.84)
+		(start 214.63 106.68)
+		(end 214.6554 137.16)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "a96279de-17ee-46ba-b4ba-220cc347e3c6")
+	)
+	(rectangle
+		(start 149.86 70.104)
+		(end 191.77 115.824)
 		(stroke
 			(width 0)
 			(type default)
@@ -394,8 +406,8 @@
 		(uuid "ac220bf7-e226-44d5-920d-c6eca29b4c5b")
 	)
 	(rectangle
-		(start 201.93 105.41)
-		(end 217.17 105.4354)
+		(start 191.77 104.394)
+		(end 207.01 104.4194)
 		(stroke
 			(width 0)
 			(type default)
@@ -406,8 +418,20 @@
 		(uuid "e52ff4dd-fbfd-4589-8f3d-6753d3652690")
 	)
 	(rectangle
-		(start 134.62 109.22)
-		(end 160.02 109.2454)
+		(start 191.77 137.16)
+		(end 214.63 137.1854)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "e8d56961-15c5-4240-a734-9afcb7c7f669")
+	)
+	(rectangle
+		(start 124.46 108.204)
+		(end 149.86 108.2294)
 		(stroke
 			(width 0)
 			(type default)
@@ -419,7 +443,7 @@
 	)
 	(text "PCM5102A"
 		(exclude_from_sim no)
-		(at 219.71 76.2 0)
+		(at 209.55 75.184 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -430,7 +454,7 @@
 	)
 	(text "XC6SLX25\nFPGA"
 		(exclude_from_sim no)
-		(at 177.8 95.25 0)
+		(at 167.64 94.234 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -439,9 +463,20 @@
 		)
 		(uuid "0f1d13e0-cad7-4317-a1a6-9d3233f92427")
 	)
+	(text "MIDI UART"
+		(exclude_from_sim no)
+		(at 194.564 84.074 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "12fa5694-2ba1-4a1f-9fac-9df043e96e5b")
+	)
 	(text "PCM1808A"
 		(exclude_from_sim no)
-		(at 219.71 96.52 0)
+		(at 209.55 95.504 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -452,7 +487,29 @@
 	)
 	(text "Parallel"
 		(exclude_from_sim no)
-		(at 141.986 109.22 0)
+		(at 171.45 121.92 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "353b26bd-37ab-4a76-807e-64b27728db9a")
+	)
+	(text "Parallel"
+		(exclude_from_sim no)
+		(at 214.884 121.158 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "38662988-b30b-4ece-88db-4b7e08a1cd84")
+	)
+	(text "Parallel"
+		(exclude_from_sim no)
+		(at 131.826 108.204 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -463,7 +520,7 @@
 	)
 	(text "YMF262-M"
 		(exclude_from_sim no)
-		(at 219.71 106.426 0)
+		(at 209.55 105.41 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -474,7 +531,7 @@
 	)
 	(text "NEMOBUS"
 		(exclude_from_sim no)
-		(at 177.292 138.938 0)
+		(at 167.132 137.922 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -485,7 +542,7 @@
 	)
 	(text "Audio Out"
 		(exclude_from_sim no)
-		(at 243.84 75.946 0)
+		(at 233.68 74.93 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -494,9 +551,20 @@
 		)
 		(uuid "69d09a14-dc02-475f-9ed1-f5ae1c25de3f")
 	)
+	(text "I2S"
+		(exclude_from_sim no)
+		(at 197.358 73.914 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6dda14cc-7ccd-407c-b802-bf07764f8cfd")
+	)
 	(text "JTAG"
 		(exclude_from_sim no)
-		(at 165.608 65.786 0)
+		(at 155.448 64.77 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -505,9 +573,20 @@
 		)
 		(uuid "880399e2-ae8d-427a-b479-bf5d6baefaa6")
 	)
+	(text "Analog Audio"
+		(exclude_from_sim no)
+		(at 214.63 90.424 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "89cec1e0-44e6-45ad-b7d9-2596af1691ed")
+	)
 	(text "QSPI"
 		(exclude_from_sim no)
-		(at 142.24 100.33 0)
+		(at 132.08 99.314 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -518,7 +597,7 @@
 	)
 	(text "50 MHz clk"
 		(exclude_from_sim no)
-		(at 189.23 66.04 0)
+		(at 179.07 65.024 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -529,7 +608,7 @@
 	)
 	(text "Flash"
 		(exclude_from_sim no)
-		(at 121.92 101.6 0)
+		(at 114.046 100.584 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -540,7 +619,7 @@
 	)
 	(text "SRAM\n2MB"
 		(exclude_from_sim no)
-		(at 124.46 112.014 0)
+		(at 114.3 110.998 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -549,9 +628,20 @@
 		)
 		(uuid "9d7d8a3e-5547-408c-b3eb-3285d9fc43bb")
 	)
+	(text "I2S"
+		(exclude_from_sim no)
+		(at 197.104 94.234 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a2071d91-57d8-43ba-9b2b-6e3b159d7f84")
+	)
 	(text "Level shifters"
 		(exclude_from_sim no)
-		(at 175.768 130.556 0)
+		(at 165.608 129.54 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -560,9 +650,34 @@
 		)
 		(uuid "a9d9bec8-a395-420b-8e10-432b3c6f5e73")
 	)
+	(text "CS, Serial"
+		(exclude_from_sim no)
+		(at 194.818 104.394 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b6676c3d-df67-4ea2-b182-138e7d88448a")
+	)
+	(text "FUNCTIONAL DIAGRAM"
+		(exclude_from_sim no)
+		(at 100.076 38.354 0)
+		(effects
+			(font
+				(size 2 2)
+				(thickness 0.4)
+				(bold yes)
+				(italic yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "e868a520-5691-46ca-9039-2cd1dba2965a")
+	)
 	(text "SAM2695"
 		(exclude_from_sim no)
-		(at 219.71 86.106 0)
+		(at 209.55 85.09 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -571,16 +686,16 @@
 		)
 		(uuid "e95ce950-8bac-43ba-8c55-8fb60be07357")
 	)
-	(text "Functional schematics"
+	(text "Stereo"
 		(exclude_from_sim no)
-		(at 113.03 45.72 0)
+		(at 224.028 73.914 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "f32eda08-afb7-4ee5-ab86-1d67238acc6f")
+		(uuid "fa568aa8-577f-4427-befa-e0b606b6f7b2")
 	)
 	(symbol
 		(lib_id "my:logo")
@@ -662,91 +777,6 @@
 			(project "karabas-megasound"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
 					(reference "LOGO2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "my:logo")
-		(at 151.13 170.18 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "324ea932-56aa-49d6-aaa4-59e61e6468cd")
-		(property "Reference" "LOGO1"
-			(at 151.13 165.1 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1 1)
-				)
-			)
-		)
-		(property "Value" "graphic"
-			(at 151.13 176.53 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1 1)
-				)
-			)
-		)
-		(property "Footprint" "footprints:opl3"
-			(at 151.13 175.26 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 151.892 175.26 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 151.13 170.18 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Desc" "Logo"
-			(at 151.13 172.085 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.9906 0.9906)
-				)
-			)
-		)
-		(instances
-			(project "karabas-megasound"
-				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
-					(reference "LOGO1")
 					(unit 1)
 				)
 			)
