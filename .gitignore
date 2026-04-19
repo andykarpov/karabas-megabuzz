@@ -69,3 +69,7 @@ ipcore_dir/tmp/
 
 # special scripts
 make_core.py
+
+# kicad backups
+.history/
+*-backups/
