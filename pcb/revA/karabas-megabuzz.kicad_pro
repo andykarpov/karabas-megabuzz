@@ -51,7 +51,7 @@
         "silk_text_upright": true,
         "zones": {
           "45_degree_only": false,
-          "min_clearance": 0.5
+          "min_clearance": 0.0
         }
       },
       "diff_pair_dimensions": [
@@ -71,19 +71,71 @@
           ""
         ],
         [
+          "missing_courtyard|116611978|119888250|00000000-0000-0000-0000-00005fb0f170|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_edge_clearance|97390000|107050000|a172f793-3c44-4414-9641-7447e5d66e89|b4ff14de-7c81-410e-b363-feef972e1abf",
+          ""
+        ],
+        [
+          "silk_edge_clearance|97390000|107800000|a172f793-3c44-4414-9641-7447e5d66e89|fcee8550-7e4f-459a-b145-a5b587871bcb",
+          ""
+        ],
+        [
+          "silk_edge_clearance|97390000|108550000|a172f793-3c44-4414-9641-7447e5d66e89|6aa3f7a4-dbb9-4d2e-8f8c-cfdb7c0e27d1",
+          ""
+        ],
+        [
+          "silk_edge_clearance|97390000|114550000|52891bf6-034d-4946-bc0b-cd2cb4b39e51|5c773b0f-bd1d-4e21-a4c9-5249cc92c912",
+          ""
+        ],
+        [
+          "silk_edge_clearance|97390000|115300000|52891bf6-034d-4946-bc0b-cd2cb4b39e51|3f6dd664-3c56-4477-ba38-933246b39b23",
+          ""
+        ],
+        [
+          "silk_edge_clearance|97390000|116050000|52891bf6-034d-4946-bc0b-cd2cb4b39e51|3dd589ea-ed31-4028-b611-08e743b6c2e9",
+          ""
+        ],
+        [
+          "silk_over_copper|170490000|92660000|e569a530-8894-4c19-bf65-59304186674b|c1d89342-4b46-4220-a0d0-f5e1a272bd55",
+          ""
+        ],
+        [
+          "silk_over_copper|170490000|97060000|5cbd2368-c4cd-479c-b413-5768eacff47f|a77ca17a-ec03-4577-9e2e-161b2b7245d7",
+          ""
+        ],
+        [
+          "silk_over_copper|171500000|92660000|92cb9a1d-b854-4d23-93b7-a62978432904|c1d89342-4b46-4220-a0d0-f5e1a272bd55",
+          ""
+        ],
+        [
+          "silk_over_copper|171500000|97060000|fe6ecd57-267f-4d97-b1f6-2c281c801206|a77ca17a-ec03-4577-9e2e-161b2b7245d7",
+          ""
+        ],
+        [
+          "silk_over_copper|172640000|92660000|92cb9a1d-b854-4d23-93b7-a62978432904|2f52ecd9-ef5e-4a50-aa0b-80dd1d49eb5c",
+          ""
+        ],
+        [
+          "silk_over_copper|172640000|97060000|fe6ecd57-267f-4d97-b1f6-2c281c801206|11973924-78b0-437f-a692-dc2270bdafd9",
+          ""
+        ],
+        [
+          "silk_over_copper|173650000|92660000|f0b27838-cf84-48ee-8466-bbc003238529|2f52ecd9-ef5e-4a50-aa0b-80dd1d49eb5c",
+          ""
+        ],
+        [
+          "silk_over_copper|173650000|97060000|ca7f361d-4797-40cf-9b7d-735a80b024c1|11973924-78b0-437f-a692-dc2270bdafd9",
+          ""
+        ],
+        [
           "starved_thermal|123537500|110750000|9a9978d2-26c7-4bcc-af0e-f9b1ab355eef|95471652-e907-4357-9829-d5a4bf33d6d1|B.Cu",
           ""
         ],
         [
           "starved_thermal|123587500|107750000|9a9978d2-26c7-4bcc-af0e-f9b1ab355eef|66d4abeb-0318-4ce3-b260-2eda2b8065fe|B.Cu",
-          ""
-        ],
-        [
-          "starved_thermal|137715000|114492500|18b5961d-b2ef-4d79-8dab-929b6eba49b1|b6bc146d-6b93-40f4-b2f4-b4e83a1923a7|F.Cu",
-          ""
-        ],
-        [
-          "starved_thermal|146687500|123450000|18b5961d-b2ef-4d79-8dab-929b6eba49b1|0314966b-4f9a-4a5a-9d42-7748bc416c9b|B.Cu",
           ""
         ],
         [
@@ -185,7 +237,7 @@
         "min_through_hole_diameter": 0.2,
         "min_track_width": 0.1,
         "min_via_annular_width": 0.05,
-        "min_via_diameter": 0.4,
+        "min_via_diameter": 0.45,
         "solder_mask_to_copper_clearance": 0.0,
         "use_height_for_length_calcs": true
       },
@@ -277,7 +329,7 @@
           "drill": 0.0
         },
         {
-          "diameter": 0.4,
+          "diameter": 0.45,
           "drill": 0.2
         },
         {
@@ -565,7 +617,7 @@
     "classes": [
       {
         "bus_width": 12,
-        "clearance": 0.2,
+        "clearance": 0.15,
         "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
@@ -576,10 +628,10 @@
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 2147483647,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.2,
+        "track_width": 0.1,
         "tuning_profile": "",
-        "via_diameter": 0.6,
-        "via_drill": 0.3,
+        "via_diameter": 0.45,
+        "via_drill": 0.2,
         "wire_width": 6
       },
       {
@@ -749,7 +801,7 @@
         "uuid": "eff1afb7-47ba-46af-a815-4a07fb8d674b"
       }
     ],
-    "used_designators": "TP9-18",
+    "used_designators": "#PWR136,TP9-18",
     "variants": []
   },
   "sheets": [

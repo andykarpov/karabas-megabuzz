@@ -205,6 +205,30 @@
 		(uuid "4c874422-d033-4e52-9d25-2df419a5e0cc")
 	)
 	(rectangle
+		(start 124.46 82.55)
+		(end 149.86 82.5754)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "50c166bf-c9f1-4b2f-8148-f529646fce3c")
+	)
+	(rectangle
+		(start 124.46 73.66)
+		(end 149.86 73.6854)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "59986035-976a-4b89-adee-99a72d1d0388")
+	)
+	(rectangle
 		(start 171.45 115.824)
 		(end 171.4754 125.984)
 		(stroke
@@ -230,8 +254,8 @@
 		(uuid "5edcab94-fe1e-4b7b-8dc8-83d9fbe816da")
 	)
 	(rectangle
-		(start 109.22 105.664)
-		(end 124.46 112.014)
+		(start 109.22 106.68)
+		(end 124.46 113.03)
 		(stroke
 			(width 0)
 			(type default)
@@ -294,6 +318,18 @@
 		(uuid "797ea670-9eca-4aa2-8dfb-9780a43e6fe2")
 	)
 	(rectangle
+		(start 124.46 91.44)
+		(end 149.86 91.4654)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "7d73d9da-6ee8-4569-94ed-5abd389edba6")
+	)
+	(rectangle
 		(start 214.6046 86.614)
 		(end 214.63 91.694)
 		(stroke
@@ -344,8 +380,8 @@
 		(uuid "93fb51a7-a362-4739-b0a5-5663f93ee517")
 	)
 	(rectangle
-		(start 124.46 99.2886)
-		(end 149.86 99.314)
+		(start 124.46 100.3046)
+		(end 149.86 100.33)
 		(stroke
 			(width 0)
 			(type default)
@@ -356,8 +392,8 @@
 		(uuid "9835be41-037d-4b03-8c3f-7cb0303b70be")
 	)
 	(rectangle
-		(start 109.22 96.774)
-		(end 124.46 101.854)
+		(start 109.22 97.79)
+		(end 124.46 102.87)
 		(stroke
 			(width 0)
 			(type default)
@@ -406,6 +442,32 @@
 		(uuid "ac220bf7-e226-44d5-920d-c6eca29b4c5b")
 	)
 	(rectangle
+		(start 109.2236 89.0839)
+		(end 124.4636 94.1639)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "c8651cc5-254c-4aaa-b8c9-7c2e8c630a50")
+	)
+	(rectangle
+		(start 109.22 80.01)
+		(end 124.46 85.09)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "d575fa98-5539-46e7-aa4c-c7b6b0a97397")
+	)
+	(rectangle
 		(start 191.77 104.394)
 		(end 207.01 104.4194)
 		(stroke
@@ -416,6 +478,19 @@
 			(type none)
 		)
 		(uuid "e52ff4dd-fbfd-4589-8f3d-6753d3652690")
+	)
+	(rectangle
+		(start 109.22 71.12)
+		(end 124.46 76.2)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "e74a29d1-625b-42fa-8524-162527459925")
 	)
 	(rectangle
 		(start 191.77 137.16)
@@ -430,8 +505,8 @@
 		(uuid "e8d56961-15c5-4240-a734-9afcb7c7f669")
 	)
 	(rectangle
-		(start 124.46 108.204)
-		(end 149.86 108.2294)
+		(start 124.46 109.22)
+		(end 149.86 109.2454)
 		(stroke
 			(width 0)
 			(type default)
@@ -452,7 +527,18 @@
 		)
 		(uuid "0d433ce6-de07-4ddb-8874-8339ecdfeec2")
 	)
-	(text "XC6SLX25\nFPGA"
+	(text "VU Leds"
+		(exclude_from_sim no)
+		(at 113.538 74.676 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0dfb1eec-f47c-4ffd-9f09-0475260fc51c")
+	)
+	(text "XC6SLX25\nXC6SLX16\nFPGA"
 		(exclude_from_sim no)
 		(at 167.64 94.234 0)
 		(effects
@@ -473,6 +559,17 @@
 			(justify left bottom)
 		)
 		(uuid "12fa5694-2ba1-4a1f-9fac-9df043e96e5b")
+	)
+	(text "Button"
+		(exclude_from_sim no)
+		(at 113.792 92.71 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "19defe7a-eec4-4f5c-ab28-ba38a16b7d65")
 	)
 	(text "PCM1808A"
 		(exclude_from_sim no)
@@ -509,7 +606,7 @@
 	)
 	(text "Parallel"
 		(exclude_from_sim no)
-		(at 131.826 108.204 0)
+		(at 131.826 109.22 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -539,6 +636,17 @@
 			(justify left bottom)
 		)
 		(uuid "465fdf21-6ce8-4a7d-b9ea-e5f5587ea034")
+	)
+	(text "DIP Switches"
+		(exclude_from_sim no)
+		(at 110.744 83.566 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "680b54f3-1785-4c7b-a902-78db052cfd9b")
 	)
 	(text "Audio Out"
 		(exclude_from_sim no)
@@ -586,7 +694,7 @@
 	)
 	(text "QSPI"
 		(exclude_from_sim no)
-		(at 132.08 99.314 0)
+		(at 132.08 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -608,7 +716,7 @@
 	)
 	(text "Flash"
 		(exclude_from_sim no)
-		(at 114.046 100.584 0)
+		(at 114.046 101.6 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -619,7 +727,7 @@
 	)
 	(text "SRAM\n2MB"
 		(exclude_from_sim no)
-		(at 114.3 110.998 0)
+		(at 114.3 112.014 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -650,9 +758,9 @@
 		)
 		(uuid "a9d9bec8-a395-420b-8e10-432b3c6f5e73")
 	)
-	(text "CS, Serial"
+	(text "Control"
 		(exclude_from_sim no)
-		(at 194.818 104.394 0)
+		(at 195.834 104.394 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -660,6 +768,17 @@
 			(justify left bottom)
 		)
 		(uuid "b6676c3d-df67-4ea2-b182-138e7d88448a")
+	)
+	(text "Serial Audio"
+		(exclude_from_sim no)
+		(at 193.802 106.68 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c8247ada-e038-4074-b323-4ae534fe6e9c")
 	)
 	(text "FUNCTIONAL DIAGRAM"
 		(exclude_from_sim no)
@@ -715,7 +834,7 @@
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1 1)
+					(size 0.9906 0.9906)
 				)
 			)
 		)
@@ -726,7 +845,7 @@
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1 1)
+					(size 0.9906 0.9906)
 				)
 			)
 		)
