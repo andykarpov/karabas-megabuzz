@@ -16005,7 +16005,7 @@
 		)
 		(property ki_fp_filters "Connector*:*_2x??_*")
 		(sheetname "/")
-		(sheetfile "karabas-megasound.kicad_sch")
+		(sheetfile "karabas-megabuzz.kicad_sch")
 		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -18946,7 +18946,7 @@
 		)
 		(path "/00000000-0000-0000-0000-00005e51c621")
 		(sheetname "/")
-		(sheetfile "karabas-megasound.kicad_sch")
+		(sheetfile "karabas-megabuzz.kicad_sch")
 		(units
 			(unit
 				(name "A")

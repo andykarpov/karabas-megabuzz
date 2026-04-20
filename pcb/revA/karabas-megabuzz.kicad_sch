@@ -774,7 +774,7 @@
 			)
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
 					(reference "LOGO2")
 					(unit 1)
@@ -821,7 +821,7 @@
 			)
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
 					(page "8")
 				)
@@ -867,7 +867,7 @@
 			)
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
 					(page "5")
 				)
@@ -913,7 +913,7 @@
 			)
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
 					(page "6")
 				)
@@ -959,7 +959,7 @@
 			)
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
 					(page "2")
 				)
@@ -1005,7 +1005,7 @@
 			)
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
 					(page "7")
 				)
@@ -1051,7 +1051,7 @@
 			)
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
 					(page "4")
 				)
@@ -1097,7 +1097,7 @@
 			)
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
 					(page "3")
 				)

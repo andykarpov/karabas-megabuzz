@@ -558,7 +558,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "karabas-megasound.kicad_pro",
+    "filename": "karabas-megabuzz.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -744,8 +744,8 @@
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "karabas-megasound.kicad_sch",
-        "name": "karabas-megasound",
+        "filename": "karabas-megabuzz.kicad_sch",
+        "name": "karabas-megabuzz",
         "uuid": "eff1afb7-47ba-46af-a815-4a07fb8d674b"
       }
     ],
@@ -755,7 +755,7 @@
   "sheets": [
     [
       "eff1afb7-47ba-46af-a815-4a07fb8d674b",
-      "karabas-megasound"
+      "karabas-megabuzz"
     ],
     [
       "338c6fab-4b19-4839-a5d3-260e091aa8ad",

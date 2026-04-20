@@ -6770,7 +6770,7 @@
 			(uuid "71dd629e-cdb8-4d04-b615-f0a119cb8cd4")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR074")
 					(unit 1)
@@ -6847,7 +6847,7 @@
 			(uuid "1b7c5b8f-f070-40eb-ba68-23f604bf7f87")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR080")
 					(unit 1)
@@ -6923,7 +6923,7 @@
 			(uuid "b79620f3-3da4-4997-ab16-c19607098529")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR062")
 					(unit 1)
@@ -7001,7 +7001,7 @@
 			(uuid "c7bdb144-58e4-4f7d-abf4-e8311ce6a4ec")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C20")
 					(unit 1)
@@ -7078,7 +7078,7 @@
 			(uuid "000cd62d-4792-4be0-a3ad-c388eb7e904c")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR068")
 					(unit 1)
@@ -7155,7 +7155,7 @@
 			(uuid "29d3ffb1-437c-4969-9dd1-599eb65d3f7a")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR079")
 					(unit 1)
@@ -7231,7 +7231,7 @@
 			(uuid "070f1c76-4991-4157-a3f3-e1bb9cff3bd5")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR089")
 					(unit 1)
@@ -7308,7 +7308,7 @@
 			(uuid "a843d59a-277d-4c14-8341-30be49a12abd")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR088")
 					(unit 1)
@@ -7386,7 +7386,7 @@
 			(uuid "9fba0aad-b862-4d8b-9d22-865671b25108")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C22")
 					(unit 1)
@@ -7462,7 +7462,7 @@
 			(uuid "82ed1428-a9c9-40a9-b0cf-d99b0d48c612")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR071")
 					(unit 1)
@@ -7539,7 +7539,7 @@
 			(uuid "050a7d77-3e2c-4f8f-a516-5e38298ccdd8")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR061")
 					(unit 1)
@@ -7616,7 +7616,7 @@
 			(uuid "1d9c143b-bcc4-4a57-badc-326c5c094dda")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR076")
 					(unit 1)
@@ -7692,7 +7692,7 @@
 			(uuid "517f0af8-a393-4ef3-9d16-65862876a876")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR064")
 					(unit 1)
@@ -7771,7 +7771,7 @@
 			(uuid "30e6502b-3e34-4ad6-a435-6ae64a418753")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R13")
 					(unit 1)
@@ -7850,7 +7850,7 @@
 			(uuid "e9a0ac4a-5b3e-46ca-9d7a-b8429f5565a0")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C36")
 					(unit 1)
@@ -7926,7 +7926,7 @@
 			(uuid "9877c6c1-92d1-43c0-8e5f-d2d77f37b1b5")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR077")
 					(unit 1)
@@ -8005,7 +8005,7 @@
 			(uuid "f7318b9d-2f65-4664-a28f-6bef104cf690")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R15")
 					(unit 1)
@@ -8081,7 +8081,7 @@
 			(uuid "b6f51e72-b141-4e66-85ae-db430f8dd58c")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR091")
 					(unit 1)
@@ -8160,7 +8160,7 @@
 			(uuid "f9d64f4c-5720-450a-9c40-1a544fe86da4")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C31")
 					(unit 1)
@@ -8359,7 +8359,7 @@
 			(uuid "8d8756a6-97f0-4b36-a209-210387538761")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "U9")
 					(unit 1)
@@ -8438,7 +8438,7 @@
 			(uuid "c48cd994-f8e3-43a0-843c-e31234eaab07")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C32")
 					(unit 1)
@@ -8516,7 +8516,7 @@
 			(uuid "136bc697-0a19-4a84-b596-fafc7328ccce")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C21")
 					(unit 1)
@@ -8595,7 +8595,7 @@
 			(uuid "1aed54a9-4d0a-499c-814b-8e6bc97323a8")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R24")
 					(unit 1)
@@ -8674,7 +8674,7 @@
 			(uuid "83f1a5a5-beaf-47b5-911c-f77216dbdc42")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R26")
 					(unit 1)
@@ -8750,7 +8750,7 @@
 			(uuid "6dd9b3a7-5000-49b4-9cde-bcdec2137561")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR095")
 					(unit 1)
@@ -8827,7 +8827,7 @@
 			(uuid "d810a106-6e58-404b-8dbb-6dedcb00ea21")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR087")
 					(unit 1)
@@ -8904,7 +8904,7 @@
 			(uuid "3e44d84b-e660-405d-85cb-0d1c2f861957")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR090")
 					(unit 1)
@@ -8982,7 +8982,7 @@
 			(uuid "1e981913-77a2-44c6-a614-47017552495c")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C25")
 					(unit 1)
@@ -9058,7 +9058,7 @@
 			(uuid "62f24b29-1cc8-4374-a030-aa488107e7a8")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR078")
 					(unit 1)
@@ -9137,7 +9137,7 @@
 			(uuid "c0124df2-4314-463d-8031-95a190736d68")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C38")
 					(unit 1)
@@ -9215,7 +9215,7 @@
 			(uuid "bd14029a-c86b-4465-adf8-0d0b3e7a55f2")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R20")
 					(unit 1)
@@ -9294,7 +9294,7 @@
 			(uuid "33c5eb0e-0b6e-4945-bf86-5d84faa5813c")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R21")
 					(unit 1)
@@ -9373,7 +9373,7 @@
 			(uuid "e6cd8399-3263-4bfe-85ac-c13c2b287779")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C34")
 					(unit 1)
@@ -9452,7 +9452,7 @@
 			(uuid "4bd92caa-b9d7-4efe-afc3-13d0572f2b63")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R16")
 					(unit 1)
@@ -9529,7 +9529,7 @@
 			(uuid "d3d27274-a538-49c7-9458-1c18da0a4ff2")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR057")
 					(unit 1)
@@ -9608,7 +9608,7 @@
 			(uuid "9cb296c7-9403-4293-a70c-04822c843a15")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R23")
 					(unit 1)
@@ -9684,7 +9684,7 @@
 			(uuid "21cf4483-73e3-4fb8-a49c-c062d4579225")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR092")
 					(unit 1)
@@ -9819,7 +9819,7 @@
 			(uuid "56e8e588-e994-4f62-9879-e2622119fc50")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "U10")
 					(unit 1)
@@ -9895,7 +9895,7 @@
 			(uuid "f7b222c3-268f-43ed-8d85-36f86dbe68cb")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR070")
 					(unit 1)
@@ -9971,7 +9971,7 @@
 			(uuid "5a881214-110f-4118-acc1-3978afcdabea")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR082")
 					(unit 1)
@@ -10047,7 +10047,7 @@
 			(uuid "c1501b74-3b4c-4a38-987b-21b7873e1743")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR072")
 					(unit 1)
@@ -10125,7 +10125,7 @@
 			(uuid "9c088aef-5fcf-4543-8235-e56ee2e05c4a")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C30")
 					(unit 1)
@@ -10204,7 +10204,7 @@
 			(uuid "20b954e1-2810-49fa-828f-8fe385172b6c")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R14")
 					(unit 1)
@@ -10280,7 +10280,7 @@
 			(uuid "f27da1c6-ea0a-4261-85d8-3964317641e8")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR069")
 					(unit 1)
@@ -10359,7 +10359,7 @@
 			(uuid "b4c54635-b57b-4f98-835c-878e403706ff")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C27")
 					(unit 1)
@@ -10436,7 +10436,7 @@
 			(uuid "39a08a44-fdc9-492e-90a5-305f71070f0d")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR094")
 					(unit 1)
@@ -10514,7 +10514,7 @@
 			(uuid "c172445b-7611-44ac-81a5-17e5b3a759d1")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C24")
 					(unit 1)
@@ -10590,7 +10590,7 @@
 			(uuid "49828582-3113-4311-9018-9fcf3852a5f9")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR098")
 					(unit 1)
@@ -10666,7 +10666,7 @@
 			(uuid "eabca7d9-256f-490d-a912-aa0f2b15b8ff")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR067")
 					(unit 1)
@@ -10743,7 +10743,7 @@
 			(uuid "47d48ba3-12be-46aa-bb70-634d240dea9d")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR058")
 					(unit 1)
@@ -10819,7 +10819,7 @@
 			(uuid "69a222d2-5fe8-4458-b417-79f2e79ce802")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR083")
 					(unit 1)
@@ -11081,7 +11081,7 @@
 			(uuid "222b2191-2e1c-42b8-aeaf-6952067c841f")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "U11")
 					(unit 1)
@@ -11158,7 +11158,7 @@
 			(uuid "9d80185c-8c74-4585-8d72-c5808c3f5ec9")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR059")
 					(unit 1)
@@ -11237,7 +11237,7 @@
 			(uuid "26b8a807-6d0f-4a9a-9121-c10bc7bd4873")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C35")
 					(unit 1)
@@ -11315,7 +11315,7 @@
 			(uuid "b8bfeba2-3a52-40d7-a822-d215ebc5f940")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R18")
 					(unit 1)
@@ -11392,7 +11392,7 @@
 			(uuid "99b8fe69-7c24-42a3-ab89-0851f9f109b8")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR075")
 					(unit 1)
@@ -11469,7 +11469,7 @@
 			(uuid "f7b329a4-dd78-4e14-a841-ff0410b5506e")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR065")
 					(unit 1)
@@ -11547,7 +11547,7 @@
 			(uuid "cbe74388-9c58-4f27-850a-6d3120306b2b")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C29")
 					(unit 1)
@@ -11623,7 +11623,7 @@
 			(uuid "c9e925c0-5ae0-4720-afd3-3d999184449e")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR073")
 					(unit 1)
@@ -11699,7 +11699,7 @@
 			(uuid "78fc5f91-e6e7-425c-8197-83279d6de2f6")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR099")
 					(unit 1)
@@ -11777,7 +11777,7 @@
 			(uuid "363519a9-c2ae-49fb-8e21-b906feb6495c")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C18")
 					(unit 1)
@@ -11855,7 +11855,7 @@
 			(uuid "6df7748b-8a27-4d7e-bcd7-221410280bf9")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R25")
 					(unit 1)
@@ -11932,7 +11932,7 @@
 			(uuid "49a05de7-6539-4bbd-ac38-bb9799211517")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR066")
 					(unit 1)
@@ -12011,7 +12011,7 @@
 			(uuid "c2165666-06a5-43aa-8a23-286a7035516d")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C33")
 					(unit 1)
@@ -12090,7 +12090,7 @@
 			(uuid "009a5ac0-8211-4f45-ad6a-edf6f66fdcfa")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C37")
 					(unit 1)
@@ -12168,7 +12168,7 @@
 			(uuid "600f1202-0f2c-4aa2-b49b-855685f8a02d")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C16")
 					(unit 1)
@@ -12245,7 +12245,7 @@
 			(uuid "ff4d33d7-ad22-4e47-a712-d23711d157cf")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR085")
 					(unit 1)
@@ -12323,7 +12323,7 @@
 			(uuid "2917f4f7-95c7-462b-b287-8048f9c4418a")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C26")
 					(unit 1)
@@ -12401,7 +12401,7 @@
 			(uuid "06980f72-9a6a-4864-86a9-2f97848b1db6")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R17")
 					(unit 1)
@@ -12477,7 +12477,7 @@
 			(uuid "47c5807d-b380-4083-95fa-7874408ea568")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR097")
 					(unit 1)
@@ -12554,7 +12554,7 @@
 			(uuid "38ab5130-d331-4441-b5ed-7fc706f33182")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR084")
 					(unit 1)
@@ -12633,7 +12633,7 @@
 			(uuid "c1866705-c89b-49cd-a77f-ad0e79d22262")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C28")
 					(unit 1)
@@ -12711,7 +12711,7 @@
 			(uuid "aa68dfac-5717-49eb-8b95-6cde9c6a2681")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C17")
 					(unit 1)
@@ -12789,7 +12789,7 @@
 			(uuid "08094e6e-5158-4317-9f22-67cf570e4383")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C19")
 					(unit 1)
@@ -12866,7 +12866,7 @@
 			(uuid "40176926-1956-43a7-8a6b-bcfe2879b08b")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR096")
 					(unit 1)
@@ -12944,7 +12944,7 @@
 			(uuid "b8b30dbb-39d0-4922-8b11-b4106dbad596")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R19")
 					(unit 1)
@@ -13023,7 +13023,7 @@
 			(uuid "04c0b0b3-b43e-4a50-bce9-13eda8ba5c4d")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R22")
 					(unit 1)
@@ -13168,7 +13168,7 @@
 			(uuid "ab7bd8d6-5eb1-43ed-9ccf-a053dc280967")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "U8")
 					(unit 1)
@@ -13256,7 +13256,7 @@
 			(uuid "cb5c234b-841d-4108-a497-4ac9fea720e0")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "J4")
 					(unit 1)
@@ -13333,7 +13333,7 @@
 			(uuid "b9b69dca-d7f1-4ded-bf35-e06bddd57e82")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR093")
 					(unit 1)
@@ -13410,7 +13410,7 @@
 			(uuid "e99b0f49-4cff-4d2d-804b-184512acd50b")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR060")
 					(unit 1)
@@ -13487,7 +13487,7 @@
 			(uuid "9b5feeff-9ee3-42df-9d03-5d1b98641cdb")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR081")
 					(unit 1)
@@ -13565,7 +13565,7 @@
 			(uuid "8bb60257-342a-4da9-8562-c23da1901817")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "C23")
 					(unit 1)
@@ -13656,7 +13656,7 @@
 			(uuid "397dc790-511e-4b25-8953-802252a5f253")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "J3")
 					(unit 1)
@@ -13733,7 +13733,7 @@
 			(uuid "650dea87-1482-46cf-8fe4-8f60abfc9c63")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR086")
 					(unit 1)
@@ -13810,7 +13810,7 @@
 			(uuid "0de780a5-6eab-42a2-96c7-3b2a02581b13")
 		)
 		(instances
-			(project "karabas-megasound"
+			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR063")
 					(unit 1)
