@@ -10859,7 +10859,7 @@
 				)
 			)
 		)
-		(property "Footprint" "footprints:SOP65P640X120-14N"
+		(property "Footprint" "Package_SO:TSSOP-14_4.4x5mm_P0.65mm"
 			(at 238.76 49.53 0)
 			(hide yes)
 			(show_name no)
