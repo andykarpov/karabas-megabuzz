@@ -208,10 +208,18 @@ beeper beeper_inst(
 wire [7:0] saa_out_l, saa_out_r;
 wire saa_wr_n = ~(ioreq_wr && bus_a[7:0] == 8'hFF && ~rom_m1_access);
 
+wire ce_8;
+clk_div_8mhz saa1099_cen_inst(
+	.clk					(clk_bus),
+	.rst_n				(~reset),
+	.cen					(ce_8)
+);
+
 saa1099 saa1099_inst(
-    .clk              (clk8),
+    .clk_sys          (clk_bus),
+	 .ce               (ce_8),
     .rst_n            (~reset),
-    .cs_n             (saa_en),
+    .cs_n             (~saa_en),
     .a0               (bus_a[8]),
     .wr_n             (saa_wr_n),
     .din              (bus_d),

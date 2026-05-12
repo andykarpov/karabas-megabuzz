@@ -5,7 +5,7 @@ module vu_meter (
     output wire [7:0] leds                  
 );
 
-    reg [15:0] audio_abs;
+    reg [15:0] audio_abs = 0;
 
     always @(posedge clk) begin
         if (audio_sample < 0)
@@ -14,19 +14,17 @@ module vu_meter (
             audio_abs <= audio_sample;
     end
 
-    reg [15:0] bar_val;
-	 reg prev_sample_tick;
+    reg [15:0] bar_val = 0;
+	 reg prev_sample_tick = 0;
 	 
-	 localparam STEP = 16;
+	 localparam STEP = 8;
 
     always @(posedge clk) begin
-		prev_sample_tick <= sample_tick;
-		if (sample_tick && ~prev_sample_tick) begin
-        if (audio_abs > bar_val)
-            bar_val <= audio_abs;
-        else if (bar_val >= STEP)
-            bar_val <= bar_val - STEP;
-		 end
+      prev_sample_tick <= sample_tick;
+      if (audio_abs > bar_val)
+	     bar_val <= audio_abs;
+      else if (sample_tick && ~prev_sample_tick && (bar_val >= STEP))
+        bar_val <= bar_val - STEP;
     end
 
     function [7:0] to_leds(input [15:0] val);
@@ -42,7 +40,7 @@ module vu_meter (
         end
     endfunction
 
-    assign leds = ~to_leds(bar_val);
+    assign leds = ~(to_leds(bar_val));
 
 endmodule
 

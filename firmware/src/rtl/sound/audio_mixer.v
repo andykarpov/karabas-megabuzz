@@ -77,7 +77,7 @@ wire signed [15:0] mix_l = 	((turbosound_en) ? $signed({tsfm_l[11:0], 4'b0000}) 
 										((opl3_en) ? $signed(opl3_l[15:0]) : $signed({16'b0})) +
 										((saa_en) ? $signed({2'b00, saa_l, 6'b000000}) : $signed({16'b0})) +
 										((soundrive_en) ? $signed({covox_l[11:0], 4'b0000}) : $signed({16'b0})) + 
-										((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b0000}) : $signed({16'b0}));
+										((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
 
 wire signed [15:0] mix_r = 	((turbosound_en) ? $signed({tsfm_r[11:0], 4'b0000}) : $signed({16'b0})) + 
 										((gs_en) ? $signed({gs_r[14], gs_r[14:0]}) : $signed({16'b0})) + 
