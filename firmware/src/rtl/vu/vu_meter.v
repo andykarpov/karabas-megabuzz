@@ -6,74 +6,127 @@ module vu_meter (
     output wire [7:0] leds                  
 );
 
-    reg [15:0] audio_abs = 0;
+	// vu_level (0..8 from signed audio sample)
+	wire [3:0] level;
+	vu_level vu_level(.clk(clk), .audio_sample(audio_sample), .level(level));
 
-    always @(posedge clk) begin
-        if (audio_sample < 0)
-            audio_abs <= -audio_sample;
-        else 
-            audio_abs <= audio_sample;
-    end
+	// falling bar value (0..8)
+	wire [3:0] bar_val;
+	vu_falling #(.DELAY(3000)) vu_falling_bar(.clk(clk), .reset(reset), .sample_tick(sample_tick), .level(level), .out(bar_val));
 
-    reg [15:0] bar_val = 0;
-	 reg [15:0] dot_val = 0;
-	 reg [1:0] dot_cnt = 0;
-	 reg [2:0] sample_tick_r = 3'b000;
-	 
-	 localparam STEP = 1;
+	// falling dot value (0..8)
+	wire [3:0] dot_val;
+	vu_falling #(.DELAY(10000)) vu_falling_dot(.clk(clk), .reset(reset), .sample_tick(sample_tick), .level(level), .out(dot_val));
 
-    always @(posedge clk or posedge reset) begin
-		if (reset) begin
-			bar_val <= {16{1'b1}};
-			dot_val <= {16{1'b1}};
-			sample_tick_r <= 3'b000;
-			dot_cnt <= 0;
-		end else begin
-			sample_tick_r <= {sample_tick_r[1:0], sample_tick};
-			if (sample_tick_r[2:1] == 2'b01) begin
+	// bar led data
+	wire [7:0] bar_int;
+	vu_leds #(.MODE(1)) vu_leds_bar (.clk(clk), .level(bar_val), .out(bar_int));
 
-				if (audio_abs > bar_val)
-				  bar_val <= audio_abs;
-				else if (bar_val >= STEP)
-				  bar_val <= bar_val - STEP;
+	// dot led data
+	wire [7:0] dot_int;
+	vu_leds #(.MODE(2)) vu_dots_bar (.clk(clk), .level(dot_val), .out(dot_int));
 
-				if (audio_abs > dot_val) begin
-					dot_val <= audio_abs;
-					dot_cnt <= 0;
-				end else if (dot_val >= STEP) begin
-					if (dot_cnt == 3)
-						dot_val <= dot_val - STEP;
-					dot_cnt <= dot_cnt + 1;
-				end
-			end
-		end
-    end
-	 
-	 reg [7:0] bar_int = 0;
-	 reg [7:0] dot_int = 0;
-	 always @(posedge clk) begin
-		bar_int <=   (bar_val > 10000) ? 8'b11111111 :
-						 (bar_val > 5000)  ? 8'b01111111 :
-						 (bar_val > 2000)  ? 8'b00111111 :
-						 (bar_val > 1000)  ? 8'b00011111 :
-						 (bar_val > 500)   ? 8'b00001111 :
-						 (bar_val > 200)   ? 8'b00000111 :
-						 (bar_val > 60)    ? 8'b00000011 :
-						 (bar_val > 20)    ? 8'b00000001 : 
-											      8'b00000000;
-
-		dot_int <=   (dot_val > 10000) ? 8'b10000000 :
-						 (dot_val > 5000)  ? 8'b01000000 :
-						 (dot_val > 2000)  ? 8'b00100000 :
-						 (dot_val > 1000)  ? 8'b00010000 :
-						 (dot_val > 500)   ? 8'b00001000 :
-						 (dot_val > 200)   ? 8'b00000100 :
-						 (dot_val > 60)    ? 8'b00000010 :
-						 (dot_val > 20)    ? 8'b00000001 : 
-											      8'b00000000;
-	 end
-
-    assign leds = ~(bar_int | dot_int);
+	// inverting the result value for our leds
+	assign leds = ~(bar_int | dot_int);
 
 endmodule
 
+///////////////////////////////////////////////////////////////////////////
+
+module vu_level (
+	input wire clk,
+	input wire signed [15:0] audio_sample,
+	output reg [3:0] level
+);
+
+// absolute value 0..65535
+reg [15:0] audio_abs = 0;
+always @(posedge clk) begin
+	if (audio_sample < 0)
+		audio_abs <= -audio_sample;
+	else 
+		audio_abs <= audio_sample;
+end
+ 
+// level value 0-8
+always @(posedge clk) begin
+	level <= 
+		(audio_abs > 10000) ? 8 :
+		(audio_abs > 5000)  ? 7 :
+		(audio_abs > 2000)  ? 6 :
+		(audio_abs > 1000)  ? 5 :
+		(audio_abs > 500)   ? 4 :
+		(audio_abs > 200)   ? 3 :
+		(audio_abs > 60)    ? 2 :
+		(audio_abs > 20)    ? 1 : 
+									 0;
+end
+
+endmodule
+
+///////////////////////////////////////////////////////////////////////////
+
+module vu_falling (
+	input wire clk,
+	input wire reset,
+	input wire sample_tick,
+	input wire [3:0] level,
+	output reg [3:0] out
+);
+
+parameter DELAY = 3000;
+
+reg [15:0] cnt = 0;
+reg [2:0] sample_tick_r = 3'b000;
+
+always @(posedge clk or posedge reset) begin
+	if (reset) begin
+		out <= 8;
+		sample_tick_r <= 0;
+		cnt <= 0;
+	end else begin
+		sample_tick_r <= {sample_tick_r[1:0], sample_tick};
+		if (sample_tick_r[2:1] == 2'b01) begin
+			if (level > out) begin
+			  out <= level;
+			  cnt <= 0;
+			end else if (out > 0) begin
+				if (cnt == DELAY) begin
+					out <= out - 1;
+					cnt <= 0;
+				end else
+					cnt <= cnt + 1;
+			end
+		end
+	end
+end
+
+endmodule
+
+///////////////////////////////////////////////////////////////////////////
+
+module vu_leds (
+	input wire clk,
+	input wire [3:0] level,
+	output reg [7:0] out
+);
+
+localparam MODE_BAR = 1;
+localparam MODE_DOT = 2;
+parameter MODE = MODE_BAR;
+
+always @(posedge clk) begin
+			case (level)
+				8: out <= (MODE == MODE_BAR) ? 8'b11111111 : 8'b10000000;
+				7: out <= (MODE == MODE_BAR) ? 8'b01111111 : 8'b01000000;
+				6: out <= (MODE == MODE_BAR) ? 8'b00111111 : 8'b00100000;
+				5: out <= (MODE == MODE_BAR) ? 8'b00011111 : 8'b00010000;
+				4: out <= (MODE == MODE_BAR) ? 8'b00001111 : 8'b00001000;
+				3: out <= (MODE == MODE_BAR) ? 8'b00000111 : 8'b00000100;
+				2: out <= (MODE == MODE_BAR) ? 8'b00000011 : 8'b00000010;
+				1: out <= (MODE == MODE_BAR) ? 8'b00000001 : 8'b00000001;
+				default: out <= 8'b00000000;
+			endcase
+end
+
+endmodule
