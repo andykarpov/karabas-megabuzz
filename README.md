@@ -16,7 +16,7 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 * SAA1099
 * Soundrive, Covox + Beeper
 * 16-bit DAC PCM5102
-* XC6SLX25 FPGA
+* XC6SLX16 / XC6SLX25 FPGA
 * Low profile PCB: 92x44mm
 * 5V only power required
 
