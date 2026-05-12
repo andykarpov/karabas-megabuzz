@@ -124,6 +124,14 @@ begin
 	if (RESET) begin
 		port_xx00_reg <= 0;
       port_xx03_reg <= 0;
+		ch_a_reg <= 0;
+		ch_b_reg <= 0;
+		ch_c_reg <= 0;
+		ch_d_reg <= 0;
+		port_xx06_reg <= 0;
+		port_xx07_reg <= 0;
+		port_xx08_reg <= 0;
+		port_xx09_reg <= 0;
 	end
 	else if (CE) begin
 	

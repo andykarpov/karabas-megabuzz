@@ -99,12 +99,11 @@ wire midi_en        = cfg_n[3]; // depends on AY port
 wire opl3_en        = ~cfg_n[4]; // выключено по-умолчанию (веременно)
 
 // pll
-wire clk_bus, clk12, clk8, locked, areset;
+wire clk_bus, clk12, locked, areset;
 pll pll_inst(
     .CLK_IN1         (clk),
     .CLK_OUT1        (clk_bus), // 28
     .CLK_OUT2        (clk12),   // 12
-    .CLK_OUT3        (clk8),    // 8
     .LOCKED          (locked)
 );
 assign areset = ~locked;
@@ -287,6 +286,7 @@ gs_top gs_inst(
      .ce            (ce_14m),
     .reset          (reset),
     .areset         (areset),
+	 .btn			  	  (~btn_reset_n),
 
     .a              (bus_a),
     .di             (bus_d),
@@ -401,6 +401,7 @@ assign bus_iorqge_n = (bus_m1_n && (ts_enable || gs_oe || ~opl3_iorqge_n))? 1'b0
 // vu meter
 vu_meter vu_meter_l_inst(
     .clk            (clk_bus),
+	 .reset          (reset),
     .sample_tick    (dac_ws),
     .audio_sample   (audio_mix_l),
     .leds           (led_meter_l)
@@ -408,6 +409,7 @@ vu_meter vu_meter_l_inst(
 
 vu_meter vu_meter_r_inst(
     .clk            (clk_bus),
+	 .reset          (reset),
     .sample_tick    (dac_ws),
     .audio_sample   (audio_mix_r),
     .leds           (led_meter_r)
