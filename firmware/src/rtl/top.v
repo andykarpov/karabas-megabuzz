@@ -96,7 +96,7 @@ wire saa_en         = cfg_n[1];
 wire gs_en          = cfg_n[2];
 wire turbosound_en  = cfg_n[3];
 wire midi_en        = cfg_n[3]; // depends on AY port
-wire opl3_en        = cfg_n[4];
+wire opl3_en        = ~cfg_n[4]; // выключено по-умолчанию (веременно)
 
 // pll
 wire clk_bus, clk12, clk8, locked, areset;
