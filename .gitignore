@@ -41,6 +41,7 @@ k# intermediate build files
 *_summary.xml
 *_usage.xml
 *_xst.xrpt
+*_map.psr
 
 # iMPACT generated files
 _impactbatch.log
