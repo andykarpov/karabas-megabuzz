@@ -21,8 +21,8 @@ module opl3(
 	
 	output wire opl3_iorqge_n,
 	
-	output reg [15:0] out_l,
-	output reg [15:0] out_r
+	output wire [15:0] out_l,
+	output wire [15:0] out_r
 );
 
 // port access (range 0xc4 ... 0xc7)
@@ -59,21 +59,32 @@ end
 assign ym_dclk_strobe = (ym_dclk_r == 2'b01) ? 1'b1 : 1'b0; // rising edge 
 
 // convert data stream for i2s from lsb-first to msb-first
+// yac512 expects offset-binary PCM @ https://yehar.com/blog/?p=665#comment-5472
+// Value 0x8000 means silence 0, 0xFFFF means +32767 and 0x0000 means -32768. 
 reg [1:0] prev_smp;
 reg [17:0] serial;
+reg [15:0] opl_l, opl_r;
+reg opl_valid;
 always @(posedge clk) begin
+  opl_valid <= 0;
   if (ym_dclk_strobe) begin
 	  prev_smp <= opl3_smp_r2;
 	  serial <= {opl3_data_r2, serial[17:1]};
 	  if (prev_smp[0] & ~opl3_smp_r2[0]) // latch smp0 on falling edge
-		  out_l <= {~serial[17], serial[16:2]};
-	  else if (prev_smp[1] & ~opl3_smp_r2[1]) // latch smp1
-		  out_r <= {~serial[17], serial[16:2]};
+		  opl_l <= {~serial[17], serial[16:2]};
+	  else if (prev_smp[1] & ~opl3_smp_r2[1]) begin // latch smp1
+		  opl_r <= {~serial[17], serial[16:2]};
+		  opl_valid <= 1;
+	  end
   end
 end
 
 // assign clock
 // todo: OODR2
 assign opl3_clk = ce;
+
+// resample + interpolation
+opl3_resample opl3_resample_l(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_l), .data_out(out_l));
+opl3_resample opl3_resample_r(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_r), .data_out(out_r));
 
 endmodule
