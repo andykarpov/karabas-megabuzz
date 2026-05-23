@@ -3,12 +3,12 @@ module audio_resample (
     input wire reset,
     input wire [15:0] data_in,// Input audio-data (48.611 kHz)
     input wire valid_in,      // Valid input (1 clock)
-    output reg [15:0] data_out,// Output audio-data (54.687 kHz)
+    output reg [15:0] data_out,// Output audio-data (109.375 kHz)
     output reg valid_out      // Valid output (1 clock)
 );
 
-    // NCO step constant for samplerate 54.687 kHz @ 28 MHz
-    localparam [31:0] NCO_INC = 32'd8389360;
+    // NCO step constant for samplerate 109.375 kHz @ 28 MHz
+    localparam [31:0] NCO_INC = 32'h01000000;
 
     reg [15:0] sample_curr;
     reg [15:0] sample_next;
