@@ -345,11 +345,19 @@ midi_tx_sensor midi_tx_sensor(
 	.midi_active 	  (midi_active)
 );
 
+// audio muter on reset
+wire mute;
+audio_mute audio_mute(
+	.clk				  (clk_bus),
+	.on				  (reset),
+	.mute				  (mute)
+);
+
 // audio mixer
 audio_mixer audio_mixer_inst(
     .clk            (clk_bus),
 
-    .mute           (1'b0), // todo
+    .mute           (mute), 
     .mode           (2'b00), // abc/acb/mono ? 
     
     .soundrive_en   (soundrive_en),
@@ -412,7 +420,7 @@ wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en & !rom_m1_access;
 // sd
 wire port_xf = soundrive_en & (bus_a[7] == 1'b0) & (bus_a[5] == 1'b0) & (bus_a[3:0] == 4'hF) & !rom_m1_access;
 // iorqge
-assign bus_iorqge_n = (bus_m1_n & (port_fffd_full || port_bffd || port_b3 || port_bb || port_opl3)) ? 1'b0 : 1'b1;
+assign bus_iorqge_n = (port_fffd_full | port_bffd | port_b3 | port_bb | port_opl3) ? 1'b0 : 1'b1;
 
 // BUS
 assign bus_d = 

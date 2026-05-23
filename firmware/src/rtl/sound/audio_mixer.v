@@ -87,7 +87,7 @@ wire signed [15:0] mix_r = 	((turbosound_en) ? $signed({tsfm_r[11:0], 4'b0000}) 
 										((soundrive_en) ? $signed({covox_r[11:0], 4'b0000}) : $signed({16'b0})) + 
 										((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
 
-assign audio_l = mix_l;
-assign audio_r = mix_r;
+assign audio_l = (mute) ? {16'b0} : mix_l;
+assign audio_r = (mute) ? {16'b0} : mix_r;
 
 endmodule

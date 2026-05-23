@@ -38,32 +38,36 @@ assign opl3_a[1:0] = bus_a[1:0];
 assign opl3_iorqge_n = bus_m1_n & port_cs;
 
 // registers in clock domain clk
-reg opl3_dclk_r, opl3_data_r;
-reg [1:0] opl3_smp_r;
+reg opl3_dclk_r, opl3_dclk_r2; 
+reg opl3_data_r, opl3_data_r2;
+reg [1:0] opl3_smp_r, opl3_smp_r2;
 always @(posedge clk) begin
 	opl3_dclk_r <= opl3_dclk;
 	opl3_smp_r <= opl3_smp;
 	opl3_data_r <= opl3_data;
+	opl3_dclk_r2 <= opl3_dclk_r;
+	opl3_smp_r2 <= opl3_smp_r;
+	opl3_data_r2 <= opl3_data_r;
 end
 
 // sample ym_dclk in main clock domain
-reg [2:0] ym_dclk_r = 0;
+reg [1:0] ym_dclk_r = 0;
 wire ym_dclk_strobe;
 always @(posedge clk) begin
-		ym_dclk_r <= {ym_dclk_r[1:0], opl3_dclk_r};
+		ym_dclk_r <= {ym_dclk_r[0], opl3_dclk_r2};
 end
-assign ym_dclk_strobe = (ym_dclk_r[2:1] == 2'b01) ? 1'b1 : 1'b0; // rising edge 
+assign ym_dclk_strobe = (ym_dclk_r == 2'b01) ? 1'b1 : 1'b0; // rising edge 
 
 // convert data stream for i2s from lsb-first to msb-first
 reg [1:0] prev_smp;
 reg [17:0] serial;
 always @(posedge clk) begin
   if (ym_dclk_strobe) begin
-	  prev_smp <= opl3_smp_r;
-	  serial <= {opl3_data_r, serial[17:1]};
-	  if (prev_smp[0] & ~opl3_smp_r[0]) // latch smp0 on falling edge
+	  prev_smp <= opl3_smp_r2;
+	  serial <= {opl3_data_r2, serial[17:1]};
+	  if (prev_smp[0] & ~opl3_smp_r2[0]) // latch smp0 on falling edge
 		  out_l <= {~serial[17], serial[16:2]};
-	  else if (prev_smp[1] & ~opl3_smp_r[1]) // latch smp1
+	  else if (prev_smp[1] & ~opl3_smp_r2[1]) // latch smp1
 		  out_r <= {~serial[17], serial[16:2]};
   end
 end
