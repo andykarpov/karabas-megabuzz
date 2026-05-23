@@ -1,6 +1,7 @@
 module opl3(
 	input wire clk,
 	input wire ce,
+	input wire en,
 	input wire reset,
 
 	input wire [15:0] bus_a,
@@ -25,7 +26,7 @@ module opl3(
 );
 
 // port access (range 0xc4 ... 0xc7)
-wire port_cs = bus_a[7:2] == 6'b110001;
+wire port_cs = (bus_a[7:2] == 6'b110001) & en;
 
 // ymf262-m chip select
 assign opl3_cs_n = ~(bus_m1_n & ~bus_iorq_n & port_cs);
@@ -36,29 +37,34 @@ assign opl3_a[1:0] = bus_a[1:0];
 // iorqge
 assign opl3_iorqge_n = bus_m1_n & port_cs;
 
+// registers in clock domain clk
+reg opl3_dclk_r, opl3_data_r;
+reg [1:0] opl3_smp_r;
+always @(posedge clk) begin
+	opl3_dclk_r <= opl3_dclk;
+	opl3_smp_r <= opl3_smp;
+	opl3_data_r <= opl3_data;
+end
+
 // sample ym_dclk in main clock domain
 reg [2:0] ym_dclk_r = 0;
-wire ym_dclk_strobe, ym_dclk_strobe_n;
-always @(posedge clk)
-begin
-	 if (ce) ym_dclk_r <= {ym_dclk_r[1:0], opl3_dclk};
+wire ym_dclk_strobe;
+always @(posedge clk) begin
+		ym_dclk_r <= {ym_dclk_r[1:0], opl3_dclk_r};
 end
 assign ym_dclk_strobe = (ym_dclk_r[2:1] == 2'b01) ? 1'b1 : 1'b0; // rising edge 
-assign ym_dclk_strobe_n = (ym_dclk_r[2:1] == 2'b10) ? 1'b1 : 1'b0; // falling edge
 
 // convert data stream for i2s from lsb-first to msb-first
 reg [1:0] prev_smp;
-reg [15:0] serial;
+reg [17:0] serial;
 always @(posedge clk) begin
-  if (ce) begin
-	  if (ym_dclk_strobe) begin
-		  prev_smp <= opl3_smp;
-		  serial <= {opl3_data, serial[15:1]};
-		  if (prev_smp[0] & ~opl3_smp[0]) // latch smp0 on falling edge
-			  out_l <= serial;
-		  else if (prev_smp[1] & ~opl3_smp[1]) // latch smp1
-			  out_r <= serial;
-	  end
+  if (ym_dclk_strobe) begin
+	  prev_smp <= opl3_smp_r;
+	  serial <= {opl3_data_r, serial[17:1]};
+	  if (prev_smp[0] & ~opl3_smp_r[0]) // latch smp0 on falling edge
+		  out_l <= {~serial[17], serial[16:2]};
+	  else if (prev_smp[1] & ~opl3_smp_r[1]) // latch smp1
+		  out_r <= {~serial[17], serial[16:2]};
   end
 end
 

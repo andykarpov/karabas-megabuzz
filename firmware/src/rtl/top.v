@@ -310,10 +310,10 @@ gs_top gs_inst(
 
 // opl3
 wire signed [15:0] opl3_l, opl3_r;
-wire opl3_iorqge_n;
 opl3 opl3_inst(
     .clk            (clk_bus),
     .ce             (ce_14m),
+	 .en				  (opl3_en),
     .reset          (reset),
     
     .bus_a          (bus_a),
@@ -332,10 +332,17 @@ opl3 opl3_inst(
    .opl3_data       (opl3_data),
    .opl3_dclk       (opl3_dclk),
     
-    .opl3_iorqge_n  (opl3_iorqge_n),
-    
     .out_l          (opl3_l),
     .out_r          (opl3_r)
+);
+
+// midi activity detector
+wire midi_active;
+midi_tx_sensor midi_tx_sensor(
+	.clk				  (clk_bus),
+	.reset 			  (reset),
+	.midi_in			  (midi_tx),
+	.midi_active 	  (midi_active)
 );
 
 // audio mixer
@@ -350,7 +357,7 @@ audio_mixer audio_mixer_inst(
     .turbosound_en  (turbosound_en),
     .saa_en         (saa_en),
     .gs_en          (gs_en),
-    .midi_en        (midi_en),
+    .midi_en        (midi_en & midi_active),
     .opl3_en        (opl3_en),
     
     .speaker        (beeper),
@@ -389,14 +396,29 @@ audio_mixer audio_mixer_inst(
     .audio_r        (audio_mix_r)    
 );
 
+// IORQGE
+
+// turbosound ports
+wire port_bffd      = (bus_a[15:14] == 2'b10) & (bus_a[3:0] == 4'b1101) & turbosound_en;
+wire port_fffd      = (bus_a[15:14] == 2'b11) & (bus_a[3:0] == 4'b1101) & turbosound_en;
+wire port_fffd_full = (bus_a[15:13] == 3'b111) & (bus_a[3:0] == 4'b1101) & turbosound_en; // required for compatibility with #dffd port
+// saa port
+wire port_ff = (bus_a[7:0] == 8'hFF) & saa_en & !rom_m1_access;
+// gs
+wire port_b3 = (bus_a[7:0] == 8'hB3) & gs_en;
+wire port_bb = (bus_a[7:0] == 8'hBB) & gs_en;
+// opl3
+wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en & !rom_m1_access;
+// sd
+wire port_xf = soundrive_en & (bus_a[7] == 1'b0) & (bus_a[5] == 1'b0) & (bus_a[3:0] == 4'hF) & !rom_m1_access;
+// iorqge
+assign bus_iorqge_n = (bus_m1_n & (port_fffd_full || port_bffd || port_b3 || port_bb || port_opl3)) ? 1'b0 : 1'b1;
+
 // BUS
 assign bus_d = 
-    (ts_enable && ioreq_rd) ? ts_do : // TurboSound
-    (gs_oe && ioreq_rd) ? gs_do_bus : // gs
+	 (ioreq_rd & port_fffd) ? ts_do : // TS
+    (ioreq_rd & (port_b3 | port_bb)) ? gs_do_bus : // GS	 
     8'bzzzzzzzz;
-
-// IORQGE
-assign bus_iorqge_n = (bus_m1_n && (ts_enable || gs_oe || ~opl3_iorqge_n))? 1'b0 : 1'b1;
 
 // vu meter
 vu_meter vu_meter_l_inst(

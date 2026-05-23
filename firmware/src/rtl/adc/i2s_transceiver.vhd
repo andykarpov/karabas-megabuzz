@@ -25,7 +25,7 @@ USE ieee.std_logic_1164.all;
 
 ENTITY i2s_transceiver IS
   GENERIC(
-    mclk_sclk_ratio  :  INTEGER := 4;    --number of mclk periods per sclk period
+    mclk_sclk_ratio  :  INTEGER := 8;    --number of mclk periods per sclk period
     sclk_ws_ratio    :  INTEGER := 64;   --number of sclk periods per word select period
     d_width          :  INTEGER := 24);  --data width
   PORT(
