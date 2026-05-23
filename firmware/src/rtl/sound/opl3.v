@@ -84,7 +84,7 @@ end
 assign opl3_clk = ce;
 
 // resample + interpolation
-opl3_resample opl3_resample_l(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_l), .data_out(out_l));
-opl3_resample opl3_resample_r(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_r), .data_out(out_r));
+audio_resample opl3_resample_l(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_l), .data_out(out_l));
+audio_resample opl3_resample_r(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_r), .data_out(out_r));
 
 endmodule
