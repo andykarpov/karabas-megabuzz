@@ -28,7 +28,7 @@ always @(posedge clk or posedge reset) begin
 		out_fb <= 0;
 	end
 	else if (cs && ioreq_wr && ~rom_m1_access) begin
-		case (a)
+		case (a[7:0])
 			8'h0F: out_a <= d;
 			8'h1F: out_b <= d;
 			8'h3F: out_b <= d;

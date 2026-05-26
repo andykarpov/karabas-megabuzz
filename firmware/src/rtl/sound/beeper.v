@@ -8,7 +8,7 @@ module beeper(
 	output reg out_beeper
 );
 
-wire port_xxfe = ~a[0] && cs;
+wire port_xxfe = (a[7:0] == 8'hFE) && cs;
 always @(posedge clk or posedge reset) begin
 	if (reset || ~cs)
 		out_beeper <= 0;
