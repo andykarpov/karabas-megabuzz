@@ -4,23 +4,21 @@ module clk_div_8mhz (
     output reg  cen     // 8 MHz enable
 );
 
-    reg [2:0] counter;
+    reg [1:0] counter;
+	 reg cyc34 = 0;
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            counter <= 3'd0;
-            cen <= 1'b0;
+            counter <= 0;
+            cen <= 0;
+				cyc34 <= 0;
         end else begin
-            if (counter == 3'd2) begin
-                counter <= 3'd0;
-                cen <= 1'b1;
-            end else if (counter == 3'd0 && cen) begin 
-					// correction
-            end
-            else begin
-                counter <= counter + 1'b1;
-                cen <= 1'b0;
-            end
+				cen <= 0;
+				case ({cyc34, counter})
+					3'b011: begin cen <= 1; counter <= 0; cyc34 <= ~cyc34; end // 4
+					3'b110: begin cen <= 1; counter <= 0; cyc34 <= ~cyc34; end // 3
+					default: counter <= counter + 1;
+				endcase
         end
     end
 endmodule
