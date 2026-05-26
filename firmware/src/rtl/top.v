@@ -108,13 +108,29 @@ pll pll_inst(
 );
 assign areset = ~locked;
 
+// clock for gs and opl3
+reg ce_14m;
+always @(negedge clk_bus)
+    ce_14m <= !ce_14m;
+
 // reset
 reg reset = 0;
+reg [23:0] cnt_reset = 0; // initial reset counter
 always @(posedge clk_bus, posedge areset) begin
-    if (~bus_rst_n || ~btn_reset_n || areset) 
-        reset <= 1;
-    else
-        reset <= 0;
+	 if (areset) begin
+		reset <= 1;
+		cnt_reset <= 0;
+	 end
+	 else begin
+		 if (cnt_reset != 24'hFFFFFF) begin
+			reset <= 1;
+			cnt_reset <= cnt_reset + 1;
+		 end
+		 else if (~bus_rst_n || ~btn_reset_n || areset) 
+			  reset <= 1;
+		 else
+			  reset <= 0;
+	 end
 end
 
 assign midi_reset_n = ~reset;
@@ -145,7 +161,7 @@ wire signed [15:0] audio_mix_l, audio_mix_r;
 
 PCM5102 #(.DAC_CLK_DIV_BITS(2)) dac_inst(
     .clk              (clk_bus),
-    .reset            (areset),
+    .reset            (reset),
     .left             (audio_mix_l),
     .right            (audio_mix_r),
     .din              (dac_dat),
@@ -157,7 +173,7 @@ PCM5102 #(.DAC_CLK_DIV_BITS(2)) dac_inst(
 wire signed [23:0] adc_l, adc_r;
 
 i2s_transceiver adc_inst(
-    .reset_n          (~areset),
+    .reset_n          (~reset),
     .mclk             (clk_bus),
     .sclk             (adc_bck),
     .ws               (adc_lrck),
@@ -268,15 +284,6 @@ turbosound turbosound_inst(
 
 // ------- GS
 
-wire clk_gs;
-reg ce_14m;
-always @(negedge clk_bus)
-begin
-    ce_14m <= !ce_14m;
-end
-
-BUFGCE U_BUFG14 (.O(clk_gs), .I(clk_bus), .CE(ce_14m));
-
 wire gs_oe;
 wire [7:0] gs_do_bus;
 wire [14:0] gs_out_l, gs_out_r;
@@ -309,6 +316,7 @@ gs_top gs_inst(
 );
 
 // opl3
+
 wire signed [15:0] opl3_l, opl3_r;
 opl3 opl3_inst(
     .clk            (clk_bus),
