@@ -139,13 +139,13 @@ NET "led_meter_r<7>"      LOC="M4"   | IOSTANDARD = LVCMOS33 | DRIVE = 8;
 
 # TEST Points
 NET "tp<1>"               LOC="A12"  | IOSTANDARD = LVCMOS33;
-NET "tp<2>"               LOC="A11"  | IOSTANDARD = LVCMOS33;
-NET "tp<3>"               LOC="B12"  | IOSTANDARD = LVCMOS33;
-NET "tp<4>"               LOC="C13"  | IOSTANDARD = LVCMOS33;
-NET "tp<5>"               LOC="G12"  | IOSTANDARD = LVCMOS33;
-NET "tp<6>"               LOC="F13"  | IOSTANDARD = LVCMOS33;
-NET "tp<7>"               LOC="F14"  | IOSTANDARD = LVCMOS33;
-NET "tp<8>"               LOC="M12"  | IOSTANDARD = LVCMOS33;
+NET "tp<2>"               LOC="A11"  | IOSTANDARD = LVCMOS33 | PULLUP;
+NET "tp<3>"               LOC="B12"  | IOSTANDARD = LVCMOS33 | PULLUP;
+NET "tp<4>"               LOC="C13"  | IOSTANDARD = LVCMOS33 | PULLUP;
+NET "tp<5>"               LOC="G12"  | IOSTANDARD = LVCMOS33 | PULLUP;
+NET "tp<6>"               LOC="F13"  | IOSTANDARD = LVCMOS33 | PULLUP;
+NET "tp<7>"               LOC="F14"  | IOSTANDARD = LVCMOS33 | PULLUP;
+NET "tp<8>"               LOC="M12"  | IOSTANDARD = LVCMOS33 | PULLUP;
 
 # Timings
 NET "clk" TNM_NET = "clk";

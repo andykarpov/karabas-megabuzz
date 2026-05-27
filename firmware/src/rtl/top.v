@@ -84,8 +84,6 @@ module karabas_megabuzz(
 	 inout wire  [8:1]   tp
 );
 
-parameter VU_DIR = 0;
-
 // unused signals
 assign flash_cs_n   = 1'b1;
 assign flash_sck    = 1'b1;
@@ -443,16 +441,22 @@ assign bus_d =
     8'bzzzzzzzz;
 
 // vu meter
-vu_meter #(.DIR(VU_DIR)) vu_meter_l_inst(
+vu_meter vu_meter_l_inst(
     .clk            (clk_bus),
+	 .dir            (tp[2]),
+	 .enable_bar     (tp[3]),
+	 .enable_dot     (tp[4]),
 	 .reset          (reset),
     .sample_tick    (dac_ws),
     .audio_sample   (audio_mix_l),
     .leds           (led_meter_l)
 );
 
-vu_meter #(.DIR(VU_DIR)) vu_meter_r_inst(
+vu_meter vu_meter_r_inst(
     .clk            (clk_bus),
+	 .dir            (tp[2]),
+	 .enable_bar     (tp[3]),
+	 .enable_dot     (tp[4]),
 	 .reset          (reset),
     .sample_tick    (dac_ws),
     .audio_sample   (audio_mix_r),

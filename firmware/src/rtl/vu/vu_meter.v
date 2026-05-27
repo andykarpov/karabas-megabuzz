@@ -1,12 +1,13 @@
 module vu_meter (
     input wire clk,
 	 input wire reset,
+	 input wire dir,
+	 input wire enable_bar,
+	 input wire enable_dot,
     input wire sample_tick,                 
     input wire signed [15:0] audio_sample,  
     output wire [7:0] leds                  
 );
-
-   parameter DIR = 0;
 
 	// vu_level (0..8 from signed audio sample)
 	wire [3:0] level;
@@ -22,14 +23,14 @@ module vu_meter (
 
 	// bar led data
 	wire [7:0] bar_int;
-	vu_leds #(.MODE(1), .DIR(DIR)) vu_leds_bar (.clk(clk), .level(bar_val), .out(bar_int));
+	vu_leds #(.MODE(1)) vu_leds_bar (.clk(clk), .level(bar_val), .out(bar_int), .dir(dir));
 
 	// dot led data
 	wire [7:0] dot_int;
-	vu_leds #(.MODE(2), .DIR(DIR)) vu_dots_bar (.clk(clk), .level(dot_val), .out(dot_int));
+	vu_leds #(.MODE(2)) vu_dots_bar (.clk(clk), .level(dot_val), .out(dot_int), .dir(dir));
 
 	// inverting the result value for our leds
-	assign leds = ~(bar_int | dot_int);
+	assign leds = ~((enable_bar ? bar_int : 8'b0) | (enable_dot ? dot_int : 8'b0));
 
 endmodule
 
@@ -110,19 +111,19 @@ endmodule
 module vu_leds (
 	input wire clk,
 	input wire [3:0] level,
-	output reg [7:0] out
+	output reg [7:0] out,
+	input wire dir
 );
 
 localparam MODE_BAR = 1;
 localparam MODE_DOT = 2;
 parameter MODE = MODE_BAR;
 
-localparam DIR_NORMAL = 0;
-localparam DIR_REVERSE = 1;
-parameter DIR = DIR_NORMAL;
+localparam DIR_NORMAL = 1;
+localparam DIR_REVERSE = 0;
 
 always @(posedge clk) begin
-	if (DIR == DIR_NORMAL)
+	if (dir == DIR_NORMAL)
 			case (level)
 				8: out <= (MODE == MODE_BAR) ? 8'b11111111 : 8'b10000000;
 				7: out <= (MODE == MODE_BAR) ? 8'b01111111 : 8'b01000000;
