@@ -22,7 +22,7 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
 ### Changelog & current status
 
-* Rev.A - initial release [link](ERRATA.md)
+* Rev.A - initial release [ERRATA](ERRATA.md)
 
 ### Related projects
 
