@@ -22,6 +22,9 @@
 4) make flash - прошьет прошивку под камень XC6SLX16
 5) make flash25 - прошьет прошивку под камень XC6SLX25
 
+Важно: для slx25 камня в дистрибутиве openFPGALoader нет собранного лодера под этот камень.
+Поэтому его нужно взять из support/spiOverJtag_xc6slx25ftg256.bit.gz и положить в соотв /usr/share/openFPGALoader/ локацию.
+
 Если влом юзать makefile, можно руками, пример для SLX16:
 
 `openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f work16/karabas_megabuzz.bit`
