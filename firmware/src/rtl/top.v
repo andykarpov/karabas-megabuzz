@@ -117,24 +117,8 @@ always @(negedge clk_bus)
     ce_14m <= !ce_14m;
 
 // reset
-reg reset = 0;
-reg [23:0] cnt_reset = 0; // initial reset counter
-always @(posedge clk_bus, posedge areset) begin
-	 if (areset) begin
-		reset <= 1;
-		cnt_reset <= 0;
-	 end
-	 else begin
-		 if (cnt_reset != 24'hFFFFFF) begin
-			reset <= 1;
-			cnt_reset <= cnt_reset + 1;
-		 end
-		 else if (~bus_rst_n || ~btn_reset_n || areset) 
-			  reset <= 1;
-		 else
-			  reset <= 0;
-	 end
-end
+wire reset;
+resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n), .reset_out(reset));
 
 assign midi_reset_n = ~reset;
 assign tp[1] = ~reset; // hotfix revA - opl3 reset
@@ -230,7 +214,7 @@ wire saa_wr_n = ~(ioreq_wr && bus_a[7:0] == 8'hFF && ~rom_m1_access);
 wire ce_8;
 clk_div_8mhz saa1099_cen_inst(
 	.clk					(clk_bus),
-	.rst_n				(~reset),
+	.rst_n				(~areset),
 	.cen					(ce_8)
 );
 
