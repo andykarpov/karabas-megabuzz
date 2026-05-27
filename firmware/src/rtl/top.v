@@ -79,8 +79,12 @@ module karabas_megabuzz(
     output wire         flash_wp_n,
 
     output wire [7:0]   led_meter_l,
-    output wire [7:0]   led_meter_r
+    output wire [7:0]   led_meter_r,
+	 
+	 inout wire  [8:1]   tp
 );
+
+parameter VU_DIR = 0;
 
 // unused signals
 assign flash_cs_n   = 1'b1;
@@ -88,6 +92,7 @@ assign flash_sck    = 1'b1;
 assign flash_mosi   = 1'b1;
 assign flash_hold_n = 1'b1;
 assign flash_wp_n   = 1'b1;
+assign tp[8:2]      = 7'bz;
 
 // config bits expanded to named signals
 wire soundrive_en   = cfg_n[0];
@@ -134,6 +139,7 @@ always @(posedge clk_bus, posedge areset) begin
 end
 
 assign midi_reset_n = ~reset;
+assign tp[1] = ~reset; // hotfix revA - opl3 reset
 assign bus_wait_n   = 1'bz;
 
 // bus_iorq_n is useless on zxevo :(
@@ -437,7 +443,7 @@ assign bus_d =
     8'bzzzzzzzz;
 
 // vu meter
-vu_meter vu_meter_l_inst(
+vu_meter #(.DIR(VU_DIR)) vu_meter_l_inst(
     .clk            (clk_bus),
 	 .reset          (reset),
     .sample_tick    (dac_ws),
@@ -445,7 +451,7 @@ vu_meter vu_meter_l_inst(
     .leds           (led_meter_l)
 );
 
-vu_meter vu_meter_r_inst(
+vu_meter #(.DIR(VU_DIR)) vu_meter_r_inst(
     .clk            (clk_bus),
 	 .reset          (reset),
     .sample_tick    (dac_ws),

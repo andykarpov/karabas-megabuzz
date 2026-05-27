@@ -6,6 +6,8 @@ module vu_meter (
     output wire [7:0] leds                  
 );
 
+   parameter DIR = 0;
+
 	// vu_level (0..8 from signed audio sample)
 	wire [3:0] level;
 	vu_level vu_level(.clk(clk), .audio_sample(audio_sample), .level(level));
@@ -20,11 +22,11 @@ module vu_meter (
 
 	// bar led data
 	wire [7:0] bar_int;
-	vu_leds #(.MODE(1)) vu_leds_bar (.clk(clk), .level(bar_val), .out(bar_int));
+	vu_leds #(.MODE(1), .DIR(DIR)) vu_leds_bar (.clk(clk), .level(bar_val), .out(bar_int));
 
 	// dot led data
 	wire [7:0] dot_int;
-	vu_leds #(.MODE(2)) vu_dots_bar (.clk(clk), .level(dot_val), .out(dot_int));
+	vu_leds #(.MODE(2), .DIR(DIR)) vu_dots_bar (.clk(clk), .level(dot_val), .out(dot_int));
 
 	// inverting the result value for our leds
 	assign leds = ~(bar_int | dot_int);
@@ -115,7 +117,12 @@ localparam MODE_BAR = 1;
 localparam MODE_DOT = 2;
 parameter MODE = MODE_BAR;
 
+localparam DIR_NORMAL = 0;
+localparam DIR_REVERSE = 1;
+parameter DIR = DIR_NORMAL;
+
 always @(posedge clk) begin
+	if (DIR == DIR_NORMAL)
 			case (level)
 				8: out <= (MODE == MODE_BAR) ? 8'b11111111 : 8'b10000000;
 				7: out <= (MODE == MODE_BAR) ? 8'b01111111 : 8'b01000000;
@@ -125,6 +132,18 @@ always @(posedge clk) begin
 				3: out <= (MODE == MODE_BAR) ? 8'b00000111 : 8'b00000100;
 				2: out <= (MODE == MODE_BAR) ? 8'b00000011 : 8'b00000010;
 				1: out <= (MODE == MODE_BAR) ? 8'b00000001 : 8'b00000001;
+				default: out <= 8'b00000000;
+			endcase
+	else
+			case (level)
+				8: out <= (MODE == MODE_BAR) ? 8'b11111111 : 8'b00000001;
+				7: out <= (MODE == MODE_BAR) ? 8'b11111110 : 8'b00000010;
+				6: out <= (MODE == MODE_BAR) ? 8'b11111100 : 8'b00000100;
+				5: out <= (MODE == MODE_BAR) ? 8'b11111000 : 8'b00001000;
+				4: out <= (MODE == MODE_BAR) ? 8'b11110000 : 8'b00010000;
+				3: out <= (MODE == MODE_BAR) ? 8'b11100000 : 8'b00100000;
+				2: out <= (MODE == MODE_BAR) ? 8'b11000000 : 8'b01000000;
+				1: out <= (MODE == MODE_BAR) ? 8'b10000000 : 8'b10000000;
 				default: out <= 8'b00000000;
 			endcase
 end
