@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "Karabas-MegaBuzz")
-		(date "2026-05-27")
+		(date "2026-05-29")
 		(rev "A1")
 		(company "Andy Karpov")
 	)
@@ -695,6 +695,164 @@
 					)
 					(fill
 						(type background)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Connector_Generic:Conn_01x02"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 0 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_01x02"
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "connector"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Conn_01x02_1_1"
+				(rectangle
+					(start -1.27 1.27)
+					(end 1.27 -3.81)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(rectangle
+					(start -1.27 0.127)
+					(end 0 -0.127)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 -2.413)
+					(end 0 -2.667)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
 					)
 				)
 			)
@@ -5684,7 +5842,7 @@
 		(uuid "bec4dff5-b5e3-456c-a75a-2a542d331b88")
 	)
 	(junction
-		(at 201.93 156.21)
+		(at 194.31 156.21)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "c5720973-1190-49d3-9282-c846b03734e4")
@@ -5893,7 +6051,17 @@
 	)
 	(wire
 		(pts
-			(xy 201.93 156.21) (xy 205.74 156.21)
+			(xy 215.9 146.05) (xy 219.71 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0da300b0-4a8f-4ddf-9aef-ae98cafa6964")
+	)
+	(wire
+		(pts
+			(xy 194.31 156.21) (xy 198.12 156.21)
 		)
 		(stroke
 			(width 0)
@@ -5920,6 +6088,16 @@
 			(type default)
 		)
 		(uuid "0f38ba9f-9c76-4c4c-b24f-485ed9dd7e3f")
+	)
+	(wire
+		(pts
+			(xy 215.9 146.05) (xy 215.9 147.32)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1004843e-308e-40df-8bd2-b264959979db")
 	)
 	(wire
 		(pts
@@ -6233,7 +6411,7 @@
 	)
 	(wire
 		(pts
-			(xy 215.9 156.21) (xy 218.44 156.21)
+			(xy 208.28 156.21) (xy 210.82 156.21)
 		)
 		(stroke
 			(width 0)
@@ -6733,7 +6911,7 @@
 	)
 	(wire
 		(pts
-			(xy 201.93 144.78) (xy 201.93 147.32)
+			(xy 194.31 144.78) (xy 194.31 147.32)
 		)
 		(stroke
 			(width 0)
@@ -6953,7 +7131,7 @@
 	)
 	(wire
 		(pts
-			(xy 198.12 156.21) (xy 201.93 156.21)
+			(xy 190.5 156.21) (xy 194.31 156.21)
 		)
 		(stroke
 			(width 0)
@@ -7433,6 +7611,16 @@
 	)
 	(wire
 		(pts
+			(xy 215.9 143.51) (xy 219.71 143.51)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d5a7babb-473e-40c6-8c13-1773375f4fa4")
+	)
+	(wire
+		(pts
 			(xy 255.27 80.01) (xy 257.81 80.01)
 		)
 		(stroke
@@ -7613,7 +7801,7 @@
 	)
 	(wire
 		(pts
-			(xy 201.93 154.94) (xy 201.93 156.21)
+			(xy 194.31 154.94) (xy 194.31 156.21)
 		)
 		(stroke
 			(width 0)
@@ -9683,6 +9871,30 @@
 			)
 		)
 	)
+	(global_label "~{BTN_NMI}"
+		(shape output)
+		(at 215.9 143.51 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify right)
+		)
+		(uuid "a3f5219d-832b-4d44-b0e8-0d5a3f491f01")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 207.3181 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "xD5"
 		(shape bidirectional)
 		(at 148.59 52.07 0)
@@ -10213,7 +10425,7 @@
 	)
 	(global_label "~{BTN_NMI}"
 		(shape output)
-		(at 198.12 156.21 180)
+		(at 190.5 156.21 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10223,7 +10435,7 @@
 		)
 		(uuid "d363c41b-098e-41a5-9def-9a262a0306dd")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 189.5381 156.21 0)
+			(at 181.9181 156.21 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10716,6 +10928,88 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 224.79 143.51 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp yes)
+		(fields_autoplaced yes)
+		(uuid "0898bac9-ff68-4f47-be4a-f237536022fd")
+		(property "Reference" "J7"
+			(at 227.33 143.5099 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "NMI"
+			(at 227.33 146.0499 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+			(at 224.79 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 224.79 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 224.79 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "4a1605d9-6c11-42eb-8137-4d1fc8a879bb")
+		)
+		(pin "1"
+			(uuid "b55e50de-e923-4d53-b9ee-86a25c9ffb33")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
+					(reference "J7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+5V")
 		(at 92.71 64.77 0)
 		(unit 1)
@@ -11074,7 +11368,7 @@
 				)
 			)
 		)
-		(property "Value" "Reverse"
+		(property "Value" "VU Reverse"
 			(at 76.835 135.4074 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11290,7 +11584,7 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 201.93 144.78 0)
+		(at 194.31 144.78 0)
 		(mirror y)
 		(unit 1)
 		(body_style 1)
@@ -11301,7 +11595,7 @@
 		(dnp no)
 		(uuid "1e6fc6f5-353b-48c6-9e31-614fee75bb5a")
 		(property "Reference" "#PWR0149"
-			(at 201.93 148.59 0)
+			(at 194.31 148.59 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11312,7 +11606,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 201.93 140.97 0)
+			(at 194.31 140.97 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -11322,7 +11616,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 201.93 144.78 0)
+			(at 194.31 144.78 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11333,7 +11627,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 201.93 144.78 0)
+			(at 194.31 144.78 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11344,7 +11638,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 201.93 144.78 0)
+			(at 194.31 144.78 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12352,7 +12646,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 218.44 156.21 90)
+		(at 210.82 156.21 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -12362,7 +12656,7 @@
 		(dnp no)
 		(uuid "46e8eded-6e9b-4e76-a8fe-a1f7a25bc0dd")
 		(property "Reference" "#PWR0150"
-			(at 224.79 156.21 0)
+			(at 217.17 156.21 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12373,7 +12667,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 222.25 156.21 0)
+			(at 214.63 156.21 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -12383,7 +12677,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 218.44 156.21 0)
+			(at 210.82 156.21 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12394,7 +12688,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 218.44 156.21 0)
+			(at 210.82 156.21 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12405,7 +12699,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 218.44 156.21 0)
+			(at 210.82 156.21 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14100,7 +14394,7 @@
 	)
 	(symbol
 		(lib_id "Switch:SW_Push")
-		(at 210.82 156.21 0)
+		(at 203.2 156.21 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -14110,7 +14404,7 @@
 		(dnp no)
 		(uuid "9bef7d79-ec7b-481a-ab90-457897477eec")
 		(property "Reference" "BTN2"
-			(at 210.82 149.606 0)
+			(at 203.2 149.606 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -14120,7 +14414,7 @@
 			)
 		)
 		(property "Value" "NMI"
-			(at 210.82 151.2824 0)
+			(at 203.2 151.2824 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -14130,7 +14424,7 @@
 			)
 		)
 		(property "Footprint" "footprints:SW_SPST_PTS810_handsoldering"
-			(at 210.82 151.13 0)
+			(at 203.2 151.13 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14141,7 +14435,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 210.82 151.13 0)
+			(at 203.2 151.13 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14152,7 +14446,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 210.82 156.21 0)
+			(at 203.2 156.21 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -15036,7 +15330,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 201.93 151.13 0)
+		(at 194.31 151.13 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -15046,7 +15340,7 @@
 		(dnp no)
 		(uuid "b48b2022-6ff9-4b49-ba62-fbf03153f8b2")
 		(property "Reference" "R50"
-			(at 203.835 151.13 90)
+			(at 196.215 151.13 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -15056,7 +15350,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 201.93 151.13 90)
+			(at 194.31 151.13 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -15066,7 +15360,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
-			(at 200.152 151.13 90)
+			(at 192.532 151.13 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15077,7 +15371,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 201.93 151.13 0)
+			(at 194.31 151.13 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15088,7 +15382,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 201.93 151.13 0)
+			(at 194.31 151.13 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16808,6 +17102,83 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
 					(reference "#PWR056")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 215.9 147.32 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "e15c3cc0-c0e9-4bfe-94a3-65299f990cf9")
+		(property "Reference" "#PWR0153"
+			(at 215.9 153.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 215.9 151.13 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 215.9 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 215.9 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 215.9 147.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "85ce59bc-5dea-4cc5-b437-26bd6550d474")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
+					(reference "#PWR0153")
 					(unit 1)
 				)
 			)

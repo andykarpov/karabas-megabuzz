@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "Karabas-MegaBuzz")
-		(date "2026-05-27")
+		(date "2026-05-29")
 		(rev "A1")
 		(company "Andy Karpov")
 		(comment 1 "Sound card for ZX Spectrum (NemoBus)")

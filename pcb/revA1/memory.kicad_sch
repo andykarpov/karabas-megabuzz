@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "Karabas-MegaBuzz")
-		(date "2026-05-27")
+		(date "2026-05-29")
 		(rev "A1")
 		(company "Andy Karpov")
 	)
@@ -3414,10 +3414,10 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp no)
+		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "537578b5-9186-4504-a2dc-b2375434820c")
 		(property "Reference" "U18"
