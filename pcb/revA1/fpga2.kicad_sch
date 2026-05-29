@@ -6599,10 +6599,6 @@
 		(uuid "5ea9a253-5f4f-4ed2-82b7-db097f8c4e55")
 	)
 	(no_connect
-		(at 41.91 101.6)
-		(uuid "65f3f1e3-a964-481a-a3f1-bd88e2481a8a")
-	)
-	(no_connect
 		(at 266.7 87.63)
 		(uuid "7974a899-de41-4011-ade5-0bde0d4b46e7")
 	)
@@ -7083,6 +7079,16 @@
 			(type default)
 		)
 		(uuid "3e7ca95a-5420-4865-aa94-b668f3e4aa11")
+	)
+	(wire
+		(pts
+			(xy 143.51 63.5) (xy 146.05 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3f5ae418-7880-4d2d-9111-f7d83930f5e4")
 	)
 	(wire
 		(pts
@@ -7866,6 +7872,16 @@
 	)
 	(wire
 		(pts
+			(xy 39.37 101.6) (xy 41.91 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fdc6eb68-a5dc-467c-867a-d2b4a0fee9d0")
+	)
+	(wire
+		(pts
 			(xy 143.51 106.68) (xy 146.05 106.68)
 		)
 		(stroke
@@ -7903,16 +7919,6 @@
 			(type default)
 		)
 		(uuid "fea9f851-5212-45d1-a5ea-fe54e54d9908")
-	)
-	(wire
-		(pts
-			(xy 143.51 63.5) (xy 146.05 63.5)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ff4f65a5-dc53-4f57-b415-fd7a3c459c30")
 	)
 	(label "CLK"
 		(at 200.66 86.36 0)
@@ -7993,6 +7999,30 @@
 					(size 0.9906 0.9906)
 				)
 				(justify left)
+			)
+		)
+	)
+	(global_label "xF"
+		(shape input)
+		(at 39.37 101.6 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify right)
+		)
+		(uuid "07e0310b-73ab-4884-a833-08c71914296e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 35.3165 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify right)
 			)
 		)
 	)
@@ -9673,30 +9703,6 @@
 					(size 0.9906 0.9906)
 				)
 				(justify right)
-			)
-		)
-	)
-	(global_label "~{xDOS}"
-		(shape input)
-		(at 146.05 63.5 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.9906 0.9906)
-			)
-			(justify left)
-		)
-		(uuid "d1b4dd04-ef16-48be-91d8-ff6245e725dd")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 152.2262 63.5 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.9906 0.9906)
-				)
-				(justify left)
 			)
 		)
 	)
@@ -11537,6 +11543,84 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
 					(reference "#PWR023")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 146.05 63.5 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "5e51a6da-fbef-4244-97ab-58f8678d15cf")
+		(property "Reference" "T8"
+			(at 152.4 63.5 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 148.0821 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 146.05 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 146.05 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 146.05 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a9e79eec-32c5-4b08-acfb-b0b7e9af6dcd")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/e7252a15-61a8-4bf7-9e14-907719ec721b"
+					(reference "T8")
 					(unit 1)
 				)
 			)

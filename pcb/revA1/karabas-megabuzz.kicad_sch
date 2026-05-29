@@ -443,7 +443,7 @@
 	)
 	(rectangle
 		(start 214.63 106.68)
-		(end 214.6554 137.16)
+		(end 214.6554 128.27)
 		(stroke
 			(width 0)
 			(type default)
@@ -555,8 +555,8 @@
 		(uuid "e74a29d1-625b-42fa-8524-162527459925")
 	)
 	(rectangle
-		(start 191.77 137.16)
-		(end 214.63 137.1854)
+		(start 191.77 128.27)
+		(end 214.63 128.2954)
 		(stroke
 			(width 0)
 			(type default)
@@ -944,7 +944,7 @@
 				)
 			)
 		)
-		(property "Footprint" "footprints:andy_karpov_logo4_silk"
+		(property "Footprint" "footprints:andy_karpov_logo5_silk"
 			(at 163.83 175.26 0)
 			(hide yes)
 			(show_name no)
