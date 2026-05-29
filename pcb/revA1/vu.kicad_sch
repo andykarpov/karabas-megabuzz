@@ -1568,7 +1568,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "07bf0b40-89e3-4922-8a8e-39e840ad09f7")
-		(property "Reference" "R31"
+		(property "Reference" "R34"
 			(at 59.69 43.815 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1630,7 +1630,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R31")
+					(reference "R34")
 					(unit 1)
 				)
 			)
@@ -1647,7 +1647,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "099043eb-14aa-4e5d-96c2-0fddf4e9b467")
-		(property "Reference" "R40"
+		(property "Reference" "R43"
 			(at 81.28 51.435 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1709,7 +1709,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R40")
+					(reference "R43")
 					(unit 1)
 				)
 			)
@@ -1817,7 +1817,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "16b266d2-2e97-4060-a962-a05d8512e5f6")
-		(property "Reference" "R38"
+		(property "Reference" "R41"
 			(at 81.28 36.195 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1879,7 +1879,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R38")
+					(reference "R41")
 					(unit 1)
 				)
 			)
@@ -1897,7 +1897,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1cbf9694-928f-4ae6-abc4-f735650a3673")
-		(property "Reference" "R34"
+		(property "Reference" "R37"
 			(at 59.69 66.675 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1959,7 +1959,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R34")
+					(reference "R37")
 					(unit 1)
 				)
 			)
@@ -1976,7 +1976,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1d5dfb23-bebd-47cd-a861-b3766fae4d13")
-		(property "Reference" "R45"
+		(property "Reference" "R48"
 			(at 81.28 89.535 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2038,7 +2038,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R45")
+					(reference "R48")
 					(unit 1)
 				)
 			)
@@ -2235,7 +2235,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2e9c3050-28aa-42de-ae8e-4d9d472bef9c")
-		(property "Reference" "#PWR0131"
+		(property "Reference" "#PWR0143"
 			(at 68.58 38.1 0)
 			(hide yes)
 			(show_name no)
@@ -2295,7 +2295,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "#PWR0131")
+					(reference "#PWR0143")
 					(unit 1)
 				)
 			)
@@ -2675,7 +2675,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4b970e8d-6c87-4b19-9b64-8c2a18a4a97f")
-		(property "Reference" "R36"
+		(property "Reference" "R39"
 			(at 59.69 81.915 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2737,7 +2737,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R36")
+					(reference "R39")
 					(unit 1)
 				)
 			)
@@ -2754,7 +2754,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "53f8400d-2c21-4d3b-a349-170e2326bf1c")
-		(property "Reference" "R44"
+		(property "Reference" "R47"
 			(at 81.28 81.915 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2816,7 +2816,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R44")
+					(reference "R47")
 					(unit 1)
 				)
 			)
@@ -2833,7 +2833,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5f6dcc09-65ca-475b-b070-84bd3ccf5df5")
-		(property "Reference" "#PWR0136"
+		(property "Reference" "#PWR0144"
 			(at 72.39 38.1 0)
 			(hide yes)
 			(show_name no)
@@ -2893,7 +2893,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "#PWR0136")
+					(reference "#PWR0144")
 					(unit 1)
 				)
 			)
@@ -2911,7 +2911,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6973491b-5a8d-410a-b741-5e3bba0935a8")
-		(property "Reference" "R37"
+		(property "Reference" "R40"
 			(at 59.69 89.535 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2973,7 +2973,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R37")
+					(reference "R40")
 					(unit 1)
 				)
 			)
@@ -3080,7 +3080,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "77c488b8-ebe8-40d5-a6d1-aa55b0fb826b")
-		(property "Reference" "R42"
+		(property "Reference" "R45"
 			(at 81.28 66.675 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3142,7 +3142,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R42")
+					(reference "R45")
 					(unit 1)
 				)
 			)
@@ -3160,7 +3160,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9b2d570d-5282-4959-960b-16d7bf61214f")
-		(property "Reference" "R32"
+		(property "Reference" "R35"
 			(at 59.69 51.435 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3222,7 +3222,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R32")
+					(reference "R35")
 					(unit 1)
 				)
 			)
@@ -3330,7 +3330,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "ada4b765-95b9-4cef-a582-6213e6204a61")
-		(property "Reference" "R41"
+		(property "Reference" "R44"
 			(at 81.28 59.055 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3392,7 +3392,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R41")
+					(reference "R44")
 					(unit 1)
 				)
 			)
@@ -3592,7 +3592,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "be489d80-4e36-4341-b116-4d2d2c81e23a")
-		(property "Reference" "R35"
+		(property "Reference" "R38"
 			(at 59.69 74.295 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3654,7 +3654,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R35")
+					(reference "R38")
 					(unit 1)
 				)
 			)
@@ -3853,7 +3853,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "d2aa6187-58d6-4ffa-9618-dddf2bc2e714")
-		(property "Reference" "R39"
+		(property "Reference" "R42"
 			(at 81.28 43.815 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3915,7 +3915,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R39")
+					(reference "R42")
 					(unit 1)
 				)
 			)
@@ -4113,7 +4113,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f32d6585-1abe-4e12-ad89-3ba3a5fabb0f")
-		(property "Reference" "R33"
+		(property "Reference" "R36"
 			(at 59.69 59.055 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4175,7 +4175,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R33")
+					(reference "R36")
 					(unit 1)
 				)
 			)
@@ -4193,7 +4193,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f86eb855-5a47-4200-a02e-fca85947f3da")
-		(property "Reference" "R30"
+		(property "Reference" "R33"
 			(at 59.69 36.195 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4255,7 +4255,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R30")
+					(reference "R33")
 					(unit 1)
 				)
 			)
@@ -4272,7 +4272,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "fd7af13c-9937-43aa-8cc2-c2a0580192d9")
-		(property "Reference" "R43"
+		(property "Reference" "R46"
 			(at 81.28 74.295 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4334,7 +4334,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/13ede702-d735-4dea-a3c9-12f9e8dd6d62"
-					(reference "R43")
+					(reference "R46")
 					(unit 1)
 				)
 			)

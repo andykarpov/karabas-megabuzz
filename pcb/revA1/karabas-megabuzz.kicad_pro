@@ -821,7 +821,7 @@
         "uuid": "eff1afb7-47ba-46af-a815-4a07fb8d674b"
       }
     ],
-    "used_designators": "",
+    "used_designators": "X1,TP1-4,PRG1,L1,JP1-2,#PWR1-152,C1-57,J1-6,M1,R1-52,INIT1,D1-17,U1-18,#FLG1-3,/CS1,SW1,CLK1,IO1-4,LOGO1,BTN1-2,DONE1",
     "variants": []
   },
   "sheets": [

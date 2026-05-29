@@ -166,6 +166,388 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Memory_RAM:APS6404L-3SQRx-SN"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at -6.35 11.43 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "APS6404L-3SQRx-SN"
+				(at 11.684 11.43 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+				(at 0 -15.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.mouser.com/datasheet/2/1127/APM_PSRAM_QSPI_APS6404L_3SQR_v2_3_PKG-1954826.pdf"
+				(at 0 -17.78 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "64 Mbit / 8M x 8-bits serial pseudo SRAM MEMORY, up to 133MHz, 2.7-3.6V supply, SOIC-8 (SOP-8)"
+				(at 0 -20.32 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "qspi qpi spi psram"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "*SOIC*3.9x4.9mm*P1.27mm*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "APS6404L-3SQRx-SN_0_1"
+				(rectangle
+					(start -7.62 10.16)
+					(end 7.62 -10.16)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "APS6404L-3SQRx-SN_1_1"
+				(pin input line
+					(at -10.16 7.62 0)
+					(length 2.54)
+					(name "~{CE}"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 0 0)
+					(length 2.54)
+					(name "SO/SIO1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 -2.54 0)
+					(length 2.54)
+					(name "SIO2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -12.7 90)
+					(length 2.54)
+					(name "VSS"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "SI/SIO0"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -10.16 5.08 0)
+					(length 2.54)
+					(name "SCLK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at -10.16 -5.08 0)
+					(length 2.54)
+					(name "SIO3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 12.7 270)
+					(length 2.54)
+					(name "VDD"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "power:+3V3"
 			(power global)
 			(pin_numbers
@@ -1373,6 +1755,32 @@
 		)
 		(uuid "22d02f47-b195-4dfc-9040-d1b0a2dc64e2")
 	)
+	(rectangle
+		(start 111.76 24.765)
+		(end 175.26 114.3)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "8cdf2ab5-308a-4afc-adc2-5cc7b8ff591f")
+	)
+	(text "PSRAM"
+		(exclude_from_sim no)
+		(at 111.76 24.13 0)
+		(effects
+			(font
+				(size 2 2)
+				(thickness 0.4)
+				(bold yes)
+				(italic yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "314567cb-dc62-4f8f-87fd-10590b1793c0")
+	)
 	(text "GS RAM"
 		(exclude_from_sim no)
 		(at 30.48 24.13 0)
@@ -1398,6 +1806,18 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "521945e3-2884-4d50-ab70-3c2c23ccd9cc")
+	)
+	(junction
+		(at 130.81 53.34)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "683b931b-b87d-4f27-b933-4d68841ba9ff")
+	)
+	(junction
+		(at 142.24 48.26)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a1dcdef4-3c93-4717-b2a7-626293b29aec")
 	)
 	(no_connect
 		(at 46.99 92.71)
@@ -1454,6 +1874,36 @@
 			(type default)
 		)
 		(uuid "129a05b4-9ec3-44f5-9886-257e1e5434ae")
+	)
+	(wire
+		(pts
+			(xy 128.27 63.5) (xy 132.08 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1b97d112-8fde-461f-9f82-d8b546392d6e")
+	)
+	(wire
+		(pts
+			(xy 128.27 55.88) (xy 132.08 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1d354273-d737-4da2-b5b7-5490ce518f8f")
+	)
+	(wire
+		(pts
+			(xy 130.81 50.8) (xy 130.81 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "209e077d-410b-4c4e-bc7b-b269888e9555")
 	)
 	(wire
 		(pts
@@ -1537,6 +1987,16 @@
 	)
 	(wire
 		(pts
+			(xy 142.24 48.26) (xy 144.78 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "68e8aeb1-005d-4500-89cd-70a6c7635587")
+	)
+	(wire
+		(pts
 			(xy 46.99 97.79) (xy 44.45 97.79)
 		)
 		(stroke
@@ -1557,6 +2017,16 @@
 	)
 	(wire
 		(pts
+			(xy 142.24 45.72) (xy 142.24 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6a344e4a-68a4-42cf-b774-c376022e682c")
+	)
+	(wire
+		(pts
 			(xy 46.99 44.45) (xy 44.45 44.45)
 		)
 		(stroke
@@ -1574,6 +2044,16 @@
 			(type default)
 		)
 		(uuid "70dbb956-dda3-40ac-b55c-2e08d4ecd4d3")
+	)
+	(wire
+		(pts
+			(xy 128.27 58.42) (xy 132.08 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "78da8825-e4c6-40ba-91ae-624c1d9204da")
 	)
 	(wire
 		(pts
@@ -1654,6 +2134,16 @@
 			(type default)
 		)
 		(uuid "a7f952ee-f8e9-4771-a6b7-9c8290a5a95d")
+	)
+	(wire
+		(pts
+			(xy 128.27 66.04) (xy 132.08 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a8882133-5afe-4146-8049-8b37451e10c9")
 	)
 	(wire
 		(pts
@@ -1827,6 +2317,16 @@
 	)
 	(wire
 		(pts
+			(xy 130.81 53.34) (xy 132.08 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f113b250-6d4d-4cab-b34c-07316de93c6c")
+	)
+	(wire
+		(pts
 			(xy 44.45 72.39) (xy 46.99 72.39)
 		)
 		(stroke
@@ -1844,6 +2344,26 @@
 			(type default)
 		)
 		(uuid "faf4a03b-653f-4d83-9dd9-19d5e19e51f6")
+	)
+	(wire
+		(pts
+			(xy 128.27 60.96) (xy 132.08 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fda48eaa-5680-476f-b776-df352084ed66")
+	)
+	(wire
+		(pts
+			(xy 128.27 53.34) (xy 130.81 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ffb05f4f-9b07-4b80-ad3f-e0d33bc72dda")
 	)
 	(global_label "MA14"
 		(shape input)
@@ -1989,6 +2509,30 @@
 			)
 		)
 	)
+	(global_label "CONF_IO2"
+		(shape input)
+		(at 128.27 63.5 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify right)
+		)
+		(uuid "2d6c4059-9b27-477c-a00d-c70d70d763df")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 116.1528 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "MA10"
 		(shape input)
 		(at 44.45 62.23 180)
@@ -2034,6 +2578,78 @@
 					(size 0.9906 0.9906)
 				)
 				(justify left)
+			)
+		)
+	)
+	(global_label "~{PSRAM_CS}"
+		(shape input)
+		(at 128.27 53.34 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify right)
+		)
+		(uuid "3d64b72c-7121-44ff-8404-be1aaa482019")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 118.273 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "CONF_CLK"
+		(shape input)
+		(at 128.27 55.88 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify right)
+		)
+		(uuid "48afec30-4189-481a-a6d2-5dc1a1639b6f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 115.7295 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "CONF_IO1"
+		(shape input)
+		(at 128.27 60.96 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify right)
+		)
+		(uuid "51db3d41-cef7-485c-9afc-fa777160a264")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 116.1528 60.96 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify right)
 			)
 		)
 	)
@@ -2194,6 +2810,30 @@
 		(uuid "66e18e96-46b4-4415-b6ed-0d3b46619e0a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 37.9462 97.79 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "CONF_IO3"
+		(shape input)
+		(at 128.27 66.04 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify right)
+		)
+		(uuid "6fe1fa0b-4b07-4feb-9963-b4d5c2781125")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 116.1528 66.04 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2589,6 +3229,30 @@
 			)
 		)
 	)
+	(global_label "CONF_IO0"
+		(shape input)
+		(at 128.27 58.42 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify right)
+		)
+		(uuid "ffb86833-5bb1-4b58-b1bb-ac3a25802b2c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 116.1528 58.42 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify right)
+			)
+		)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 81.28 93.98 0)
@@ -2600,7 +3264,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1957d64a-8111-443f-b495-67318d76698d")
-		(property "Reference" "C39"
+		(property "Reference" "C40"
 			(at 87.6808 93.98 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2661,7 +3325,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
-					(reference "C39")
+					(reference "C40")
 					(unit 1)
 				)
 			)
@@ -2678,7 +3342,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "50a84224-e1c9-4b89-ade8-8439ed8873b8")
-		(property "Reference" "#PWR0105"
+		(property "Reference" "#PWR0117"
 			(at 80.01 100.33 0)
 			(hide yes)
 			(show_name no)
@@ -2738,7 +3402,265 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
-					(reference "#PWR0105")
+					(reference "#PWR0117")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Memory_RAM:APS6404L-3SQRx-SN")
+		(at 142.24 60.96 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "537578b5-9186-4504-a2dc-b2375434820c")
+		(property "Reference" "U18"
+			(at 151.13 59.6899 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "APS6404L-3SQRx-SN"
+			(at 151.13 62.2299 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 142.24 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.mouser.com/datasheet/2/1127/APM_PSRAM_QSPI_APS6404L_3SQR_v2_3_PKG-1954826.pdf"
+			(at 142.24 78.74 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "64 Mbit / 8M x 8-bits serial pseudo SRAM MEMORY, up to 133MHz, 2.7-3.6V supply, SOIC-8 (SOP-8)"
+			(at 142.24 81.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "3"
+			(uuid "bf53ced7-5ee1-4e6e-b50e-a7a2d9350e9f")
+		)
+		(pin "2"
+			(uuid "81254020-8d55-48dd-b07e-8e0b5052080b")
+		)
+		(pin "1"
+			(uuid "e670a397-64be-41fb-89a6-5d5eac597c8b")
+		)
+		(pin "8"
+			(uuid "0bb63aef-338a-4e02-83e9-ab4d6e621242")
+		)
+		(pin "5"
+			(uuid "6718a637-c744-4804-a89a-a3db5672556b")
+		)
+		(pin "6"
+			(uuid "7f5f4dc0-fd88-4fdb-b201-a13eada9708b")
+		)
+		(pin "4"
+			(uuid "4e68290c-2d63-4dae-9b69-f24a13d7542a")
+		)
+		(pin "7"
+			(uuid "1ea422d2-19ac-402a-a2ef-3727ffefc96e")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
+					(reference "U18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 130.81 46.99 0)
+		(mirror x)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "5ab7d437-1886-407a-9dc3-6d79a084e164")
+		(property "Reference" "R49"
+			(at 128.778 46.99 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 130.81 46.99 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 129.032 46.99 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 130.81 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 130.81 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a2bd1132-5689-4d3b-95ed-f2e5542590a8")
+		)
+		(pin "2"
+			(uuid "f9cb4082-32b3-44da-80ae-19b6b3dc5788")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
+					(reference "R49")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 142.24 41.91 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "73c792a3-6dfc-45a4-b335-1861d0b4afdb")
+		(property "Reference" "C57"
+			(at 148.6408 41.91 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "100n"
+			(at 146.3294 41.91 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
+			(at 143.2052 45.72 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 142.24 41.91 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 142.24 41.91 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "ff396aa2-2d0a-4e48-a92d-a2bae453a86a")
+		)
+		(pin "2"
+			(uuid "e2910863-b727-498d-8974-96d2b165c387")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
+					(reference "C57")
 					(unit 1)
 				)
 			)
@@ -2756,7 +3678,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "8b33da12-c1be-4c40-9a9b-ed64cdc0fe6a")
-		(property "Reference" "#PWR0101"
+		(property "Reference" "#PWR0113"
 			(at 38.1 102.87 0)
 			(hide yes)
 			(show_name no)
@@ -2815,7 +3737,160 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
-					(reference "#PWR0101")
+					(reference "#PWR0113")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 144.78 48.26 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "8cf986be-8b23-423c-bdd5-8d646c2b8500")
+		(property "Reference" "#PWR0146"
+			(at 140.97 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 149.86 48.26 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 144.78 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 144.78 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 144.78 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0c625697-bcc8-435c-a5b2-f9783f67b87a")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
+					(reference "#PWR0146")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 142.24 38.1 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "9468f61f-41ad-4bdc-b055-e9e23a8fdd3f")
+		(property "Reference" "#PWR0145"
+			(at 142.24 31.75 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 142.24 34.29 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 142.24 38.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 142.24 38.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 142.24 38.1 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "ba8b575e-e61d-45d9-a89b-2a2ac02fce0f")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
+					(reference "#PWR0145")
 					(unit 1)
 				)
 			)
@@ -2833,7 +3908,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "99ad6b40-3c95-49b7-8a2f-a2f1623d43e4")
-		(property "Reference" "#PWR0100"
+		(property "Reference" "#PWR0112"
 			(at 38.1 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -2892,7 +3967,83 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
-					(reference "#PWR0100")
+					(reference "#PWR0112")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 142.24 73.66 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "b08825a3-2d6b-4f1d-b82f-40ebbce1179b")
+		(property "Reference" "#PWR0147"
+			(at 142.24 80.01 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 142.24 77.47 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 142.24 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 142.24 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 142.24 73.66 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "74742fe9-4a7c-47f3-8650-34ff6d2d1590")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
+					(reference "#PWR0147")
 					(unit 1)
 				)
 			)
@@ -2909,7 +4060,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "dd6e5234-3f99-4c89-9661-a4a32a62fad5")
-		(property "Reference" "U12"
+		(property "Reference" "U14"
 			(at 60.96 30.0482 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3108,7 +4259,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
-					(reference "U12")
+					(reference "U14")
 					(unit 1)
 				)
 			)
@@ -3125,7 +4276,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e797dac8-a1b6-4bd1-9409-61ddc45b5986")
-		(property "Reference" "#PWR0104"
+		(property "Reference" "#PWR0116"
 			(at 81.28 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -3184,7 +4335,84 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
-					(reference "#PWR0104")
+					(reference "#PWR0116")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 130.81 43.18 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "eabe572f-bf90-4de6-a013-03cd9456cc11")
+		(property "Reference" "#PWR0148"
+			(at 130.81 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 130.81 39.116 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 130.81 43.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 130.81 43.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 130.81 43.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "e0dbdbc4-e422-40f8-a7f7-7e7f8c9922b9")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
+					(reference "#PWR0148")
 					(unit 1)
 				)
 			)
@@ -3201,7 +4429,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f7d17740-240e-4e6a-b3e3-6fc3bd442764")
-		(property "Reference" "#PWR0102"
+		(property "Reference" "#PWR0114"
 			(at 48.26 105.41 0)
 			(hide yes)
 			(show_name no)
@@ -3261,7 +4489,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
-					(reference "#PWR0102")
+					(reference "#PWR0114")
 					(unit 1)
 				)
 			)
@@ -3278,7 +4506,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f9c2f74a-79f0-45d9-9368-913c0dfdc41d")
-		(property "Reference" "#PWR0103"
+		(property "Reference" "#PWR0115"
 			(at 83.82 105.41 0)
 			(hide yes)
 			(show_name no)
@@ -3337,7 +4565,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1ef77d13-3c60-4080-9817-a45398794587"
-					(reference "#PWR0103")
+					(reference "#PWR0115")
 					(unit 1)
 				)
 			)

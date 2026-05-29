@@ -106,6 +106,18 @@
 		)
 	)
 	(rectangle
+		(start 124.46 119.3546)
+		(end 161.29 119.38)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "0333aa92-37bb-4d16-b490-305dd9f2fecd")
+	)
+	(rectangle
 		(start 100.33 39.624)
 		(end 262.89 153.924)
 		(stroke
@@ -180,7 +192,7 @@
 		(uuid "315a7e8f-26dd-483b-a303-2e558ddf7602")
 	)
 	(rectangle
-		(start 176.53 61.214)
+		(start 177.8 61.214)
 		(end 191.77 66.294)
 		(stroke
 			(width 0)
@@ -330,6 +342,19 @@
 		(uuid "7d73d9da-6ee8-4569-94ed-5abd389edba6")
 	)
 	(rectangle
+		(start 109.22 116.84)
+		(end 124.46 121.92)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "837a28f9-9f35-4bcf-accc-a942d2db31a8")
+	)
+	(rectangle
 		(start 214.6046 86.614)
 		(end 214.63 91.694)
 		(stroke
@@ -442,6 +467,18 @@
 		(uuid "ac220bf7-e226-44d5-920d-c6eca29b4c5b")
 	)
 	(rectangle
+		(start 161.29 115.57)
+		(end 161.3154 119.38)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "c5aafa37-332e-4151-ad0e-104b81fc0902")
+	)
+	(rectangle
 		(start 109.2236 89.0839)
 		(end 124.4636 94.1639)
 		(stroke
@@ -455,6 +492,19 @@
 		(uuid "c8651cc5-254c-4aaa-b8c9-7c2e8c630a50")
 	)
 	(rectangle
+		(start 165.2365 61.1529)
+		(end 175.3965 66.2329)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type color)
+			(color 255 255 194 1)
+		)
+		(uuid "ccc75dcd-5911-4372-b781-e779d892820c")
+	)
+	(rectangle
 		(start 109.22 80.01)
 		(end 124.46 85.09)
 		(stroke
@@ -466,6 +516,18 @@
 			(color 255 255 194 1)
 		)
 		(uuid "d575fa98-5539-46e7-aa4c-c7b6b0a97397")
+	)
+	(rectangle
+		(start 170.1331 66.2858)
+		(end 170.1585 70.0958)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid "dc1a9e99-912c-4d6c-8a1e-4e785542e22e")
 	)
 	(rectangle
 		(start 191.77 104.394)
@@ -560,7 +622,7 @@
 		)
 		(uuid "12fa5694-2ba1-4a1f-9fac-9df043e96e5b")
 	)
-	(text "Button"
+	(text "Buttons"
 		(exclude_from_sim no)
 		(at 113.792 92.71 0)
 		(effects
@@ -581,6 +643,17 @@
 			(justify left bottom)
 		)
 		(uuid "271409d0-310f-4e2e-8dbe-09480682927f")
+	)
+	(text "SD"
+		(exclude_from_sim no)
+		(at 169.164 64.77 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2a027623-a8d0-451c-ba21-e66ff645f7ed")
 	)
 	(text "Parallel"
 		(exclude_from_sim no)
@@ -669,6 +742,17 @@
 			(justify left bottom)
 		)
 		(uuid "6dda14cc-7ccd-407c-b802-bf07764f8cfd")
+	)
+	(text "QSPI"
+		(exclude_from_sim no)
+		(at 132.08 119.38 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "762176fa-cfea-4b16-97b0-cc182fd8a29b")
 	)
 	(text "JTAG"
 		(exclude_from_sim no)
@@ -780,6 +864,17 @@
 		)
 		(uuid "c8247ada-e038-4074-b323-4ae534fe6e9c")
 	)
+	(text "PSRAM"
+		(exclude_from_sim no)
+		(at 114.046 120.396 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cd8aea51-5a0c-4b12-b263-676ef1fd01b2")
+	)
 	(text "FUNCTIONAL DIAGRAM"
 		(exclude_from_sim no)
 		(at 100.076 38.354 0)
@@ -827,7 +922,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "00000000-0000-0000-0000-00005e51c621")
-		(property "Reference" "LOGO2"
+		(property "Reference" "LOGO1"
 			(at 163.83 165.1 0)
 			(hide yes)
 			(show_name no)
@@ -895,7 +990,7 @@
 		(instances
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b"
-					(reference "LOGO2")
+					(reference "LOGO1")
 					(unit 1)
 				)
 			)
