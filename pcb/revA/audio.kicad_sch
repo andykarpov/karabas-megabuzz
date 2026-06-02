@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "Karabas-MegaBuzz")
-		(date "2026-04-18")
+		(date "2026-06-03")
 		(rev "A")
 		(company "Andy Karpov")
 	)
@@ -6246,7 +6246,7 @@
 			)
 		)
 	)
-	(global_label "~{RST}"
+	(global_label "~{MIDI_RST}"
 		(shape input)
 		(at 35.56 38.1 180)
 		(fields_autoplaced yes)
@@ -6258,7 +6258,7 @@
 		)
 		(uuid "7fb4e20e-f288-4039-a672-c115d9be8c7b")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 30.4688 38.1 0)
+			(at 26.648 38.1 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
