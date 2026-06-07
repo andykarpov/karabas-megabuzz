@@ -3,9 +3,9 @@
 Simple FPGA based sound card for ZX Spectrum (NemoBus). 
 Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
-[![photo](docs/karabas-megabuzz_top.png)](docs/karabas-megabuzz_top.png?raw=true)
+[![photo](docs/karabas-megabuzz_revA_top.png)](docs/karabas-megabuzz_revA_top.png?raw=true)
 
-[![photo](docs/karabas-megabuzz_bottom.png)](docs/karabas-megabuzz_bottom.png?raw=true)
+[![photo](docs/karabas-megabuzz_revA_bottom.png)](docs/karabas-megabuzz_revA_bottom.png?raw=true)
 
 ### Tech specs
 
@@ -24,7 +24,7 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
 * Rev.A - initial release [ERRATA](ERRATA.md)
 
-* Rev.A1 - dev version, untested yet
+* Rev.A1 - dev version, untested yet, do not order it
 - Added SD card
 - Changed OPL3 chip power to 3v3 rail, reset controlled by FPGA
 - Added NMI button
@@ -32,6 +32,11 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 - Added PSRAM chip
 - Added new signals to grab and emit on nemobus (NMI, ROMCS)
 - Added ability to pass sound via nemobus
+
+* Rev.B - dev version, untested yet, do not order it
+- Replaced SRAM with SDRAM
+- Replaced level shifter with resistor networks
+- Removed some extra resistors from the schematics
 
 ### Related projects
 
