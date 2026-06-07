@@ -5828,10 +5828,6 @@
 		(uuid "c4b19e4f-ee33-41d6-8a92-37e1d88021c5")
 	)
 	(no_connect
-		(at 36.83 74.93)
-		(uuid "d0f28b8d-e114-440b-9016-b650dd30d104")
-	)
-	(no_connect
 		(at 138.43 118.11)
 		(uuid "edd91dbd-e005-413c-8611-7bdc17e68d0c")
 	)
@@ -7381,6 +7377,16 @@
 	)
 	(wire
 		(pts
+			(xy 33.02 74.93) (xy 36.83 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d6729271-e42e-4bb2-a414-1097a5434835")
+	)
+	(wire
+		(pts
 			(xy 210.82 66.04) (xy 210.82 68.58)
 		)
 		(stroke
@@ -8798,6 +8804,30 @@
 		(uuid "ca9b70f4-ab2f-40c3-aa9c-97fc33ca05ec")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 27.0325 57.15 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "LED1"
+		(shape output)
+		(at 33.02 74.93 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.9906 0.9906)
+			)
+			(justify right)
+		)
+		(uuid "d40db3d7-6271-42c1-b0c8-6778d38a3d6b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 26.9853 74.93 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11223,7 +11253,7 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)

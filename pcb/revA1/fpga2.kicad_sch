@@ -13957,10 +13957,10 @@
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "f76558fe-eb65-4d8c-b551-2c2c723d61ae")
 		(property "Reference" "J1"
 			(at 259.08 74.93 0)
