@@ -179,7 +179,7 @@
 				)
 			)
 		)
-		(property "Value" "L0"
+		(property "Value" "BLUE"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "1ac98104-2fe0-4bff-a1e8-5c7493ca4c4e")
@@ -480,7 +480,7 @@
 				)
 			)
 		)
-		(property "Value" "R3"
+		(property "Value" "GREEN"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "a805068a-8ef9-48c5-bda6-060b04788c88")
@@ -1053,7 +1053,7 @@
 				)
 			)
 		)
-		(property "Value" "L5"
+		(property "Value" "YELLOW"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "fcec5751-66e5-4213-921a-ffbe38aa4353")
@@ -2442,7 +2442,7 @@
 				)
 			)
 		)
-		(property "Value" "R0"
+		(property "Value" "BLUE"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "57c42168-8350-471a-ba0b-0bfa1ddcda74")
@@ -4688,7 +4688,7 @@
 				(pins "1" "2" "3" "4")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -1.38 -1.38)
@@ -4897,7 +4897,7 @@
 				)
 			)
 		)
-		(property "Value" "L4"
+		(property "Value" "GREEN"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "9909fc35-8454-4a8b-8428-9cac139bb948")
@@ -5119,7 +5119,7 @@
 				)
 			)
 		)
-		(property "Value" "R5"
+		(property "Value" "YELLOW"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "55166bd0-d67d-4c8e-b66e-531c3fb97dca")
@@ -6027,7 +6027,7 @@
 				)
 			)
 		)
-		(property "Value" "L1"
+		(property "Value" "GREEN"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "5877e8ab-242f-4162-ac5c-b2acfb6f9368")
@@ -8906,7 +8906,7 @@
 				)
 			)
 		)
-		(property "Value" "L6"
+		(property "Value" "YELLOW"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "b4381604-27a7-4ebf-9df6-b77349fa0e09")
@@ -13750,7 +13750,7 @@
 				)
 			)
 		)
-		(property "Value" "L3"
+		(property "Value" "GREEN"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "5998cdfa-64bf-44ba-b68e-0a7158eb696f")
@@ -14209,7 +14209,7 @@
 				)
 			)
 		)
-		(property "Value" "R4"
+		(property "Value" "GREEN"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "f2122776-c755-4271-b9e8-1953c0e129a5")
@@ -15055,7 +15055,7 @@
 				)
 			)
 		)
-		(property "Value" "L7"
+		(property "Value" "RED"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "f85046c4-5b30-4362-b521-da406912476d")
@@ -15333,7 +15333,7 @@
 				(pins "1" "3" "5" "7" "9" "2" "4" "6" "8" "10")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start 3.92 -1.38)
@@ -16093,7 +16093,7 @@
 				)
 			)
 		)
-		(property "Value" "R2"
+		(property "Value" "GREEN"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "25039e20-2b58-4611-8555-23a30c6e2778")
@@ -17380,7 +17380,7 @@
 				)
 			)
 		)
-		(property "Value" "R6"
+		(property "Value" "YELLOW"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "584da38c-d386-4dd6-9090-fc46acbd02c3")
@@ -17602,7 +17602,7 @@
 				)
 			)
 		)
-		(property "Value" "PRG"
+		(property "Value" "5V_PRG"
 			(at 0.01 4.865 180)
 			(layer "F.SilkS" knockout)
 			(uuid "f89c719d-ed90-41ae-b2e9-8663d4c99522")
@@ -17658,7 +17658,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole exclude_from_bom)
+		(attr through_hole exclude_from_bom dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -1.38 -1.38)
@@ -17845,7 +17845,7 @@
 				)
 			)
 		)
-		(property "Value" "RESET"
+		(property "Value" "Reset"
 			(at -3.7 -2.25 180)
 			(layer "F.SilkS" knockout)
 			(uuid "aaf147d6-f3ad-4337-a171-dfd1961a6a4b")
@@ -18174,7 +18174,7 @@
 				)
 			)
 		)
-		(property "Value" "R1"
+		(property "Value" "GREEN"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "4fedd3fa-8b19-4f78-a1df-3e90dbdf8830")
@@ -18396,7 +18396,7 @@
 				)
 			)
 		)
-		(property "Value" "R7"
+		(property "Value" "RED"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "700dafc5-01e0-41dd-b2a2-5237b0966159")
@@ -18618,7 +18618,7 @@
 				)
 			)
 		)
-		(property "Value" "L2"
+		(property "Value" "GREEN"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(uuid "004526fb-bde3-4deb-a179-4674195cd14c")
@@ -20575,6 +20575,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -21029,7 +21030,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr smd)
+		(attr smd exclude_from_bom dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.254724 0.5225)
@@ -21729,6 +21730,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22503,6 +22505,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -22947,6 +22950,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -24546,6 +24550,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -24660,6 +24665,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -24774,6 +24780,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -26043,6 +26050,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -26167,7 +26175,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr smd)
+		(attr smd exclude_from_bom dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.254724 -0.5225)
@@ -28633,7 +28641,7 @@
 			)
 		)
 		(zone_connect 1)
-		(attr allow_soldermask_bridges)
+		(attr exclude_from_bom allow_soldermask_bridges)
 		(net_tie_pad_groups "1, 2")
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_poly
@@ -29255,6 +29263,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -30029,6 +30038,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -30308,6 +30318,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -33334,6 +33345,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -33943,6 +33955,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -34882,6 +34895,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -35491,6 +35505,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -35984,6 +35999,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -36098,6 +36114,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -36377,6 +36394,7 @@
 				(pins "1")
 			)
 		)
+		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)

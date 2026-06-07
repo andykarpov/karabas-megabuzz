@@ -1487,7 +1487,7 @@
 				)
 			)
 		)
-		(property "Value" "L1"
+		(property "Value" "GREEN"
 			(at 52.07 42.926 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1737,7 +1737,7 @@
 				)
 			)
 		)
-		(property "Value" "R6"
+		(property "Value" "YELLOW"
 			(at 88.9 81.026 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2065,7 +2065,7 @@
 				)
 			)
 		)
-		(property "Value" "L0"
+		(property "Value" "BLUE"
 			(at 52.07 35.306 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2155,7 +2155,7 @@
 				)
 			)
 		)
-		(property "Value" "L6"
+		(property "Value" "YELLOW"
 			(at 52.07 81.026 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2322,7 +2322,7 @@
 				)
 			)
 		)
-		(property "Value" "L4"
+		(property "Value" "GREEN"
 			(at 52.07 65.786 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2413,7 +2413,7 @@
 				)
 			)
 		)
-		(property "Value" "R3"
+		(property "Value" "GREEN"
 			(at 88.9 58.166 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2503,7 +2503,7 @@
 				)
 			)
 		)
-		(property "Value" "L2"
+		(property "Value" "GREEN"
 			(at 52.07 50.546 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2594,7 +2594,7 @@
 				)
 			)
 		)
-		(property "Value" "R2"
+		(property "Value" "GREEN"
 			(at 88.9 50.546 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3000,7 +3000,7 @@
 				)
 			)
 		)
-		(property "Value" "L7"
+		(property "Value" "RED"
 			(at 52.07 88.646 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3250,7 +3250,7 @@
 				)
 			)
 		)
-		(property "Value" "R5"
+		(property "Value" "YELLOW"
 			(at 88.9 73.406 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3420,7 +3420,7 @@
 				)
 			)
 		)
-		(property "Value" "R4"
+		(property "Value" "GREEN"
 			(at 88.9 65.786 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3511,7 +3511,7 @@
 				)
 			)
 		)
-		(property "Value" "R7"
+		(property "Value" "RED"
 			(at 88.9 88.646 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3682,7 +3682,7 @@
 				)
 			)
 		)
-		(property "Value" "R1"
+		(property "Value" "GREEN"
 			(at 88.9 42.926 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3773,7 +3773,7 @@
 				)
 			)
 		)
-		(property "Value" "R0"
+		(property "Value" "BLUE"
 			(at 88.9 35.306 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3942,7 +3942,7 @@
 				)
 			)
 		)
-		(property "Value" "L5"
+		(property "Value" "YELLOW"
 			(at 52.07 73.406 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4032,7 +4032,7 @@
 				)
 			)
 		)
-		(property "Value" "L3"
+		(property "Value" "GREEN"
 			(at 52.07 58.166 0)
 			(show_name no)
 			(do_not_autoplace no)
