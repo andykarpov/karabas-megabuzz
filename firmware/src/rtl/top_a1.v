@@ -91,6 +91,8 @@ module karabas_megabuzz_a1(
     output wire [7:0]   led_meter_l,
     output wire [7:0]   led_meter_r,
 	 
+	 output wire         led1,
+	 
 	inout wire  [4:1]   tp
 );
 
@@ -108,6 +110,7 @@ assign bus_romcs_n  = 1'bz;
 assign sd_cs_n      = 1'b1;
 assign sd_di        = 1'b1;
 assign sd_clk       = 1'b1;
+assign led1         = 1'b1; // off
 
 // config bits expanded to named signals
 wire soundrive_en   = cfg_n[0];

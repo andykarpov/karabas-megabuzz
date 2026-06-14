@@ -81,7 +81,7 @@ end
 
 // assign clock
 //assign opl3_clk = ce;
-ODDR2 oddr_opl3(.Q(opl3_clk), .C0(ce), .C1(~ce), .CE(~reset), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
+ODDR2 oddr_opl3(.Q(opl3_clk), .C0(ce), .C1(~ce), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
 
 // resample + interpolation
 audio_resample opl3_resample_l(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_l), .data_out(out_l));

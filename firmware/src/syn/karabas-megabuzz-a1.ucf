@@ -153,6 +153,9 @@ NET "led_meter_r<5>"      LOC="M2"   | IOSTANDARD = LVCMOS33 | DRIVE = 8;
 NET "led_meter_r<6>"      LOC="M3"   | IOSTANDARD = LVCMOS33 | DRIVE = 8;
 NET "led_meter_r<7>"      LOC="M4"   | IOSTANDARD = LVCMOS33 | DRIVE = 8;
 
+# MMC LED
+NET "led1"                LOC="D6"   | IOSTANDARD = LVCMOS33 | DRIVE = 8;
+
 # TEST Points
 NET "tp<1>"               LOC="M12"  | IOSTANDARD = LVCMOS33 | PULLUP;
 NET "tp<2>"               LOC="A12"  | IOSTANDARD = LVCMOS33 | PULLUP;

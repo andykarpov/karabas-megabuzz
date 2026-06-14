@@ -7,7 +7,7 @@ module resetter (
 
 // reset
 reg reset = 0;
-reg [8:0] cnt_reset = 0; // initial reset counter
+reg [10:0] cnt_reset = 0; // initial reset counter
 always @(posedge clk, posedge areset) begin
 	 if (areset) begin
 		reset <= 1;
@@ -17,7 +17,7 @@ always @(posedge clk, posedge areset) begin
 		 if (reset_in) begin
 			reset <= 1;
 			cnt_reset <= 0;
-		 end else if (cnt_reset != 9'h1FF) begin
+		 end else if (cnt_reset != 11'h7FF) begin
 			reset <= 1;
 			cnt_reset <= cnt_reset + 1;
 		 end
