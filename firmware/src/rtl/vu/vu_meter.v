@@ -119,8 +119,8 @@ localparam MODE_BAR = 1;
 localparam MODE_DOT = 2;
 parameter MODE = MODE_BAR;
 
-localparam DIR_NORMAL = 1;
-localparam DIR_REVERSE = 0;
+localparam DIR_NORMAL = 0;
+localparam DIR_REVERSE = 1;
 
 always @(posedge clk) begin
 	if (dir == DIR_NORMAL)
