@@ -1,0 +1,228 @@
+module zc_divmmc(
+    input wire clk,
+    input wire reset,
+    input wire divmmc_en,
+
+    input wire ioreq,
+    input wire iowr,
+	 input wire iord,
+	 input wire rom_m1_access,
+
+    input wire [15:0] bus_a,
+    input wire [7:0] bus_d,
+    input wire bus_iorq_n,
+    input wire bus_mreq_n,
+    input wire bus_m1_n,
+    input wire bus_wr_n,
+    input wire bus_rd_n,
+	 input wire bus_nmi_n,
+    input wire btn_nmi_n,
+
+    // multiplexed memory with GS
+    output wire [18:0] ram_a, // 512kb
+    input wire [7:0] ram_di,
+    output wire [7:0] ram_do,
+    output wire ram_rd_n,
+    output wire ram_wr_n,
+
+    output wire sd_clk,
+    input wire sd_do,
+    output wire sd_di,
+    output wire sd_cs_n,
+
+    output reg [7:0] dout,
+    output wire nmi_n,
+    output wire busy
+);
+
+// SPI Z-Controller + DivMMC
+wire zc_spi_start = (((bus_a[7:0] == 8'h57) | (divmmc_en & (bus_a[7:0] == 8'hEB))) & ioreq) ? 1 : 0;
+wire zc_wr_en = (zc_spi_start & iowr) ? 1 : 0;
+wire zc_rd_en = (zc_spi_start & iord) ? 1 : 0;
+wire port77_wr = (((bus_a[7:0] == 8'h77) | (divmmc_en & (bus_a[7:0] == 8'hE7))) & iowr) ? 1 : 0;
+
+reg zc_cs_n;
+always @(posedge clk or posedge reset) begin
+    if (reset) 
+        zc_cs_n <= 1;
+    else if (port77_wr) begin
+        if (bus_a[7:0] == 8'hE7)
+            zc_cs_n <= bus_d[0]; // divmmc uses bit0
+        else
+            zc_cs_n <= bus_d[1]; // zc uses bit1
+    end
+end
+
+wire zc_sclk, zc_mosi;
+wire [7:0] zc_do_bus;
+zc_spi zc_spi(
+    .clk_sys(clk),
+    .ena(1),
+    .tx(zc_wr_en),
+    .rx(zc_rd_en),
+    .din(bus_d),
+    .dout(zc_do_bus),
+    .spi_clk(zc_sclk),
+    .spi_di(sd_do),
+    .spi_do(zc_mosi),
+    .spi_wait(busy)
+);
+
+assign sd_cs_n	= zc_cs_n;
+assign sd_clk 	= (~zc_cs_n) ? zc_sclk : 1;
+assign sd_di 	= (~zc_cs_n) ? zc_mosi : 1;
+
+// ------------------------ divmmc-----------------------------
+// Engineer:   Mario Prato
+// 11.07.2013:OCH: adapted by me
+// i take this implementation to correctly and easy make nmi 
+
+reg mapterm, map3DXX, map1F00;
+always @(*)
+begin
+    if (reset | ~divmmc_en) begin 
+        mapterm <= 0;
+        map3DXX <= 0;
+        map1F00 <= 1;
+    end
+    else begin
+         if ((bus_a == 16'h0000) | 
+             (bus_a == 16'h0008) | 
+             (bus_a == 16'h0038) | 
+             (bus_a == 16'h0066) | 
+             (bus_a == 16'h04c6) | 
+             (bus_a == 16'h0562)) 
+            mapterm <= 1;
+        else 
+            mapterm <= 0;
+
+        // mappa 3D00 - 3DFF
+        if (bus_a[15:0] == 8'b00111101) 
+            map3DXX <= 1; 
+        else 
+            map3DXX <= 0;
+
+        // 1ff8 - 1fff
+        if (bus_a[15:3] == 13'b0001111111111) 
+            map1F00 <= 0;
+        else 
+            map1F00 <= 1;
+    end
+end
+
+reg mapcond, automap;
+always @(posedge reset or negedge bus_mreq_n) begin
+    if (reset | ~divmmc_en) begin
+        mapcond <= 0;
+        automap <= 0;
+    end 
+    else begin
+        if (~bus_m1_n) begin
+            mapcond <= (mapterm | map3DXX | (mapcond & map1F00)) & divmmc_en;
+            automap <= (mapcond | map3DXX) & divmmc_en;
+        end
+    end
+end
+
+reg [7:0] port_e3_reg;
+always @(posedge reset or posedge clk) begin
+    if (reset) begin
+        port_e3_reg[5:0] <= 6'b00000000;
+		port_e3_reg[7] <= 0;
+    end else if (iowr & (bus_a[7:0] == 8'hE3) & divmmc_en)	
+		port_e3_reg <= {bus_d[7], port_e3_reg[6] | bus_d[6], bus_d[5:0]};
+end
+
+// nmi signal
+assign nmi_n = ((~bus_nmi_n | ~btn_nmi_n) & divmmc_en) ? mapcond : 
+               ((~bus_nmi_n | ~btn_nmi_n) & ~divmmc_en & ~bus_m1_n & ~bus_mreq_n & (bus_a[15:14] != 2'b00)) ? 1'b0 : 1'bz;
+
+// divmmc ram / rom
+
+wire is_rom_divmmc = (divmmc_en & ~bus_mreq_n & (automap | port_e3_reg[7]) & (bus_a[15:13] == 3'b000)) ? 1 : 0;
+wire is_ram_divmmc = (divmmc_en & ~bus_mreq_n & (automap | port_e3_reg[7]) & (bus_a[15:13] == 3'b001)) ? 1 : 0;
+wire is_rom = (~bus_mreq_n & (bus_a[15:14] == 2'b00)) ? 1 : 0;
+wire is_ram = (~bus_mreq_n & ~is_rom) ? 1 : 0;
+
+// ram_a = REG_E3(5 downto 0) & A(12 downto 0) when is_ramDIVMMC = '1'
+// ram_rd = bus_rd
+// ram_wr = bus_wr + is_ramDIVMMC = '1'
+
+// rom_a = A(13 downto 0)
+// rom_oe_block = is_rom + (is_romDivmmc | is_ramDivmmc) ?
+
+// todo: esxdos rom
+// todo: romcs!
+
+always @(*) begin
+		casex ({divmmc_en, bus_a[7:0]})
+			{1'bx, 8'h77}: dout <= 8'b11111100;
+			{1'bx, 8'h57}: dout <= zc_do_bus;
+			{1'b1, 8'hEB}: dout <= zc_do_bus;
+		endcase
+end
+
+endmodule
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module zc_spi
+(
+    input wire        clk_sys,
+    input wire        ena,
+
+    input wire        tx,        // Byte ready to be transmitted
+    input wire        rx,        // request to read one byte
+    input wire  [7:0] din,
+    output wire [7:0] dout,
+
+    output wire       spi_clk,
+    input wire        spi_di,
+    output wire       spi_do,
+    output reg        spi_wait
+);
+
+assign    spi_clk = counter[0];
+assign    spi_do  = io_byte[7]; // data is shifted up during transfer
+assign    dout    = data;
+
+reg [4:0] counter = 5'b10000;  // tx/rx counter is idle
+reg [7:0] io_byte, data;
+reg tx_stb, rx_stb;
+reg prev_tx, prev_rx;
+reg spi_clk_stb, prev_spi_clk;
+
+// tx/rx/spi_clk strobes
+always @(posedge clk_sys) begin
+    tx_stb <= 1'b0;
+    rx_stb <= 1'b0;
+    spi_clk_stb <= 1'b0;
+    if (~prev_tx && tx) tx_stb <= 1'b1;
+    if (~prev_rx && rx) rx_stb <= 1'b1;
+    if (~prev_spi_clk && spi_clk) spi_clk_stb <= 1'b1;
+    prev_tx <= tx;
+    prev_rx <= rx;    
+    prev_spi_clk <= spi_clk;
+end
+
+// shift register
+always @(negedge clk_sys) begin
+     if(counter[4]) begin
+        spi_wait <= 1'b0;
+          if(rx_stb | tx_stb) begin
+                counter <= 0;
+                data <= io_byte;
+                io_byte <= tx_stb ? din : 8'hff;
+          end
+     end 
+     else begin
+        if (counter >= 4) spi_wait <= 1'b1; // wait cycle with a small delay
+        if (ena) begin
+            if(spi_clk) io_byte <= { io_byte[6:0], spi_di };
+            counter <= counter + 2'd1;
+        end 
+     end
+end
+
+endmodule
+

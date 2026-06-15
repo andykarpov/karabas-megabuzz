@@ -104,17 +104,15 @@ assign flash_hold_n = 1'b1;
 assign flash_wp_n   = 1'b1;
 assign psram_cs_n   = 1'b1;
 assign tp[4:1]      = 4'bz;
-assign bus_wait_n   = 1'bz;
+//assign bus_wait_n   = 1'bz;
 assign o_reset_n    = 1'bz;
 assign bus_romcs_n  = 1'bz;
-assign sd_cs_n      = 1'b1;
-assign sd_di        = 1'b1;
-assign sd_clk       = 1'b1;
 assign led1         = 1'b1; // off
 
 // config bits expanded to named signals
-wire soundrive_en   = cfg_n[0];
-wire beeper_en      = cfg_n[0];
+wire divmmc_en      = cfg_n[0];
+wire soundrive_en   = cfg_n[1];
+wire beeper_en      = cfg_n[1];
 wire saa_en         = cfg_n[1];
 wire gs_en          = cfg_n[2];
 wire turbosound_en  = cfg_n[3];
@@ -419,6 +417,46 @@ audio_mixer audio_mixer_inst(
     .audio_r        (audio_mix_r)    
 );
 
+// divmmc + zc
+wire [7:0] zc_do_bus;
+wire zc_busy;
+zc_divmmc zc_divmmc(
+	.clk				  (clk_bus),
+	.reset 			  (reset),
+	.divmmc_en 		  (1'b0), // todo
+
+   .ioreq			  (ioreq),
+	.iowr			     (ioreq_wr),
+	.iord            (ioreq_rd),
+	.rom_m1_access   (rom_m1_access),
+
+	.bus_a 			  (bus_a),
+	.bus_d 			  (bus_d),
+	.bus_iorq_n		  (bus_iorq_n),
+	.bus_mreq_n  	  (bus_mreq_n),
+	.bus_m1_n		  (bus_m1_n),
+	.bus_wr_n		  (bus_wr_n),
+	.bus_rd_n		  (bus_rd_n),
+	.bus_nmi_n 		  (bus_nmi_n),
+	.btn_nmi_n		  (btn_nmi_n),
+
+	// todo
+	.ram_a			  (),
+	.ram_di			  (8'b0),
+	.ram_do			  (),
+	.ram_rd_n		  (),
+	.ram_wr_n		  (),
+	
+	.sd_clk			  (sd_clk),
+	.sd_do			  (sd_do),
+	.sd_di			  (sd_di),
+	.sd_cs_n			  (sd_cs_n),
+	
+	.dout				  (zc_do_bus),
+	.nmi_n			  (),
+	.busy  			  (zc_busy)	
+);
+
 // IORQGE
 
 // turbosound ports
@@ -434,14 +472,21 @@ wire port_bb = (bus_a[7:0] == 8'hBB) & gs_en;
 wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en & !rom_m1_access;
 // sd
 wire port_xf = soundrive_en & (bus_a[7] == 1'b0) & (bus_a[5] == 1'b0) & (bus_a[3:0] == 4'hF) & !rom_m1_access;
+// zc
+wire port_77 = (bus_a[7:0] == 8'h77);
+wire port_57 = (bus_a[7:0] == 8'h57);
 // iorqge
-assign bus_iorqge_n = (port_fffd_full | port_bffd | port_b3 | port_bb | port_opl3) ? 1'b0 : 1'b1;
+assign bus_iorqge_n = (port_fffd_full | port_bffd | port_b3 | port_bb | port_opl3 | port_77 | port_57) ? 1'b0 : 1'b1;
 
 // BUS
 assign bus_d = 
+	 (ioreq_rd & (port_57 | port_77)) ? zc_do_bus : // ZC + DivMMC
 	 (ioreq_rd & port_fffd) ? ts_do : // TS
     (ioreq_rd & (port_b3 | port_bb)) ? gs_do_bus : // GS	 
     8'bzzzzzzzz;
+	 
+// wait (from zc)
+assign bus_wait_n = (zc_busy) ? 1'b0 : 1'bz;
 
 // vu meter
 vu_meter vu_meter_l_inst(
