@@ -84,8 +84,8 @@ module karabas_megabuzz_a1(
 
     output wire         sd_cs_n,
     output wire         sd_clk,
-    output wire         sd_di,
-    input wire          sd_do,
+    inout wire          sd_di,
+    inout wire          sd_do,
     input wire          sd_det_n,    
 
     output wire [7:0]   led_meter_l,
@@ -297,8 +297,6 @@ gs_top gs_inst(
     .clk_bus        (clk_bus),
      .ce            (ce_14m),
     .reset          (reset),
-    .areset         (areset),
-	 .btn			  	  (~btn_reset_n),
 
     .a              (bus_a),
     .di             (bus_d),

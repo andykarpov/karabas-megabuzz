@@ -130,7 +130,7 @@ NET "psram_cs_n"          LOC="M13"  | IOSTANDARD = LVCMOS33;
 # SD CARD
 NET "sd_cs_n"             LOC="F14"  | IOSTANDARD = LVCMOS33 | PULLUP;
 NET "sd_di"               LOC="F13"  | IOSTANDARD = LVCMOS33;
-NET "sd_do"               LOC="B14"  | IOSTANDARD = LVCMOS33;
+NET "sd_do"               LOC="B14"  | IOSTANDARD = LVCMOS33 | PULLUP;
 NET "sd_clk"              LOC="B12"  | IOSTANDARD = LVCMOS33;
 NET "sd_det_n"            LOC="A11"  | IOSTANDARD = LVCMOS33 | PULLUP;
 
