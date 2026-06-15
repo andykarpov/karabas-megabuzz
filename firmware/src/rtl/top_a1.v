@@ -45,7 +45,7 @@ module karabas_megabuzz_a1(
     input wire          bus_m1_n,
     output wire         bus_wait_n,
     output wire         bus_iorqge_n,
-    input wire          bus_nmi_n,
+    inout wire          bus_nmi_n,
     output wire         bus_romcs_n,
     input wire          bus_f14,
 
@@ -438,20 +438,12 @@ zc_divmmc zc_divmmc(
 	.bus_nmi_n 		  (bus_nmi_n),
 	.btn_nmi_n		  (btn_nmi_n),
 
-	// todo
-	.ram_a			  (),
-	.ram_di			  (8'b0),
-	.ram_do			  (),
-	.ram_rd_n		  (),
-	.ram_wr_n		  (),
-	
 	.sd_clk			  (sd_clk),
 	.sd_do			  (sd_do),
 	.sd_di			  (sd_di),
 	.sd_cs_n			  (sd_cs_n),
 	
 	.dout				  (zc_do_bus),
-	.nmi_n			  (),
 	.busy  			  (zc_busy)	
 );
 

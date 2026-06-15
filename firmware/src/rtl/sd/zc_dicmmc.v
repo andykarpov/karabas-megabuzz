@@ -18,20 +18,12 @@ module zc_divmmc(
 	 input wire bus_nmi_n,
     input wire btn_nmi_n,
 
-    // multiplexed memory with GS
-    output wire [18:0] ram_a, // 512kb
-    input wire [7:0] ram_di,
-    output wire [7:0] ram_do,
-    output wire ram_rd_n,
-    output wire ram_wr_n,
-
     output wire sd_clk,
     input wire sd_do,
     output wire sd_di,
     output wire sd_cs_n,
 
     output reg [7:0] dout,
-    output wire nmi_n,
     output wire busy
 );
 
@@ -134,8 +126,8 @@ always @(posedge reset or posedge clk) begin
 end
 
 // nmi signal
-assign nmi_n = ((~bus_nmi_n | ~btn_nmi_n) & divmmc_en) ? mapcond : 
-               ((~bus_nmi_n | ~btn_nmi_n) & ~divmmc_en & ~bus_m1_n & ~bus_mreq_n & (bus_a[15:14] != 2'b00)) ? 1'b0 : 1'bz;
+assign bus_nmi_n = (~btn_nmi_n & divmmc_en & ~mapcond) ? 1'b0 : 
+                   (~btn_nmi_n & ~divmmc_en & ~bus_m1_n & ~bus_mreq_n & (bus_a[15:14] != 2'b00)) ? 1'b0 : 1'bz;
 
 // divmmc ram / rom
 
