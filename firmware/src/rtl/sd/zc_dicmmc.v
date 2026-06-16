@@ -1,6 +1,7 @@
 module zc_divmmc(
     input wire clk,
     input wire reset,
+	 input wire areset,
     input wire divmmc_en,
 
     input wire [15:0] bus_a,
@@ -75,7 +76,7 @@ assign sd_di 	= zc_mosi; //(~zc_cs_n) ? zc_mosi : 1;
 reg mapterm, map3DXX, map1F00;
 always @(*)
 begin
-    if (reset | ~divmmc_en) begin 
+    if (areset | ~divmmc_en) begin 
         mapterm <= 0;
         map3DXX <= 0;
         map1F00 <= 1;
@@ -106,8 +107,8 @@ begin
 end
 
 reg mapcond, automap;
-always @(posedge reset or negedge bus_mreq_n) begin
-    if (reset | ~divmmc_en) begin
+always @(posedge areset or negedge bus_mreq_n) begin
+    if (areset | ~divmmc_en) begin
         mapcond <= 0;
         automap <= 0;
     end 
@@ -122,8 +123,8 @@ end
 reg [7:0] port_e3_reg;
 wire conmem = port_e3_reg[7];
 wire divideio = (~bus_iorq_n & ~bus_wr_n & bus_m1_n & (bus_a[7:0] == 8'hE3) & divmmc_en) ? 0 : 1;
-always @(posedge reset or posedge divideio) begin
-    if (reset) begin // poweron : todo: areset ?
+always @(posedge areset or posedge divideio) begin
+    if (areset) begin // poweron
         port_e3_reg[5:0] <= 6'b00000000;
 		  port_e3_reg[7] <= 0;
     end else

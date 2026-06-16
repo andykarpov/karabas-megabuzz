@@ -420,6 +420,7 @@ wire zc_busy, divmmc_mem, divmmc_zxrom_block;
 zc_divmmc zc_divmmc(
 	.clk				  (clk_bus),
 	.reset 			  (reset_short),
+	.areset          (areset),
 	.divmmc_en 		  (divmmc_en),
 
 	.bus_a 			  (bus_a),
