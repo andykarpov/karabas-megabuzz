@@ -135,7 +135,8 @@ always @(negedge clk_bus)
 
 // reset
 wire reset;
-resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n), .reset_out(reset));
+wire reset_short;
+resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n), .reset_out(reset), .reset_short(reset_short));
 
 assign midi_reset_n = ~reset;
 
@@ -415,16 +416,11 @@ audio_mixer audio_mixer_inst(
 
 // divmmc + zc
 wire [7:0] zc_do_bus, divmmc_dout;
-wire zc_busy, divmmc_mem;
+wire zc_busy, divmmc_mem, divmmc_zxrom_block;
 zc_divmmc zc_divmmc(
 	.clk				  (clk_bus),
-	.reset 			  (reset),
+	.reset 			  (reset_short),
 	.divmmc_en 		  (divmmc_en),
-
-   .ioreq			  (ioreq),
-	.iowr			     (ioreq_wr),
-	.iord            (ioreq_rd),
-	.rom_m1_access   (rom_m1_access),
 
 	.bus_a 			  (bus_a),
 	.bus_d 			  (bus_d),
@@ -441,7 +437,7 @@ zc_divmmc zc_divmmc(
 	.sd_di			  (sd_di),
 	.sd_cs_n			  (sd_cs_n),
 	
-	.ram_a           (mem_a[18:0]),
+	.ram_a           (mem_a[16:0]),
 	.ram_d           (mem_d),
 	.ram_wr_n        (mem_wr_n),
 	.ram_rd_n        (mem_rd_n),
@@ -449,9 +445,10 @@ zc_divmmc zc_divmmc(
 	.dout				  (zc_do_bus),
 	.divmmc_mem      (divmmc_mem),
 	.divmmc_dout     (divmmc_dout),
+	.divmmc_zxrom_block(divmmc_zxrom_block),
 	.busy  			  (zc_busy)
 );
-assign mem_a[20:19] = 2'b00;
+assign mem_a[20:17] = 4'b0000;
 
 // IORQGE
 
@@ -472,14 +469,16 @@ wire port_xf = soundrive_en & (bus_a[7] == 1'b0) & (bus_a[5] == 1'b0) & (bus_a[3
 wire port_77 = (bus_a[7:0] == 8'h77);
 wire port_57 = (bus_a[7:0] == 8'h57);
 wire port_EB = (bus_a[7:0] == 8'hEB) & divmmc_en;
+wire port_E3 = (bus_a[7:0] == 8'hE3) & divmmc_en;
+wire port_E7 = (bus_a[7:0] == 8'hE7) & divmmc_en;
 
 // iorqge
-assign bus_iorqge_n = (port_fffd_full | port_bffd | port_b3 | port_bb | port_opl3 | port_77 | port_57 | port_EB) ? 1'b0 : 1'b1;
+assign bus_iorqge_n = (port_fffd_full | port_bffd | port_b3 | port_bb | port_opl3 | port_77 | port_57 | port_EB | port_E3 | port_E7) ? 1'b0 : 1'b1;
 
 // BUS
 assign bus_d = 
 	 (divmmc_en & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
-	 (ioreq_rd & (port_57 | port_77 | port_EB)) ? zc_do_bus : // ZC + DivMMC
+	 (~bus_iorq_n & ~bus_rd_n & bus_m1_n & (port_57 | port_77 | port_EB)) ? zc_do_bus : // ZC + DivMMC
 	 (ioreq_rd & port_fffd) ? ts_do : // TS
     (ioreq_rd & (port_b3 | port_bb)) ? gs_do_bus : // GS	 
     8'bzzzzzzzz;
@@ -488,7 +487,7 @@ assign bus_d =
 assign bus_wait_n = (zc_busy) ? 1'b0 : 1'bz;
 
 // block zx rom
-assign bus_romcs_n = (divmmc_en & divmmc_mem & ~bus_mreq_n & (~bus_rd_n | ~bus_wr_n)) ? 1'b0 : 1'b1;
+assign bus_romcs_n = divmmc_zxrom_block ? 1'b0 : 1'b1;
 
 // vu meter
 vu_meter vu_meter_l_inst(
