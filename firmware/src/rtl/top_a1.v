@@ -530,7 +530,7 @@ assign bus_d =
     8'bzzzzzzzz;
 	 
 // wait (from zc)
-assign bus_wait_n = (zc_busy) ? 1'b0 : 1'bz;
+assign bus_wait_n = 1'bz; //(zc_busy) ? 1'b0 : 1'bz;
 
 // block zx rom
 assign bus_romcs_n = divmmc_zxrom_block ? 1'b0 : 1'b1;
