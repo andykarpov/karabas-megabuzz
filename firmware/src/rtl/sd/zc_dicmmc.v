@@ -1,5 +1,6 @@
 module zc_divmmc(
     input wire clk,
+	 input wire clk_mem,
     input wire reset,
 	 input wire areset,
     input wire divmmc_en,
@@ -19,11 +20,6 @@ module zc_divmmc(
     inout wire sd_di,
     output wire sd_cs_n,
 	 
-	 output wire [16:0] ram_a, // 128k
-	 inout wire [7:0] ram_d,
-	 output wire ram_rd_n,
-	 output wire ram_wr_n,
-
     output wire [7:0] dout,
 	 output wire divmmc_mem,
 	 output wire [7:0] divmmc_dout,
@@ -142,22 +138,23 @@ wire is_ram_divmmc = (divmmc_en & ~bus_mreq_n & (automap | conmem) & (bus_a[15:1
 wire is_rom = (divmmc_en & ~bus_mreq_n & (bus_a[15:14] == 2'b00)) ? 1 : 0;
 
 wire [7:0] rom_do;
-dprom #(.ADDRWIDTH(13), .MEM_INIT_FILE("esxdos.mem")) esxdos_rom(.clock(clk), .address_a(bus_a[12:0]), .q_a(rom_do));
+sprom #(.ADDRWIDTH(13), .MEM_INIT_FILE("esxdos.mem")) esxdos_rom(.clock(clk_mem), .address(bus_a[12:0]), .q(rom_do));
 
-wire [7:0] zxrom_do;
-dprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk), .address_a(bus_a[13:0]), .q_a(zxrom_do));
+//wire [7:0] zxrom_do;
+//sprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk_mem), .address(bus_a[13:0]), .q(zxrom_do));
 
-assign ram_a = {port_e3_reg[3:0], bus_a[12:0]};
-assign ram_d = (is_ram_divmmc & ~bus_wr_n) ? bus_d : 8'bz;
-assign ram_wr_n = (is_ram_divmmc & ~bus_wr_n) ? 1'b0 : 1'b1;
-assign ram_rd_n = (is_ram_divmmc & ~bus_rd_n) ? 1'b0 : 1'b1;
+wire [7:0] ram_do;
+spram #(.ADDRWIDTH(15)) esxdos_ram(.clock(clk_mem), .address({port_e3_reg[1:0], bus_a[12:0]}), .data(bus_d), .wren(is_ram_divmmc & ~bus_wr_n), .q(ram_do));
 
-assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc | is_rom) ? 1 : 0;
-assign divmmc_dout = (is_ram_divmmc) ? ram_d : 
+//assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc | is_rom) ? 1 : 0;
+assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc) ? 1 : 0;
+assign divmmc_dout = (is_ram_divmmc) ? ram_do : 
 							(is_rom_divmmc) ? rom_do : 
-							zxrom_do;
+							divmmc_dout;
+							//zxrom_do;
 
-assign divmmc_zxrom_block = divmmc_en & (is_rom | automap | conmem);
+//assign divmmc_zxrom_block = divmmc_en & (is_rom | automap | conmem);
+assign divmmc_zxrom_block = divmmc_en & (automap | conmem);
 assign dout = (bus_a[7:0] == 8'h77) ? {~busy, 7'b1111100} : zc_do_bus;
 
 endmodule

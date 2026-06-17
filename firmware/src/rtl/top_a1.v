@@ -119,11 +119,12 @@ wire opl3_en        = cfg_n[4];
 wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
 
 // pll
-wire clk_bus, clk12, locked, areset;
+wire clk_bus, clk_112, clk12, locked, areset;
 pll pll_inst(
     .CLK_IN1         (clk),
-    .CLK_OUT1        (clk_bus), // 28
-    .CLK_OUT2        (clk12),   // 12
+	 .CLK_OUT1        (clk_112), // 112
+    .CLK_OUT2        (clk_bus), // 28
+    .CLK_OUT3        (clk12),   // 12
     .LOCKED          (locked)
 );
 assign areset = ~locked;
@@ -292,7 +293,7 @@ wire gs_oe;
 wire [7:0] gs_do_bus;
 wire [14:0] gs_out_l, gs_out_r;
 
-/*gs_top gs_inst(
+gs_top gs_inst(
     .clk_bus        (clk_bus),
      .ce            (ce_14m),
     .reset          (reset),
@@ -315,7 +316,7 @@ wire [14:0] gs_out_l, gs_out_r;
 
     .out_l          (gs_out_l),
     .out_r          (gs_out_r)    
-);*/
+);
 
 // opl3
 
@@ -419,6 +420,7 @@ wire [7:0] zc_do_bus, divmmc_dout;
 wire zc_busy, divmmc_mem, divmmc_zxrom_block;
 zc_divmmc zc_divmmc(
 	.clk				  (clk_bus),
+	.clk_mem         (clk_112),
 	.reset 			  (reset_short),
 	.areset          (areset),
 	.divmmc_en 		  (divmmc_en),
@@ -438,18 +440,12 @@ zc_divmmc zc_divmmc(
 	.sd_di			  (sd_di),
 	.sd_cs_n			  (sd_cs_n),
 	
-	.ram_a           (mem_a[16:0]),
-	.ram_d           (mem_d),
-	.ram_wr_n        (mem_wr_n),
-	.ram_rd_n        (mem_rd_n),
-	
 	.dout				  (zc_do_bus),
 	.divmmc_mem      (divmmc_mem),
 	.divmmc_dout     (divmmc_dout),
 	.divmmc_zxrom_block(divmmc_zxrom_block),
 	.busy  			  (zc_busy)
 );
-assign mem_a[20:17] = 4'b0000;
 
 // IORQGE
 
