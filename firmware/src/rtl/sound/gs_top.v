@@ -83,8 +83,8 @@ dprom #(.ADDRWIDTH(15), .MEM_INIT_FILE("gs105b.mem")) rom(
 	.q_a(rom_d)
 );
 
-wire is_rom = (gs_mem_addr < 32768);
-wire reserved = (divmmc_en & (gs_mem_addr >= 21'h1E0000)); // upper 128k for divmmc ram
+wire is_rom = (gs_mem_addr[20:15] == 6'b000000); // lower 32k for gs rom
+wire reserved = (divmmc_en & (gs_mem_addr[20:19] == 2'b11)); // upper 512k for divmmc ram
 assign gs_mem_din = (is_rom) ? rom_d : (reserved ? 8'hFF : sram_di);
 assign sram_do = (~gs_mem_wr_n) ? gs_mem_dout : 8'bz;
 assign sram_a = (reserved) ? 21'd0 : gs_mem_addr;

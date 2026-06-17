@@ -430,6 +430,7 @@ wire divmmc_ram_wr_n, divmmc_ram_rd_n, divmmc_ram_req, divmmc_ram_busy, divmmc_r
 
 zc_divmmc zc_divmmc(
 	.clk				  (clk_bus),
+	.clk_mem			  (clk_bus2),
 	.reset 			  (reset_short),
 	.areset          (areset),
 	.divmmc_en 		  (divmmc_en),
@@ -465,17 +466,18 @@ zc_divmmc zc_divmmc(
 	.busy  			  (zc_busy)
 );
 
-wire gs_ram_wait;
+wire gs_ram_wait, divmmc_ram_wait;
 sram_arbiter sram_arbiter(
 	.clk(clk_bus2), // 140
 	.rst_n(~areset),
 	
 	.req1(~divmmc_ram_rd_n | ~divmmc_ram_wr_n),
-	.addr1({4'b1111, divmmc_ram_a[16:0]}),
+	.addr1({2'b11, divmmc_ram_a[18:0]}),
 	.we1(~divmmc_ram_wr_n),
 	.din1(divmmc_ram_do),
 	.dout1(divmmc_ram_di),
 	.ack1(divmmc_ram_ack),
+	.wait1(divmmc_ram_wait),
 
 	.clk2(ce_14m),
 	.req2(~gs_ram_rd_n | ~gs_ram_wr_n),
@@ -525,8 +527,8 @@ assign bus_d =
     (ioreq_rd & (port_b3 | port_bb)) ? gs_do_bus : // GS	 
     8'bzzzzzzzz;
 	 
-// wait (from zc)
-assign bus_wait_n = (zc_busy) ? 1'b0 : 1'bz;
+// wait (from zc or sram arbiter)
+assign bus_wait_n = (zc_busy | divmmc_ram_wait) ? 1'b0 : 1'bz;
 
 // block zx rom
 assign bus_romcs_n = divmmc_zxrom_block ? 1'b0 : 1'b1;

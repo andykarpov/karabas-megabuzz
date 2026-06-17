@@ -8,6 +8,7 @@ module sram_arbiter (
     input  wire [7:0]  din1,       
     output reg  [7:0]  dout1,      
     output reg         ack1,
+	 output wire        wait1,
 
 	 input  wire        clk2, // для wait2
     input  wire        req2,       
@@ -50,22 +51,28 @@ module sram_arbiter (
     reg [1:0] state;
     reg [4:0] cycle_cnt; 
 
-    // Логика формирования сигнала WAIT для GS
-    wire wait2_int = req2 && (req1_pending || req1_edge || (state == STATE_DEV1));
-	 reg [9:0] wait2_reg; // удлиняем до 10 бит, чтобы поймать в медленном клок-домене
-	 always @(posedge clk) begin
-		if (wait2_int)
-			wait2_reg <= 10'b1111111111;
-		else
-			wait2_reg <= {wait2_reg[8:0], 1'b0};
-	 end
-	 
-	 // формирование wait2 в клок-домене clk2
+	 // Логика формирования сигнала WAIT для DivMMC
+	 // Когда GS еще занят памятью
+	 waiter waiter1(
+		.clk(clk),
+		.reset(~rst_n),
+		.i(req1 && (state == STATE_DEV2)),
+		.q(wait1)
+	 );
+
+    // Логика формирования сигнала WAIT для GS (в клоке clk2)
+	 // Когда DivMMC занят памятью
+	 wire wait2_int;
+	 waiter waiter2(
+		.clk(clk),
+		.reset(~rst_n),
+		.i(req2 && (req1_pending || req1_edge || (state == STATE_DEV1))),
+		.q(wait2_int)
+	 );
 	 always @(posedge clk2) begin
-		if (wait2_reg != 10'b0000000000)
-			wait2 <= 1'b1;
-		else
-			wait2 <= 1'b0;
+		wait2 <= 0;
+		if (wait2_int)
+			wait2 <= 1;
 	 end
 
     // SRAM
@@ -160,3 +167,30 @@ module sram_arbiter (
 
 endmodule
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module waiter(
+	input wire clk,
+	input wire reset,
+	input wire i,
+	output reg q
+);
+
+reg [7:0] cnt = 0;
+always @(posedge reset or posedge clk) begin
+	if (reset) begin
+		cnt <= 8'd82;
+		q <= 0;
+	end
+	else
+		if (i & (cnt >= 8'd82)) begin
+			cnt <= 0;
+			q <= 1;
+		end
+		else if (cnt >= 8'd82)
+			q <= 0;
+		else
+			cnt <= cnt + 1;
+end
+
+endmodule
