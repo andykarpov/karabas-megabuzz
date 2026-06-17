@@ -17,26 +17,22 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 * Soundrive, Covox + Beeper
 * 16-bit DAC PCM5102
 * XC6SLX16 / XC6SLX25 FPGA
+* SD Card by Z-Controller / DivMMC (since rev.A1)
 * Low profile PCB: 92x44mm
 * 5V only power required
 
-### Changelog & current status
+### Changelog & current status [ERRATA](ERRATA.md)
 
-* Rev.A - initial release [ERRATA](ERRATA.md)
+* Rev.A - initial release
 
-* Rev.A1 - dev version, untested yet, do not order it
+* Rev.A1 - current dev version
 - Added SD card
 - Changed OPL3 chip power to 3v3 rail, reset controlled by FPGA
 - Added NMI button
 - Added SD LED
 - Added PSRAM chip
 - Added new signals to grab and emit on nemobus (NMI, ROMCS)
-- Added ability to pass sound via nemobus
-
-* Rev.B - dev version, untested yet, do not order it
-- Replaced SRAM with SDRAM
-- Replaced level shifter with resistor networks
-- Removed some extra resistors from the schematics
+- Added ability to pass sound out via nemobus slot
 
 ### Related projects
 
