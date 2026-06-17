@@ -19,10 +19,13 @@ module zc_divmmc(
     inout wire sd_di,
     output wire sd_cs_n,
 	 
-	 output wire [16:0] ram_a, // 128k
-	 inout wire [7:0] ram_d,
+	 output wire [18:0] ram_a,
+	 input wire [7:0] ram_di,
+	 output wire [7:0] ram_do,
+	 output wire ram_req,
 	 output wire ram_rd_n,
 	 output wire ram_wr_n,
+	 output wire ram_busy,
 
     output wire [7:0] dout,
 	 output wire divmmc_mem,
@@ -147,13 +150,15 @@ dprom #(.ADDRWIDTH(13), .MEM_INIT_FILE("esxdos.mem")) esxdos_rom(.clock(clk), .a
 wire [7:0] zxrom_do;
 dprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk), .address_a(bus_a[13:0]), .q_a(zxrom_do));
 
-assign ram_a = {port_e3_reg[3:0], bus_a[12:0]};
-assign ram_d = (is_ram_divmmc & ~bus_wr_n) ? bus_d : 8'bz;
+assign ram_a = {port_e3_reg[5:0], bus_a[12:0]};
+assign ram_do = (is_ram_divmmc & ~bus_wr_n) ? bus_d : 8'bz;
 assign ram_wr_n = (is_ram_divmmc & ~bus_wr_n) ? 1'b0 : 1'b1;
 assign ram_rd_n = (is_ram_divmmc & ~bus_rd_n) ? 1'b0 : 1'b1;
+assign ram_busy = (automap | conmem) & divmmc_en;
+assign ram_req = is_ram_divmmc;
 
 assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc | is_rom) ? 1 : 0;
-assign divmmc_dout = (is_ram_divmmc) ? ram_d : 
+assign divmmc_dout = (is_ram_divmmc) ? ram_di : 
 							(is_rom_divmmc) ? rom_do : 
 							zxrom_do;
 

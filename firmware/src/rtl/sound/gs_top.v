@@ -24,10 +24,13 @@ module gs_top (
     output wire [7:0]     do_bus,
 
 	// interface to sram
-	inout  wire [7:0]    sram_d,
+	input  wire [7:0]    sram_di,
+	output wire [7:0]    sram_do,
 	output wire [20:0]   sram_a,
 	output wire          sram_wr_n,
 	output wire          sram_rd_n,
+	output wire          sram_req,
+	input wire           divmmc_en, // to preserve access to upper 128k for divmmc
 
     // sound output
 	output wire signed [14:0] out_l,
@@ -42,6 +45,7 @@ wire  [7:0] gs_mem_dout;
 wire  [7:0] gs_mem_din;
 wire        gs_mem_rd_n;
 wire        gs_mem_wr_n;
+wire        gs_mem_req;
 
 gs gs 
 (
@@ -64,6 +68,7 @@ gs gs
     .MA(gs_mem_addr),
     .MDI(gs_mem_din),
     .MDO(gs_mem_dout),
+	 .MREQ(gs_mem_req),
     .MRFSH_n(),
     .MWE_n(gs_mem_wr_n),
     .MRD_n(gs_mem_rd_n)
@@ -79,10 +84,12 @@ dprom #(.ADDRWIDTH(15), .MEM_INIT_FILE("gs105b.mem")) rom(
 );
 
 wire is_rom = (gs_mem_addr < 32768);
-assign gs_mem_din = (is_rom) ? rom_d : sram_d;
-assign sram_d = (~gs_mem_wr_n) ? gs_mem_dout : 8'bz;
-assign sram_a = gs_mem_addr;
-assign sram_wr_n = gs_mem_wr_n;
-assign sram_rd_n = gs_mem_rd_n;
+wire reserved = (divmmc_en & (gs_mem_addr >= 21'h1E0000)); // upper 128k for divmmc ram
+assign gs_mem_din = (is_rom) ? rom_d : (reserved ? 8'hFF : sram_di);
+assign sram_do = (~gs_mem_wr_n) ? gs_mem_dout : 8'bz;
+assign sram_a = (reserved) ? 21'd0 : gs_mem_addr;
+assign sram_wr_n = (reserved) ? 1'b1 : gs_mem_wr_n;
+assign sram_rd_n = (reserved) ? 1'b1 : gs_mem_rd_n;
+assign sram_req = gs_mem_req;
 
 endmodule

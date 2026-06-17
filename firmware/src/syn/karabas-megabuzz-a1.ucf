@@ -181,3 +181,5 @@ NET "opl3_dclk" TNM_NET = "opl3_dclk";
 TIMESPEC "TS_OPL3_DCLK" = PERIOD "opl3_dclk" 4000 kHz;
 
 NET "bus_mreq_n" CLOCK_DEDICATED_ROUTE = FALSE;
+NET "bus_rd_n" CLOCK_DEDICATED_ROUTE = FALSE;
+

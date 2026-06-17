@@ -20,6 +20,7 @@ module gs(
 	output wire				MRFSH_n,
 	output wire 			MWE_n,
 	output wire				MRD_n,
+	output wire          MREQ,
 	
 	output wire signed [14:0]	OUT_L,
 	output wire signed [14:0]	OUT_R
@@ -175,6 +176,7 @@ assign MDO = cpu_do_bus;
 assign MWE_n = cpu_wr_n || cpu_mreq_n || ~(mem[6] || mem[5] || mem[4] || mem[3] || mem[2] || mem[1]);
 assign MRD_n = cpu_rd_n || cpu_mreq_n;
 assign MRFSH_n = cpu_rfsh_n;
+assign MREQ = ~cpu_mreq_n;
 assign OE = (~IORQ_n && ~RD_n && A[7:4] == 4'b1011 && A[2:0] == 3'b011) ? 1'b1 : 1'b0;
 
 // sound mix

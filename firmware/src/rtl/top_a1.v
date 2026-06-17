@@ -119,11 +119,12 @@ wire opl3_en        = cfg_n[4];
 wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
 
 // pll
-wire clk_bus, clk12, locked, areset;
+wire clk_bus, clk_bus2, clk12, locked, areset;
 pll pll_inst(
     .CLK_IN1         (clk),
-    .CLK_OUT1        (clk_bus), // 28
-    .CLK_OUT2        (clk12),   // 12
+    .CLK_OUT1        (clk_bus2), // 140
+    .CLK_OUT2        (clk_bus),   // 28
+	 .CLK_OUT3        (clk12), // 12
     .LOCKED          (locked)
 );
 assign areset = ~locked;
@@ -291,10 +292,13 @@ turbosound turbosound_inst(
 wire gs_oe;
 wire [7:0] gs_do_bus;
 wire [14:0] gs_out_l, gs_out_r;
+wire [20:0] gs_ram_a;
+wire [7:0] gs_ram_di, gs_ram_do;
+wire gs_ram_rd_n, gs_ram_wr_n, gs_ram_req;
 
-/*gs_top gs_inst(
+gs_top gs_inst(
     .clk_bus        (clk_bus),
-     .ce            (ce_14m),
+     .ce            (ce_14m & ~gs_ram_wait),
     .reset          (reset),
 
     .a              (bus_a),
@@ -308,14 +312,17 @@ wire [14:0] gs_out_l, gs_out_r;
     .oe             (gs_oe),
     .do_bus         (gs_do_bus),
 
-    .sram_d         (mem_d),
-    .sram_a         (mem_a),
-    .sram_wr_n      (mem_wr_n),
-    .sram_rd_n      (mem_rd_n),
+    .sram_di        (gs_ram_di),
+	 .sram_do        (gs_ram_do),
+    .sram_a         (gs_ram_a),
+    .sram_wr_n      (gs_ram_wr_n),
+    .sram_rd_n      (gs_ram_rd_n),
+	 .sram_req       (gs_ram_req),
+	 .divmmc_en      (divmmc_en),
 
     .out_l          (gs_out_l),
     .out_r          (gs_out_r)    
-);*/
+);
 
 // opl3
 
@@ -417,6 +424,10 @@ audio_mixer audio_mixer_inst(
 // divmmc + zc
 wire [7:0] zc_do_bus, divmmc_dout;
 wire zc_busy, divmmc_mem, divmmc_zxrom_block;
+wire [18:0] divmmc_ram_a;
+wire [7:0] divmmc_ram_di, divmmc_ram_do;
+wire divmmc_ram_wr_n, divmmc_ram_rd_n, divmmc_ram_req, divmmc_ram_busy;
+
 zc_divmmc zc_divmmc(
 	.clk				  (clk_bus),
 	.reset 			  (reset_short),
@@ -438,10 +449,13 @@ zc_divmmc zc_divmmc(
 	.sd_di			  (sd_di),
 	.sd_cs_n			  (sd_cs_n),
 	
-	.ram_a           (mem_a[16:0]),
-	.ram_d           (mem_d),
-	.ram_wr_n        (mem_wr_n),
-	.ram_rd_n        (mem_rd_n),
+	.ram_a           (divmmc_ram_a),
+	.ram_di          (divmmc_ram_di),
+	.ram_do          (divmmc_ram_do),
+	.ram_wr_n        (divmmc_ram_wr_n),
+	.ram_rd_n        (divmmc_ram_rd_n),
+	.ram_req         (divmmc_ram_req),
+	.ram_busy        (divmmc_ram_busy),
 	
 	.dout				  (zc_do_bus),
 	.divmmc_mem      (divmmc_mem),
@@ -449,7 +463,82 @@ zc_divmmc zc_divmmc(
 	.divmmc_zxrom_block(divmmc_zxrom_block),
 	.busy  			  (zc_busy)
 );
-assign mem_a[20:17] = 4'b0000;
+
+wire gs_ram_wait;
+sram_arbiter sram_arbiter(
+	.clk(clk_bus2), // 140
+	.rst_n(~areset),
+	
+	.req1(~divmmc_ram_rd_n | ~divmmc_ram_wr_n),
+	.addr1({4'b1111, divmmc_ram_a[16:0]}),
+	.we1(~divmmc_ram_wr_n),
+	.din1(divmmc_ram_do),
+	.dout1(divmmc_ram_di),
+	.ack1(),
+
+	.clk2(ce_14m),
+	.req2(~gs_ram_rd_n | ~gs_ram_wr_n),
+	.addr2(gs_ram_a[20:0]),
+	.we2(~gs_ram_wr_n),
+	.din2(gs_ram_do),
+	.dout2(gs_ram_di),
+	.wait2(gs_ram_wait),
+	
+	.sram_addr(mem_a),
+	.sram_data(mem_d),
+	.sram_ce_n(),
+	.sram_oe_n(mem_rd_n),
+	.sram_we_n(mem_wr_n)
+);
+
+// mem mapping between gs and divmmc
+/*reg [20:0] mux_a;
+reg [7:0] mux_d;
+reg mux_wr_n, mux_rd_n;
+reg prev_divmmc_ram_busy;
+reg mux_busy;
+always @(posedge clk_bus) begin
+	//if (ce_14m) begin
+		prev_divmmc_ram_busy <= divmmc_ram_busy;
+		mux_busy <= divmmc_ram_busy | prev_divmmc_ram_busy; // longer busy signal for gs
+	//end
+end
+
+always @(*) begin
+	if (divmmc_ram_busy & mux_busy) begin
+		mux_a = {4'b1111, divmmc_ram_a[16:0]};
+		mux_d <= divmmc_ram_do;
+		mux_wr_n <= divmmc_ram_wr_n;
+		mux_rd_n <= divmmc_ram_rd_n;
+	end
+	else if (~divmmc_ram_busy & ~mux_busy) begin // gs will be able to run in a cycle after divmmc
+		mux_a = gs_ram_a[20:0];
+		mux_d <= gs_ram_do;
+		mux_wr_n <= gs_ram_wr_n;
+		mux_rd_n <= gs_ram_rd_n;
+	end else begin
+		mux_d <= 8'bz;
+		mux_wr_n <= 1;
+		mux_rd_n <= 1;
+	end
+end
+
+assign mem_a = mux_a;
+assign mem_d = mux_d; //(~mux_wr_n) ? mux_d : 8'bz;
+assign mem_wr_n = mux_wr_n;
+assign mem_rd_n = mux_rd_n;
+
+// mem readback
+reg [7:0] mux_do;
+always @(negedge clk_bus) begin
+	if (~mux_rd_n)
+		mux_do <= mem_d;
+end
+assign divmmc_ram_di = mux_do;
+assign gs_ram_di = mux_do;
+assign divmmc_ram_di = mem_d;
+assign gs_ram_di = mem_d;
+*/
 
 // IORQGE
 
