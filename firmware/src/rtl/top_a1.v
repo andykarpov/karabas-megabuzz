@@ -426,7 +426,7 @@ wire [7:0] zc_do_bus, divmmc_dout;
 wire zc_busy, divmmc_mem, divmmc_zxrom_block;
 wire [18:0] divmmc_ram_a;
 wire [7:0] divmmc_ram_di, divmmc_ram_do;
-wire divmmc_ram_wr_n, divmmc_ram_rd_n, divmmc_ram_req, divmmc_ram_busy;
+wire divmmc_ram_wr_n, divmmc_ram_rd_n, divmmc_ram_req, divmmc_ram_busy, divmmc_ram_ack;
 
 zc_divmmc zc_divmmc(
 	.clk				  (clk_bus),
@@ -455,6 +455,7 @@ zc_divmmc zc_divmmc(
 	.ram_wr_n        (divmmc_ram_wr_n),
 	.ram_rd_n        (divmmc_ram_rd_n),
 	.ram_req         (divmmc_ram_req),
+	.ram_ack         (divmmc_ram_ack),
 	.ram_busy        (divmmc_ram_busy),
 	
 	.dout				  (zc_do_bus),
@@ -474,7 +475,7 @@ sram_arbiter sram_arbiter(
 	.we1(~divmmc_ram_wr_n),
 	.din1(divmmc_ram_do),
 	.dout1(divmmc_ram_di),
-	.ack1(),
+	.ack1(divmmc_ram_ack),
 
 	.clk2(ce_14m),
 	.req2(~gs_ram_rd_n | ~gs_ram_wr_n),
@@ -490,55 +491,6 @@ sram_arbiter sram_arbiter(
 	.sram_oe_n(mem_rd_n),
 	.sram_we_n(mem_wr_n)
 );
-
-// mem mapping between gs and divmmc
-/*reg [20:0] mux_a;
-reg [7:0] mux_d;
-reg mux_wr_n, mux_rd_n;
-reg prev_divmmc_ram_busy;
-reg mux_busy;
-always @(posedge clk_bus) begin
-	//if (ce_14m) begin
-		prev_divmmc_ram_busy <= divmmc_ram_busy;
-		mux_busy <= divmmc_ram_busy | prev_divmmc_ram_busy; // longer busy signal for gs
-	//end
-end
-
-always @(*) begin
-	if (divmmc_ram_busy & mux_busy) begin
-		mux_a = {4'b1111, divmmc_ram_a[16:0]};
-		mux_d <= divmmc_ram_do;
-		mux_wr_n <= divmmc_ram_wr_n;
-		mux_rd_n <= divmmc_ram_rd_n;
-	end
-	else if (~divmmc_ram_busy & ~mux_busy) begin // gs will be able to run in a cycle after divmmc
-		mux_a = gs_ram_a[20:0];
-		mux_d <= gs_ram_do;
-		mux_wr_n <= gs_ram_wr_n;
-		mux_rd_n <= gs_ram_rd_n;
-	end else begin
-		mux_d <= 8'bz;
-		mux_wr_n <= 1;
-		mux_rd_n <= 1;
-	end
-end
-
-assign mem_a = mux_a;
-assign mem_d = mux_d; //(~mux_wr_n) ? mux_d : 8'bz;
-assign mem_wr_n = mux_wr_n;
-assign mem_rd_n = mux_rd_n;
-
-// mem readback
-reg [7:0] mux_do;
-always @(negedge clk_bus) begin
-	if (~mux_rd_n)
-		mux_do <= mem_d;
-end
-assign divmmc_ram_di = mux_do;
-assign gs_ram_di = mux_do;
-assign divmmc_ram_di = mem_d;
-assign gs_ram_di = mem_d;
-*/
 
 // IORQGE
 

@@ -25,6 +25,7 @@ module zc_divmmc(
 	 output wire ram_req,
 	 output wire ram_rd_n,
 	 output wire ram_wr_n,
+	 input wire  ram_ack,
 	 output wire ram_busy,
 
     output wire [7:0] dout,
@@ -54,6 +55,7 @@ end
 
 wire zc_sclk, zc_mosi;
 wire [7:0] zc_do_bus;
+wire spi_busy;
 zc_spi zc_spi(
     .clk_sys(clk),
     .ena(1),
@@ -64,12 +66,12 @@ zc_spi zc_spi(
     .spi_clk(zc_sclk),
     .spi_di(sd_do),
     .spi_do(zc_mosi),
-    .spi_wait(busy)
+    .spi_wait(spi_busy)
 );
 
 assign sd_cs_n	= zc_cs_n;
-assign sd_clk 	= zc_sclk; //(~zc_cs_n) ? zc_sclk : 1;
-assign sd_di 	= zc_mosi; //(~zc_cs_n) ? zc_mosi : 1;
+assign sd_clk 	= (~zc_cs_n) ? zc_sclk : 1;
+assign sd_di 	= (~zc_cs_n) ? zc_mosi : 1;
 
 // ------------------------ divmmc-----------------------------
 // Engineer:   Mario Prato
@@ -163,7 +165,9 @@ assign divmmc_dout = (is_ram_divmmc) ? ram_di :
 							zxrom_do;
 
 assign divmmc_zxrom_block = divmmc_en & (is_rom | automap | conmem);
-assign dout = (bus_a[7:0] == 8'h77) ? {~busy, 7'b1111100} : zc_do_bus;
+assign dout = (bus_a[7:0] == 8'h77) ? {~spi_busy, 7'b1111100} : zc_do_bus;
+assign busy = ((~ram_wr_n | ~ram_rd_n) & ~ram_ack) | spi_busy;
+//assign busy = spi_busy;
 
 endmodule
 

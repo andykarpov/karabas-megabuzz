@@ -77,7 +77,7 @@ module sram_arbiter (
         if (!rst_n) begin
             state         <= STATE_IDLE;
             cycle_cnt     <= 2'b0;
-            ack1          <= 1'b0;
+            ack1          <= 1'b1;
             req1_pending  <= 1'b0;
             req2_pending  <= 1'b0;
             sram_ce_n     <= 1'b1;
@@ -89,7 +89,6 @@ module sram_arbiter (
             dout1         <= 8'hFF;
             dout2         <= 8'hFF;
         end else begin
-            ack1 <= 1'b0;
 
             if (req1_edge) req1_pending <= 1'b1;
             if (req2_edge) req2_pending <= 1'b1;
@@ -104,6 +103,7 @@ module sram_arbiter (
 
                     if (req1_pending || req1_edge) begin
                         state        <= STATE_DEV1;
+								ack1 			 <= 1'b0;								
                         req1_pending <= 1'b0; 
                         sram_addr    <= addr1;
                         sram_ce_n    <= 1'b0;
