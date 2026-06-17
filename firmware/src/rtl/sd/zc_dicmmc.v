@@ -1,12 +1,9 @@
 module zc_divmmc(
     input wire clk,
+	 input wire clk_mem,
     input wire reset,
+	 input wire areset,
     input wire divmmc_en,
-
-    input wire ioreq,
-    input wire iowr,
-	 input wire iord,
-	 input wire rom_m1_access,
 
     input wire [15:0] bus_a,
     input wire [7:0] bus_d,
@@ -15,23 +12,26 @@ module zc_divmmc(
     input wire bus_m1_n,
     input wire bus_wr_n,
     input wire bus_rd_n,
-	 input wire bus_nmi_n,
+	 inout wire bus_nmi_n,
     input wire btn_nmi_n,
 
     output wire sd_clk,
-    input wire sd_do,
-    output wire sd_di,
+    inout wire sd_do,
+    inout wire sd_di,
     output wire sd_cs_n,
-
-    output reg [7:0] dout,
+	 
+    output wire [7:0] dout,
+	 output wire divmmc_mem,
+	 output wire [7:0] divmmc_dout,
+	 output wire divmmc_zxrom_block,
     output wire busy
 );
 
 // SPI Z-Controller + DivMMC
-wire zc_spi_start = (((bus_a[7:0] == 8'h57) | (divmmc_en & (bus_a[7:0] == 8'hEB))) & ioreq) ? 1 : 0;
-wire zc_wr_en = (zc_spi_start & iowr) ? 1 : 0;
-wire zc_rd_en = (zc_spi_start & iord) ? 1 : 0;
-wire port77_wr = (((bus_a[7:0] == 8'h77) | (divmmc_en & (bus_a[7:0] == 8'hE7))) & iowr) ? 1 : 0;
+wire zc_spi_start = (((bus_a[7:0] == 8'h57) | (divmmc_en & (bus_a[7:0] == 8'hEB))) & ~bus_iorq_n & bus_m1_n) ? 1 : 0;
+wire zc_wr_en = (zc_spi_start & ~bus_wr_n) ? 1 : 0;
+wire zc_rd_en = (zc_spi_start & ~bus_rd_n) ? 1 : 0;
+wire port77_wr = (((bus_a[7:0] == 8'h77) | (divmmc_en & (bus_a[7:0] == 8'hE7))) & ~bus_iorq_n & ~bus_wr_n & bus_m1_n) ? 1 : 0;
 
 reg zc_cs_n;
 always @(posedge clk or posedge reset) begin
@@ -61,8 +61,8 @@ zc_spi zc_spi(
 );
 
 assign sd_cs_n	= zc_cs_n;
-assign sd_clk 	= (~zc_cs_n) ? zc_sclk : 1;
-assign sd_di 	= (~zc_cs_n) ? zc_mosi : 1;
+assign sd_clk 	= zc_sclk; //(~zc_cs_n) ? zc_sclk : 1;
+assign sd_di 	= zc_mosi; //(~zc_cs_n) ? zc_mosi : 1;
 
 // ------------------------ divmmc-----------------------------
 // Engineer:   Mario Prato
@@ -72,7 +72,7 @@ assign sd_di 	= (~zc_cs_n) ? zc_mosi : 1;
 reg mapterm, map3DXX, map1F00;
 always @(*)
 begin
-    if (reset | ~divmmc_en) begin 
+    if (areset | ~divmmc_en) begin 
         mapterm <= 0;
         map3DXX <= 0;
         map1F00 <= 1;
@@ -89,7 +89,7 @@ begin
             mapterm <= 0;
 
         // mappa 3D00 - 3DFF
-        if (bus_a[15:0] == 8'b00111101) 
+        if (bus_a[15:8] == 8'b00111101) 
             map3DXX <= 1; 
         else 
             map3DXX <= 0;
@@ -103,8 +103,8 @@ begin
 end
 
 reg mapcond, automap;
-always @(posedge reset or negedge bus_mreq_n) begin
-    if (reset | ~divmmc_en) begin
+always @(posedge areset or negedge bus_mreq_n) begin
+    if (areset | ~divmmc_en) begin
         mapcond <= 0;
         automap <= 0;
     end 
@@ -117,11 +117,13 @@ always @(posedge reset or negedge bus_mreq_n) begin
 end
 
 reg [7:0] port_e3_reg;
-always @(posedge reset or posedge clk) begin
-    if (reset) begin
+wire conmem = port_e3_reg[7];
+wire divideio = (~bus_iorq_n & ~bus_wr_n & bus_m1_n & (bus_a[7:0] == 8'hE3) & divmmc_en) ? 0 : 1;
+always @(posedge areset or posedge divideio) begin
+    if (areset) begin // poweron
         port_e3_reg[5:0] <= 6'b00000000;
-		port_e3_reg[7] <= 0;
-    end else if (iowr & (bus_a[7:0] == 8'hE3) & divmmc_en)	
+		  port_e3_reg[7] <= 0;
+    end else
 		port_e3_reg <= {bus_d[7], port_e3_reg[6] | bus_d[6], bus_d[5:0]};
 end
 
@@ -129,30 +131,31 @@ end
 assign bus_nmi_n = (~btn_nmi_n & divmmc_en & ~mapcond) ? 1'b0 : 
                    (~btn_nmi_n & ~divmmc_en & ~bus_m1_n & ~bus_mreq_n & (bus_a[15:14] != 2'b00)) ? 1'b0 : 1'bz;
 
-// divmmc ram / rom
+// divmmc ram / rom, zx rom
 
-wire is_rom_divmmc = (divmmc_en & ~bus_mreq_n & (automap | port_e3_reg[7]) & (bus_a[15:13] == 3'b000)) ? 1 : 0;
-wire is_ram_divmmc = (divmmc_en & ~bus_mreq_n & (automap | port_e3_reg[7]) & (bus_a[15:13] == 3'b001)) ? 1 : 0;
-wire is_rom = (~bus_mreq_n & (bus_a[15:14] == 2'b00)) ? 1 : 0;
-wire is_ram = (~bus_mreq_n & ~is_rom) ? 1 : 0;
+wire is_rom_divmmc = (divmmc_en & ~bus_mreq_n & (automap | conmem) & (bus_a[15:13] == 3'b000)) ? 1 : 0;
+wire is_ram_divmmc = (divmmc_en & ~bus_mreq_n & (automap | conmem) & (bus_a[15:13] == 3'b001)) ? 1 : 0;
+wire is_rom = (divmmc_en & ~bus_mreq_n & (bus_a[15:14] == 2'b00)) ? 1 : 0;
 
-// ram_a = REG_E3(5 downto 0) & A(12 downto 0) when is_ramDIVMMC = '1'
-// ram_rd = bus_rd
-// ram_wr = bus_wr + is_ramDIVMMC = '1'
+wire [7:0] rom_do;
+sprom #(.ADDRWIDTH(13), .MEM_INIT_FILE("esxdos.mem")) esxdos_rom(.clock(clk_mem), .address(bus_a[12:0]), .q(rom_do));
 
-// rom_a = A(13 downto 0)
-// rom_oe_block = is_rom + (is_romDivmmc | is_ramDivmmc) ?
+//wire [7:0] zxrom_do;
+//sprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk_mem), .address(bus_a[13:0]), .q(zxrom_do));
 
-// todo: esxdos rom
-// todo: romcs!
+wire [7:0] ram_do;
+spram #(.ADDRWIDTH(16)) esxdos_ram(.clock(clk_mem), .address({port_e3_reg[2:0], bus_a[12:0]}), .data(bus_d), .wren(is_ram_divmmc & ~bus_wr_n), .q(ram_do));
 
-always @(*) begin
-		casex ({divmmc_en, bus_a[7:0]})
-			{1'bx, 8'h77}: dout <= 8'b11111100;
-			{1'bx, 8'h57}: dout <= zc_do_bus;
-			{1'b1, 8'hEB}: dout <= zc_do_bus;
-		endcase
-end
+//assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc | is_rom) ? 1 : 0;
+assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc) ? 1 : 0;
+assign divmmc_dout = (is_ram_divmmc) ? ram_do : 
+							(is_rom_divmmc) ? rom_do : 
+							divmmc_dout;
+							//zxrom_do;
+
+//assign divmmc_zxrom_block = divmmc_en & (is_rom | automap | conmem);
+assign divmmc_zxrom_block = divmmc_en & (automap | conmem);
+assign dout = (bus_a[7:0] == 8'h77) ? {~busy, 7'b1111100} : zc_do_bus;
 
 endmodule
 

@@ -97,16 +97,10 @@ module karabas_megabuzz_a1(
 );
 
 // unused signals
-assign flash_cs_n   = 1'b1;
-assign flash_sck    = 1'b1;
-assign flash_mosi   = 1'b1;
 assign flash_hold_n = 1'b1;
 assign flash_wp_n   = 1'b1;
 assign psram_cs_n   = 1'b1;
 assign tp[4:1]      = 4'bz;
-//assign bus_wait_n   = 1'bz;
-assign o_reset_n    = 1'bz;
-assign bus_romcs_n  = 1'bz;
 assign led1         = 1'b1; // off
 
 // config bits expanded to named signals
@@ -121,11 +115,12 @@ wire opl3_en        = cfg_n[4];
 wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
 
 // pll
-wire clk_bus, clk12, locked, areset;
+wire clk_bus, clk_112, clk12, locked, areset;
 pll pll_inst(
     .CLK_IN1         (clk),
-    .CLK_OUT1        (clk_bus), // 28
-    .CLK_OUT2        (clk12),   // 12
+	 .CLK_OUT1        (clk_112), // 112
+    .CLK_OUT2        (clk_bus), // 28
+    .CLK_OUT3        (clk12),   // 12
     .LOCKED          (locked)
 );
 assign areset = ~locked;
@@ -137,9 +132,12 @@ always @(negedge clk_bus)
 
 // reset
 wire reset;
-resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n), .reset_out(reset));
+wire reset_short;
+resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n), .reset_out(reset), .reset_short(reset_short));
 
 assign midi_reset_n = ~reset;
+//assign o_reset_n = (loader_act || loader_reset) ? 1'b0 : 1'bz; // todo
+assign o_reset_n = 1'bz;
 
 // bus_iorq_n is useless on zxevo :(
 // so we're detecting bus_iorq_n cycle by bus_rd_n/bus_wr_n signal asserted without bus_m1_n/bus_mreq_n
@@ -160,6 +158,52 @@ always @(negedge clk_bus or posedge reset) begin
     else if (~bus_m1_n)
         rom_m1_access <= bus_a[15:14] == 2'b00;
 end
+
+// ------- flash ----------------
+wire [23:0] flash_a_bus;
+wire [7:0] flash_do_bus;
+wire flash_wr_n, flash_rd_n, flash_er_n, flash_busy, flash_rdy;
+flash flash(
+	.CLK					(clk_bus),
+	.RESET				(areset),
+
+	.A						(flash_a_bus),
+	.DI					(8'hFF),
+	.DO					(flash_do_bus),
+	.WR_N					(1'b1),
+	.RD_N					(flash_rd_n),
+	.ER_N					(1'b1),
+	
+	.DATA0				(flash_miso),
+	.NCSO					(flash_cs_n),
+	.DCLK					(flash_sck),
+	.ASDO					(flash_mosi),
+
+	.BUSY					(flash_busy),
+	.DATA_READY       (flash_rdy)
+);
+
+// -------- loader --------------
+wire [20:0] loader_ram_a;
+wire [7:0] loader_ram_do;
+wire loader_act, loader_reset, loader_ram_wr;
+loader loader(
+	.CLK					(clk_bus),
+	.RESET				(areset),
+	
+	.RAM_A				(loader_ram_a),
+	.RAM_DO				(loader_ram_do),
+	.RAM_WR				(loader_ram_wr),
+
+	.FLASH_A				(flash_a_bus),
+	.FLASH_DO			(flash_do_bus),
+	.FLASH_RD_N			(flash_rd_n),
+	.FLASH_BUSY			(flash_busy),
+	.FLASH_READY		(flash_rdy),
+	
+	.LOADER_ACTIVE		(loader_act),
+	.LOADER_RESET		(loader_reset)
+);
 
 // ------- i2s DAC --------------
 wire signed [15:0] audio_mix_l, audio_mix_r;
@@ -313,6 +357,11 @@ gs_top gs_inst(
     .sram_a         (mem_a),
     .sram_wr_n      (mem_wr_n),
     .sram_rd_n      (mem_rd_n),
+	 
+	 .loader_act     (loader_act),
+	 .loader_ram_a   (loader_ram_a),
+	 .loader_ram_do  (loader_ram_do),
+	 .loader_ram_wr  (loader_ram_wr),
 
     .out_l          (gs_out_l),
     .out_r          (gs_out_r)    
@@ -416,17 +465,14 @@ audio_mixer audio_mixer_inst(
 );
 
 // divmmc + zc
-wire [7:0] zc_do_bus;
-wire zc_busy;
+wire [7:0] zc_do_bus, divmmc_dout;
+wire zc_busy, divmmc_mem, divmmc_zxrom_block;
 zc_divmmc zc_divmmc(
 	.clk				  (clk_bus),
-	.reset 			  (reset),
-	.divmmc_en 		  (1'b0), // todo
-
-   .ioreq			  (ioreq),
-	.iowr			     (ioreq_wr),
-	.iord            (ioreq_rd),
-	.rom_m1_access   (rom_m1_access),
+	.clk_mem         (clk_112),
+	.reset 			  (reset_short),
+	.areset          (areset),
+	.divmmc_en 		  (divmmc_en),
 
 	.bus_a 			  (bus_a),
 	.bus_d 			  (bus_d),
@@ -444,7 +490,10 @@ zc_divmmc zc_divmmc(
 	.sd_cs_n			  (sd_cs_n),
 	
 	.dout				  (zc_do_bus),
-	.busy  			  (zc_busy)	
+	.divmmc_mem      (divmmc_mem),
+	.divmmc_dout     (divmmc_dout),
+	.divmmc_zxrom_block(divmmc_zxrom_block),
+	.busy  			  (zc_busy)
 );
 
 // IORQGE
@@ -456,27 +505,35 @@ wire port_fffd_full = (bus_a[15:13] == 3'b111) & (bus_a[3:0] == 4'b1101) & turbo
 // saa port
 wire port_ff = (bus_a[7:0] == 8'hFF) & saa_en & !rom_m1_access;
 // gs
-wire port_b3 = (bus_a[7:0] == 8'hB3) & gs_en;
-wire port_bb = (bus_a[7:0] == 8'hBB) & gs_en;
+wire port_b3 = (bus_a[7:0] == 8'hB3) & gs_en & ~loader_act;
+wire port_bb = (bus_a[7:0] == 8'hBB) & gs_en & ~loader_act;
 // opl3
 wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en & !rom_m1_access;
 // sd
 wire port_xf = soundrive_en & (bus_a[7] == 1'b0) & (bus_a[5] == 1'b0) & (bus_a[3:0] == 4'hF) & !rom_m1_access;
-// zc
+// zc + divmmc
 wire port_77 = (bus_a[7:0] == 8'h77);
 wire port_57 = (bus_a[7:0] == 8'h57);
+wire port_EB = (bus_a[7:0] == 8'hEB) & divmmc_en;
+wire port_E3 = (bus_a[7:0] == 8'hE3) & divmmc_en;
+wire port_E7 = (bus_a[7:0] == 8'hE7) & divmmc_en;
+
 // iorqge
-assign bus_iorqge_n = (port_fffd_full | port_bffd | port_b3 | port_bb | port_opl3 | port_77 | port_57) ? 1'b0 : 1'b1;
+assign bus_iorqge_n = (port_fffd_full | port_bffd | port_b3 | port_bb | port_opl3 | port_77 | port_57 | port_EB | port_E3 | port_E7) ? 1'b0 : 1'b1;
 
 // BUS
 assign bus_d = 
-	 (ioreq_rd & (port_57 | port_77)) ? zc_do_bus : // ZC + DivMMC
+	 (divmmc_en & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
+	 (~bus_iorq_n & ~bus_rd_n & bus_m1_n & (port_57 | port_77 | port_EB)) ? zc_do_bus : // ZC + DivMMC
 	 (ioreq_rd & port_fffd) ? ts_do : // TS
     (ioreq_rd & (port_b3 | port_bb)) ? gs_do_bus : // GS	 
     8'bzzzzzzzz;
 	 
 // wait (from zc)
-assign bus_wait_n = (zc_busy) ? 1'b0 : 1'bz;
+assign bus_wait_n = 1'bz; //(zc_busy) ? 1'b0 : 1'bz;
+
+// block zx rom
+assign bus_romcs_n = divmmc_zxrom_block ? 1'b0 : 1'b1;
 
 // vu meter
 vu_meter vu_meter_l_inst(

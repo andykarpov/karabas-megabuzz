@@ -10,6 +10,8 @@ BIT_FILE25 = $(PROJECT25).bit
 PROJECT25_A1 = work25/karabas_megabuzz_a1
 BIT_FILE25_A1 = $(PROJECT25_A1).bit
 
+GS_ROM = ../rtl/sound/gs105b.rom
+
 OPENFPGA_LOADER = /usr/bin/openFPGALoader
 PART16 = xc6slx16ftg256
 PART25 = xc6slx25ftg256
@@ -26,3 +28,9 @@ flash25: $(BIT_FILE25)
 
 flash25_a1: $(BIT_FILE25_A1)
 	$(OPENFPGA_LOADER) -c $(CABLE) --fpga-part $(PART25) -f $(BIT_FILE25_A1)
+
+flash_rom: $(GS_ROM)
+	$(OPENFPGA_LOADER) -c $(CABLE) --fpga-part $(PART16) -f -o 0x100000 $(GS_ROM)
+
+flash_rom25: $(GS_ROM)
+	$(OPENFPGA_LOADER) -c $(CABLE) --fpga-part $(PART25) -f -o 0x100000 $(GS_ROM)

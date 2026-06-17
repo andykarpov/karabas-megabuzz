@@ -17,16 +17,12 @@
 --                                                 #  #  #  ######  #####  #     # ######   #####  ####### #######
 --
 -- https://github.com/andykarpov/karabas-megabuzz
--- FPGA firmware for Karabas-MegaBuzz soundcard
+-- FPGA firmware for Karabas-MegaBuzz soundcard revA
 --
 -- @author Andy Karpov <andy.karpov@gmail.com>
 -- EU, 2026
 ------------------------------------------------------------------------------------------------------------------*/
 `default_nettype none
-
-// todo:
-// 1. clk_bus = 28, clk_opl3 = 28.6! think about it
-// 2. iorqge - check for GS
 
 module karabas_megabuzz(
     input wire          clk,
@@ -73,10 +69,10 @@ module karabas_megabuzz(
 
     output wire         flash_cs_n,
     output wire         flash_sck,
-    output wire         flash_mosi,
-    input wire          flash_miso,
-    output wire         flash_hold_n,
-    output wire         flash_wp_n,
+    inout wire         flash_mosi,
+    inout wire          flash_miso,
+    inout wire         flash_hold_n,
+    inout wire         flash_wp_n,
 
     output wire [7:0]   led_meter_l,
     output wire [7:0]   led_meter_r,
@@ -102,11 +98,12 @@ wire midi_en        = cfg_n[3]; // depends on AY port
 wire opl3_en        = cfg_n[4];
 
 // pll
-wire clk_bus, clk12, locked, areset;
+wire clk_bus, clk_112, clk12, locked, areset;
 pll pll_inst(
     .CLK_IN1         (clk),
-    .CLK_OUT1        (clk_bus), // 28
-    .CLK_OUT2        (clk12),   // 12
+	 .CLK_OUT1        (clk_112), // 112
+    .CLK_OUT2        (clk_bus), // 28
+    .CLK_OUT3        (clk12),   // 12
     .LOCKED          (locked)
 );
 assign areset = ~locked;
@@ -280,8 +277,6 @@ gs_top gs_inst(
     .clk_bus        (clk_bus),
      .ce            (ce_14m),
     .reset          (reset),
-    .areset         (areset),
-	 .btn			  	  (~btn_reset_n),
 
     .a              (bus_a),
     .di             (bus_d),
