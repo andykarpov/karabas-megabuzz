@@ -144,7 +144,7 @@ sprom #(.ADDRWIDTH(13), .MEM_INIT_FILE("esxdos.mem")) esxdos_rom(.clock(clk_mem)
 //sprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk_mem), .address(bus_a[13:0]), .q(zxrom_do));
 
 wire [7:0] ram_do;
-spram #(.ADDRWIDTH(15)) esxdos_ram(.clock(clk_mem), .address({port_e3_reg[1:0], bus_a[12:0]}), .data(bus_d), .wren(is_ram_divmmc & ~bus_wr_n), .q(ram_do));
+spram #(.ADDRWIDTH(16)) esxdos_ram(.clock(clk_mem), .address({port_e3_reg[2:0], bus_a[12:0]}), .data(bus_d), .wren(is_ram_divmmc & ~bus_wr_n), .q(ram_do));
 
 //assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc | is_rom) ? 1 : 0;
 assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc) ? 1 : 0;
