@@ -34,7 +34,7 @@ wire zc_rd_en = (zc_spi_start & ~bus_rd_n) ? 1 : 0;
 wire port77_wr = (((bus_a[7:0] == 8'h77) | (divmmc_en & (bus_a[7:0] == 8'hE7))) & ~bus_iorq_n & ~bus_wr_n & bus_m1_n) ? 1 : 0;
 
 reg zc_cs_n;
-always @(posedge clk or posedge reset) begin
+always @(posedge clk_mem or posedge reset) begin
     if (reset) 
         zc_cs_n <= 1;
     else if (port77_wr) begin
@@ -45,11 +45,19 @@ always @(posedge clk or posedge reset) begin
     end
 end
 
+reg [3:0] zc_cnt;
+always @(posedge clk_mem)
+	if (zc_cnt >= 5)
+		zc_cnt <= 0;
+	else
+		zc_cnt <= zc_cnt + 1;
+wire zc_ena = (zc_cnt == 4'b0000);
+
 wire zc_sclk, zc_mosi;
 wire [7:0] zc_do_bus;
 zc_spi zc_spi(
-    .clk_sys(clk),
-    .ena(1),
+    .clk_sys(clk_mem),
+    .ena(zc_ena),
     .tx(zc_wr_en),
     .rx(zc_rd_en),
     .din(bus_d),
@@ -61,8 +69,8 @@ zc_spi zc_spi(
 );
 
 assign sd_cs_n	= zc_cs_n;
-assign sd_clk 	= zc_sclk; //(~zc_cs_n) ? zc_sclk : 1;
-assign sd_di 	= zc_mosi; //(~zc_cs_n) ? zc_mosi : 1;
+assign sd_clk 	= (~zc_cs_n) ? zc_sclk : 1;
+assign sd_di 	= (~zc_cs_n) ? zc_mosi : 1;
 
 // ------------------------ divmmc-----------------------------
 // Engineer:   Mario Prato

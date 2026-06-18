@@ -24,10 +24,6 @@
 ------------------------------------------------------------------------------------------------------------------*/
 `default_nettype none
 
-// todo:
-// 1. clk_bus = 28, clk_opl3 = 28.6! think about it
-// 2. iorqge - check for GS
-
 module karabas_megabuzz_a1(
     input wire          clk,
     input wire  [5:0]   cfg_n,
@@ -115,10 +111,10 @@ wire opl3_en        = cfg_n[4];
 wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
 
 // pll
-wire clk_bus, clk_112, clk12, locked, areset;
+wire clk_bus, clk_mem, clk12, locked, areset;
 pll pll_inst(
     .CLK_IN1         (clk),
-	 .CLK_OUT1        (clk_112), // 112
+	 .CLK_OUT1        (clk_mem), // 140
     .CLK_OUT2        (clk_bus), // 28
     .CLK_OUT3        (clk12),   // 12
     .LOCKED          (locked)
@@ -142,7 +138,7 @@ assign o_reset_n = 1'bz;
 // bus_iorq_n is useless on zxevo :(
 // so we're detecting bus_iorq_n cycle by bus_rd_n/bus_wr_n signal asserted without bus_m1_n/bus_mreq_n
 reg ioreq, ioreq_prev;
-always @(negedge clk_bus) begin
+always @(negedge clk_mem) begin
     ioreq_prev  <= ioreq;
     ioreq       <= bus_m1_n && bus_mreq_n && (~bus_rd_n || ~bus_wr_n);
 end
@@ -152,7 +148,7 @@ wire ioreq_wr = ioreq && ~bus_wr_n;
 // bus_dos_n is useless on zxevo :(
 // so we're just lock some ports access when instruction has been fetched from rom
 reg rom_m1_access;
-always @(negedge clk_bus or posedge reset) begin
+always @(negedge clk_mem or posedge reset) begin
     if (reset)
         rom_m1_access <= 0;
     else if (~bus_m1_n)
@@ -469,7 +465,7 @@ wire [7:0] zc_do_bus, divmmc_dout;
 wire zc_busy, divmmc_mem, divmmc_zxrom_block;
 zc_divmmc zc_divmmc(
 	.clk				  (clk_bus),
-	.clk_mem         (clk_112),
+	.clk_mem         (clk_mem),
 	.reset 			  (reset_short),
 	.areset          (areset),
 	.divmmc_en 		  (divmmc_en),
@@ -526,11 +522,11 @@ assign bus_d =
 	 (divmmc_en & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
 	 (~bus_iorq_n & ~bus_rd_n & bus_m1_n & (port_57 | port_77 | port_EB)) ? zc_do_bus : // ZC + DivMMC
 	 (ioreq_rd & port_fffd) ? ts_do : // TS
-    (ioreq_rd & (port_b3 | port_bb)) ? gs_do_bus : // GS	 
+    (~bus_iorq_n & ~bus_rd_n & bus_m1_n & (port_b3 | port_bb)) ? gs_do_bus : // GS	 
     8'bzzzzzzzz;
 	 
 // wait (from zc)
-assign bus_wait_n = 1'bz; //(zc_busy) ? 1'b0 : 1'bz;
+assign bus_wait_n = (zc_busy) ? 1'b0 : 1'bz;
 
 // block zx rom
 assign bus_romcs_n = divmmc_zxrom_block ? 1'b0 : 1'b1;
@@ -540,7 +536,7 @@ vu_meter vu_meter_l_inst(
     .clk            (clk_bus),
 	 .dir            (vu_reverse),
 	 .enable_bar     (1'b1),
-	 .enable_dot     (1'b1),
+	 .enable_dot     (1'b0),
 	 .reset          (reset),
     .sample_tick    (dac_ws),
     .audio_sample   (audio_mix_l),
@@ -551,7 +547,7 @@ vu_meter vu_meter_r_inst(
     .clk            (clk_bus),
 	 .dir            (vu_reverse),
 	 .enable_bar     (1'b1),
-	 .enable_dot     (1'b1),
+	 .enable_dot     (1'b0),
 	 .reset          (reset),
     .sample_tick    (dac_ws),
     .audio_sample   (audio_mix_r),
