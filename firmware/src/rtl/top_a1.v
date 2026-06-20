@@ -529,7 +529,7 @@ assign bus_d =
 assign bus_wait_n = (zc_busy) ? 1'b0 : 1'bz;
 
 // block zx rom
-assign bus_romcs_n = divmmc_zxrom_block ? 1'b0 : 1'b1;
+assign bus_romcs_n = divmmc_zxrom_block & ~bus_mreq_n ? 1'b0 : 1'b1;
 
 // vu meter
 vu_meter vu_meter_l_inst(

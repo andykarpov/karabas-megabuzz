@@ -69,8 +69,8 @@ zc_spi zc_spi(
 );
 
 assign sd_cs_n	= zc_cs_n;
-assign sd_clk 	= (~zc_cs_n) ? zc_sclk : 1;
-assign sd_di 	= (~zc_cs_n) ? zc_mosi : 1;
+assign sd_clk 	= zc_sclk;
+assign sd_di 	= zc_mosi;
 
 // ------------------------ divmmc-----------------------------
 // Engineer:   Mario Prato
