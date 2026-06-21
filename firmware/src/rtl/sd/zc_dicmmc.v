@@ -15,6 +15,13 @@ module zc_divmmc(
 	 inout wire bus_nmi_n,
     input wire btn_nmi_n,
 
+`ifdef HW_A2
+    output wire [16:13] ram_a,
+    output wire ram_cs_n,
+    output wire ram_rd_n,
+    output wire ram_wr_n,
+`endif
+
     output wire sd_clk,
     inout wire sd_do,
     inout wire sd_di,
@@ -148,21 +155,32 @@ wire is_rom = (divmmc_en & ~bus_mreq_n & (bus_a[15:14] == 2'b00)) ? 1 : 0;
 wire [7:0] rom_do;
 sprom #(.ADDRWIDTH(13), .MEM_INIT_FILE("esxdos.mem")) esxdos_rom(.clock(clk_mem), .address(bus_a[12:0]), .q(rom_do));
 
-//wire [7:0] zxrom_do;
-//sprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk_mem), .address(bus_a[13:0]), .q(zxrom_do));
+// rev A2 uses its own 128k ram chip + 1982 rom instead of default rom 
+`ifdef HW_A2
+
+wire [7:0] zxrom_do;
+sprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk_mem), .address(bus_a[13:0]), .q(zxrom_do));
+
+assign divmmc_mem = (is_rom_divmmc | is_rom) ? 1 : 0;
+assign divmmc_dout = (is_rom_divmmc) ? rom_do : zxrom_do;
+assign divmmc_zxrom_block = divmmc_en & (is_rom | automap | conmem);
+assign ram_a = port_e3_reg[3:0]; 
+assign ram_cs_n = ~divmmc_en;
+assign ram_wr_n = ~(is_ram_divmmc & ~bus_wr_n);
+assign ram_rd_n = ~(is_ram_divmmc & ~bus_rd_n);
+
+// rev A1 uses spartan's 64k ram only for divmmc ram
+`else 
 
 wire [7:0] ram_do;
 spram #(.ADDRWIDTH(16)) esxdos_ram(.clock(clk_mem), .address({port_e3_reg[2:0], bus_a[12:0]}), .data(bus_d), .wren(is_ram_divmmc & ~bus_wr_n), .q(ram_do));
 
-//assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc | is_rom) ? 1 : 0;
 assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc) ? 1 : 0;
-assign divmmc_dout = (is_ram_divmmc) ? ram_do : 
-							(is_rom_divmmc) ? rom_do : 
-							divmmc_dout;
-							//zxrom_do;
-
-//assign divmmc_zxrom_block = divmmc_en & (is_rom | automap | conmem);
+assign divmmc_dout = (is_ram_divmmc) ? ram_do : (is_rom_divmmc) ? rom_do : divmmc_dout;
 assign divmmc_zxrom_block = divmmc_en & (automap | conmem);
+
+`endif
+
 assign dout = (bus_a[7:0] == 8'h77) ? {~busy, 7'b1111100} : zc_do_bus;
 
 endmodule

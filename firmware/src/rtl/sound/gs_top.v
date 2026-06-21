@@ -4,6 +4,13 @@
    General Sound Top
   -----------------------------------------------------------------------------
 */
+
+`ifdef HW_A1
+    `define HW_A1_A2
+`elsif HW_A2
+    `define HW_A1_A2
+`endif
+
 module gs_top (
     // clocks
     input wire            clk_bus,
@@ -29,7 +36,7 @@ module gs_top (
 	output wire          sram_wr_n,
 	output wire          sram_rd_n,
 
-`ifdef HW_A1
+`ifdef HW_A1_A2
 	input wire 				loader_act,
 	input wire [20:0]    loader_ram_a,
 	input wire [7:0]     loader_ram_do,
@@ -50,7 +57,7 @@ wire  [7:0] gs_mem_din;
 wire        gs_mem_rd_n;
 wire        gs_mem_wr_n;
 
-`ifdef HW_A1
+`ifdef HW_A1_A2
 wire gs_reset = reset | loader_act;
 `else
 wire gs_reset = reset;
@@ -84,8 +91,8 @@ gs gs
 
 wire is_rom = (gs_mem_addr < 32768);
 
-// hw revA1 uses loader to load ROM into RAM
-`ifdef HW_A1
+// hw revA1/A2 uses loader to load ROM into RAM
+`ifdef HW_A1_A2
 
 assign sram_a = (loader_act) ? loader_ram_a : gs_mem_addr;
 assign gs_mem_din = (loader_act) ? 8'hFF : sram_d;
@@ -114,6 +121,6 @@ assign sram_wr_n = gs_mem_wr_n;
 assign sram_rd_n = gs_mem_rd_n;
 
 `endif
-// end HW_A1
+// end HW_A1_A2
 
 endmodule

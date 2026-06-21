@@ -42,7 +42,7 @@ port (
 	RAM_WR			: out std_logic;
 	
 	-- Config byte 
-	CFG 				: out std_logic_vector(7 downto 0) := "00000010";
+	CFG 				: out std_logic_vector(7 downto 0) := "11111111";
 
 	-- Parallel flash interface
 	FLASH_A 			: out std_logic_vector(23 downto 0);
