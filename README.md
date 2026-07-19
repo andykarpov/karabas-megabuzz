@@ -25,7 +25,7 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
 * Rev.A - initial release
 
-* Rev.A1 - current revision
+* Rev.A1 - intermediate revision
 
     * [x] Added SD card
     * [x] Changed OPL3 chip power to 3v3 rail, reset controlled by FPGA
@@ -35,7 +35,7 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
     * [x] Added new signals to grab and emit on nemobus (NMI, ROMCS)
     * [x] Added ability to pass sound out via nemobus slot
 
-* Rev.A2 - dev revision
+* Rev.A2 - current revision
 
     * [x] Removed DIP switches
     * [x] Added 128kB SRAM chip for DivMMC
