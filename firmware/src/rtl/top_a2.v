@@ -105,7 +105,7 @@ assign flash_hold_n = 1'b1;
 assign flash_wp_n   = 1'b1;
 assign psram_cs_n   = 1'b1;
 assign tp[4:1]      = 4'bz;
-assign led1         = 1'b1; // off
+assign led1         = sd_cs_n;
 assign sda          = 1'bz;
 assign scl          = 1'b1;
 
