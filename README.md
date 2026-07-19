@@ -3,9 +3,9 @@
 Simple FPGA based sound card for ZX Spectrum (NemoBus). 
 Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
-[![photo](docs/karabas-megabuzz_revA_top.png)](docs/karabas-megabuzz_revA_top.png?raw=true)
+[![photo](docs/karabas-megabuzz_revA2_top.png)](docs/karabas-megabuzz_revA2_top.png?raw=true)
 
-[![photo](docs/karabas-megabuzz_revA_bottom.png)](docs/karabas-megabuzz_revA_bottom.png?raw=true)
+[![photo](docs/karabas-megabuzz_revA2_bottom.png)](docs/karabas-megabuzz_revA2_bottom.png?raw=true)
 
 ### Tech specs
 
