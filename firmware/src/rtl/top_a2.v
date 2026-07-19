@@ -518,31 +518,23 @@ zc_divmmc zc_divmmc(
 wire port_bffd      = (bus_a[15:14] == 2'b10) & (bus_a[3:0] == 4'b1101) & turbosound_en;
 wire port_fffd      = (bus_a[15:14] == 2'b11) & (bus_a[3:0] == 4'b1101) & turbosound_en;
 wire port_fffd_full = (bus_a[15:13] == 3'b111) & (bus_a[3:0] == 4'b1101) & turbosound_en; // required for compatibility with #dffd port
-// saa port
-wire port_ff = (bus_a[7:0] == 8'hFF) & saa_en & !rom_m1_access;
-// gs
-wire port_b3 = (bus_a[7:0] == 8'hB3) & gs_en & ~loader_act;
-wire port_bb = (bus_a[7:0] == 8'hBB) & gs_en & ~loader_act;
-// opl3
-wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en & !rom_m1_access;
-// sd
-wire port_xf = soundrive_en & (bus_a[7] == 1'b0) & (bus_a[5] == 1'b0) & (bus_a[3:0] == 4'hF) & !rom_m1_access;
+// gs (b3,bb)
+wire port_gs = ((bus_a[7:0] == 8'hB3) | (bus_a[7:0] == 8'hBB)) & gs_en & ~loader_act;
+// opl3 (c4,c5,c6,c7)
+wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en;
 // zc + divmmc
-wire port_77 = (bus_a[7:0] == 8'h77);
-wire port_57 = (bus_a[7:0] == 8'h57);
-wire port_EB = (bus_a[7:0] == 8'hEB) & divmmc_en;
-wire port_E3 = (bus_a[7:0] == 8'hE3) & divmmc_en;
-wire port_E7 = (bus_a[7:0] == 8'hE7) & divmmc_en;
+wire port_zc = ((bus_a[7:0] == 8'h77) | (bus_a[7:0] == 8'h57) | ((bus_a[7:0] == 8'hEB) & divmmc_en));
+wire port_mmc = ((bus_a[7:0] == 8'hE3) | (bus_a[7:0] == 8'hE7)) & divmmc_en;
 
 // iorqge
-assign bus_iorqge_n = (port_fffd_full | port_bffd | port_b3 | port_bb | port_opl3 | port_77 | port_57 | port_EB | port_E3 | port_E7) ? 1'b0 : 1'b1;
+assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc) ? 1'b0 : 1'b1;
 
 // BUS
 assign bus_d = 
      (divmmc_en & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & (port_57 | port_77 | port_EB)) ? zc_do_bus : // ZC + DivMMC
+     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zc) ? zc_do_bus : // ZC + DivMMC
      (ioreq_rd & port_fffd) ? ts_do : // TS
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & (port_b3 | port_bb)) ? gs_do_bus : // GS     
+     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_gs) ? gs_do_bus : // GS
      8'bzzzzzzzz;
      
 // wait (from zc)

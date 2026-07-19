@@ -401,22 +401,17 @@ audio_mixer audio_mixer_inst(
 wire port_bffd      = (bus_a[15:14] == 2'b10) & (bus_a[3:0] == 4'b1101) & turbosound_en;
 wire port_fffd      = (bus_a[15:14] == 2'b11) & (bus_a[3:0] == 4'b1101) & turbosound_en;
 wire port_fffd_full = (bus_a[15:13] == 3'b111) & (bus_a[3:0] == 4'b1101) & turbosound_en; // required for compatibility with #dffd port
-// saa port
-wire port_ff = (bus_a[7:0] == 8'hFF) & saa_en & !rom_m1_access;
-// gs
-wire port_b3 = (bus_a[7:0] == 8'hB3) & gs_en;
-wire port_bb = (bus_a[7:0] == 8'hBB) & gs_en;
-// opl3
-wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en & !rom_m1_access;
-// sd
-wire port_xf = soundrive_en & (bus_a[7] == 1'b0) & (bus_a[5] == 1'b0) & (bus_a[3:0] == 4'hF) & !rom_m1_access;
+// gs (b3,bb)
+wire port_gs = ((bus_a[7:0] == 8'hB3) | (bus_a[7:0] == 8'hBB)) & gs_en;
+// opl3 (c4,c5,c6,c7)
+wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en;
 // iorqge
-assign bus_iorqge_n = (port_fffd_full | port_bffd | port_b3 | port_bb | port_opl3) ? 1'b0 : 1'b1;
+assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3) ? 1'b0 : 1'b1;
 
 // BUS
 assign bus_d = 
 	 (ioreq_rd & port_fffd) ? ts_do : // TS
-    (ioreq_rd & (port_b3 | port_bb)) ? gs_do_bus : // GS	 
+    (ioreq_rd & port_gs) ? gs_do_bus : // GS	 
     8'bzzzzzzzz;
 
 // vu meter
