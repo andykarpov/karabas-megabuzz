@@ -1,20 +1,26 @@
 PROJECT16 = work16/karabas_megabuzz
 BIT_FILE16 = $(PROJECT16).bit
+BIN_FILE16 = $(PROJECT16).bin
 
 PROJECT16_A1 = work16/karabas_megabuzz_a1
 BIT_FILE16_A1 = $(PROJECT16_A1).bit
+BIN_FILE16_A1 = $(PROJECT16_A1).bin
 
 PROJECT16_A2 = work16/karabas_megabuzz_a2
 BIT_FILE16_A2 = $(PROJECT16_A2).bit
+BIN_FILE16_A2 = $(PROJECT16_A2).bin
 
 PROJECT25 = work25/karabas_megabuzz
 BIT_FILE25 = $(PROJECT25).bit
+BIN_FILE25 = $(PROJECT25).bin
 
 PROJECT25_A1 = work25/karabas_megabuzz_a1
 BIT_FILE25_A1 = $(PROJECT25_A1).bit
+BIN_FILE25_A1 = $(PROJECT25_A1).bin
 
 PROJECT25_A2 = work25/karabas_megabuzz_a2
 BIT_FILE25_A2 = $(PROJECT25_A2).bit
+BIN_FILE25_A2 = $(PROJECT25_A2).bin
 
 GS_ROM = ../rtl/sound/gs105b.rom
 CFG1_ROM = cfg1.rom
@@ -56,15 +62,15 @@ flash_a2: $(BIT_FILE16_A2)
 #flash_cfg2: $(CFG2_ROM)
 #	$(OPENFPGA_LOADER) -c $(CABLE) --fpga-part $(PART16) -f -o 0x1F0000 $(CFG2_ROM)
 
-flash25: $(BIT_FILE25)
-	$(OPENOCD) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program work25/karabas_megabuzz.bin 0; jtagspi_program ../rtl/sound/gs105b.rom 0x100000; jtagspi_program cfg1.rom 0x1F0000; xc6s_program xc6s.tap; exit"
+flash25: $(BIN_FILE25)
+	$(OPENOCD) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BIN_FILE25) 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
-flash25_a1: $(BIT_FILE25)
-	$(OPENOCD) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program work25/karabas_megabuzz_a1.bin 0; jtagspi_program ../rtl/sound/gs105b.rom 0x100000; jtagspi_program cfg1.rom 0x1F0000; xc6s_program xc6s.tap; exit"
+flash25_a1: $(BIN_FILE25_A1)
+	$(OPENOCD) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BIN_FILE25_A1) 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
-flash25_a2: $(BIT_FILE25)
-	$(OPENOCD) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program work25/karabas_megabuzz_a2.bin 0; jtagspi_program ../rtl/sound/gs105b.rom 0x100000; jtagspi_program cfg1.rom 0x1F0000; xc6s_program xc6s.tap; exit"
+flash25_a2: $(BIN_FILE25_A2)
+	$(OPENOCD) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BIN_FILE25_A2) 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
-flash25_a2_nommc: $(BIT_FILE25)
-	$(OPENOCD) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program work25/karabas_megabuzz_a2.bin 0; jtagspi_program ../rtl/sound/gs105b.rom 0x100000; jtagspi_program cfg2.rom 0x1F0000; xc6s_program xc6s.tap; exit"
+flash25_a2_nommc: $(BIN_FILE25_A2)
+	$(OPENOCD) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BIN_FILE25_A2) 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG2_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
