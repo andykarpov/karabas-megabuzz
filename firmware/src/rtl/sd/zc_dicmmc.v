@@ -158,12 +158,16 @@ sprom #(.ADDRWIDTH(13), .MEM_INIT_FILE("esxdos.mem")) esxdos_rom(.clock(clk_mem)
 // rev A2 uses its own 128k ram chip + 1982 rom instead of default rom 
 `ifdef HW_A2
 
-wire [7:0] zxrom_do;
-sprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk_mem), .address(bus_a[13:0]), .q(zxrom_do));
+//wire [7:0] zxrom_do;
+//sprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk_mem), .address(bus_a[13:0]), .q(zxrom_do));
+//assign divmmc_mem = (is_rom_divmmc | is_rom) ? 1 : 0;
+//assign divmmc_dout = (is_rom_divmmc) ? rom_do : zxrom_do;
+//assign divmmc_zxrom_block = divmmc_en & (is_rom | automap | conmem);
 
-assign divmmc_mem = (is_rom_divmmc | is_rom) ? 1 : 0;
-assign divmmc_dout = (is_rom_divmmc) ? rom_do : zxrom_do;
-assign divmmc_zxrom_block = divmmc_en & (is_rom | automap | conmem);
+assign divmmc_mem = is_rom_divmmc;
+assign divmmc_dout = rom_do;
+assign divmmc_zxrom_block = divmmc_en & (automap | conmem);
+
 assign ram_a = port_e3_reg[3:0]; 
 assign ram_cs_n = ~divmmc_en;
 assign ram_wr_n = ~(is_ram_divmmc & ~bus_wr_n);
