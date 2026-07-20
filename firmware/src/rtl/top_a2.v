@@ -134,6 +134,12 @@ pll pll_inst(
 );
 assign areset = ~locked;
 
+// poweron reset
+wire poweron_reset;
+resetter poweron_resetter(.clk(clk_bus), .areset(divmmc_en & loader_reset), .reset_in(divmmc_en & loader_reset), .reset_out(poweron_reset));
+
+assign o_reset_n = (poweron_reset) ? 1'b0 : 1'bz;
+
 // clock for gs and opl3
 reg ce_14m;
 always @(negedge clk_bus)
@@ -142,11 +148,9 @@ always @(negedge clk_bus)
 // reset
 wire reset;
 wire reset_short;
-resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n), .reset_out(reset), .reset_short(reset_short));
+resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n || poweron_reset), .reset_out(reset), .reset_short(reset_short));
 
 assign midi_reset_n = ~reset;
-//assign o_reset_n = (loader_act || loader_reset) ? 1'b0 : 1'bz; // todo
-assign o_reset_n = 1'bz;
 
 // bus_iorq_n is useless on zxevo :(
 // so we're detecting bus_iorq_n cycle by bus_rd_n/bus_wr_n signal asserted without bus_m1_n/bus_mreq_n
@@ -482,8 +486,9 @@ zc_divmmc zc_divmmc(
     .clk              (clk_bus),
     .clk_mem          (clk_mem),
     .reset            (reset_short),
-    .areset           (areset),
+    .areset           (areset | poweron_reset),
     .divmmc_en        (divmmc_en),
+    .zc_en            (zc_en),
 
     .bus_a            (bus_a),
     .bus_d            (bus_d),
@@ -523,7 +528,9 @@ wire port_gs = ((bus_a[7:0] == 8'hB3) | (bus_a[7:0] == 8'hBB)) & gs_en & ~loader
 // opl3 (c4,c5,c6,c7)
 wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en;
 // zc + divmmc
-wire port_zc = ((bus_a[7:0] == 8'h77) | (bus_a[7:0] == 8'h57) | ((bus_a[7:0] == 8'hEB) & divmmc_en));
+wire port_zc = (((bus_a[7:0] == 8'h77) & (zc_en | divmmc_en)) | 
+                ((bus_a[7:0] == 8'h57) & (zc_en | divmmc_en)) | 
+                ((bus_a[7:0] == 8'hEB) & divmmc_en));
 wire port_mmc = ((bus_a[7:0] == 8'hE3) | (bus_a[7:0] == 8'hE7)) & divmmc_en;
 
 // iorqge
@@ -538,10 +545,10 @@ assign bus_d =
      8'bzzzzzzzz;
      
 // wait (from zc)
-assign bus_wait_n = (zc_busy) ? 1'b0 : 1'bz;
+assign bus_wait_n = (zc_busy & (divmmc_en | zc_en)) ? 1'b0 : 1'bz;
 
 // block zx rom
-assign bus_romcs_n = divmmc_zxrom_block & ~bus_mreq_n ? 1'b0 : 1'b1;
+assign bus_romcs_n = divmmc_en & divmmc_zxrom_block & ~bus_mreq_n ? 1'b0 : 1'b1;
 
 // vu meter
 vu_meter vu_meter_l_inst(

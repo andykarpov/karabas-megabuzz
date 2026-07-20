@@ -1,9 +1,10 @@
 module zc_divmmc(
     input wire clk,
-	 input wire clk_mem,
+    input wire clk_mem,
     input wire reset,
-	 input wire areset,
+    input wire areset,
     input wire divmmc_en,
+    input wire zc_en,
 
     input wire [15:0] bus_a,
     input wire [7:0] bus_d,
@@ -12,7 +13,7 @@ module zc_divmmc(
     input wire bus_m1_n,
     input wire bus_wr_n,
     input wire bus_rd_n,
-	 inout wire bus_nmi_n,
+    inout wire bus_nmi_n,
     input wire btn_nmi_n,
 
 `ifdef HW_A2
@@ -26,19 +27,21 @@ module zc_divmmc(
     inout wire sd_do,
     inout wire sd_di,
     output wire sd_cs_n,
-	 
+
     output wire [7:0] dout,
-	 output wire divmmc_mem,
-	 output wire [7:0] divmmc_dout,
-	 output wire divmmc_zxrom_block,
+    output wire divmmc_mem,
+    output wire [7:0] divmmc_dout,
+    output wire divmmc_zxrom_block,
     output wire busy
 );
 
 // SPI Z-Controller + DivMMC
-wire zc_spi_start = (((bus_a[7:0] == 8'h57) | (divmmc_en & (bus_a[7:0] == 8'hEB))) & ~bus_iorq_n & bus_m1_n) ? 1 : 0;
+wire zc_spi_start = ((((bus_a[7:0] == 8'h57) & (zc_en | divmmc_en)) | 
+                      ((bus_a[7:0] == 8'hEB) & divmmc_en)) & ~bus_iorq_n & bus_m1_n) ? 1 : 0;
 wire zc_wr_en = (zc_spi_start & ~bus_wr_n) ? 1 : 0;
 wire zc_rd_en = (zc_spi_start & ~bus_rd_n) ? 1 : 0;
-wire port77_wr = (((bus_a[7:0] == 8'h77) | (divmmc_en & (bus_a[7:0] == 8'hE7))) & ~bus_iorq_n & ~bus_wr_n & bus_m1_n) ? 1 : 0;
+wire port77_wr = ((((bus_a[7:0] == 8'h77) & (zc_en | divmmc_en)) | 
+                   ((bus_a[7:0] == 8'hE7) & divmmc_en)) & ~bus_iorq_n & ~bus_wr_n & bus_m1_n) ? 1 : 0;
 
 reg zc_cs_n;
 always @(posedge clk_mem or posedge reset) begin
