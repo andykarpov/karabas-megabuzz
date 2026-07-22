@@ -2,11 +2,11 @@
 
 module spram #(parameter DATAWIDTH=8, ADDRWIDTH=8, NUMWORDS=1<<ADDRWIDTH, MEM_INIT_FILE="")
 (
-	input	                 clock,
+	input wire                 clock,
 
-	input	 [ADDRWIDTH-1:0] address,
-	input	 [DATAWIDTH-1:0] data,
-	input	                 wren,
+	input wire [ADDRWIDTH-1:0] address,
+	input wire [DATAWIDTH-1:0] data,
+	input wire                 wren,
 	output reg [DATAWIDTH-1:0] q
 );
 
