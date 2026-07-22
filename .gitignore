@@ -74,3 +74,8 @@ make_core.py
 # kicad backups
 .history/
 *-backups/
+
+# Makefile generated 
+*_mapped.*
+netlist.lst
+
