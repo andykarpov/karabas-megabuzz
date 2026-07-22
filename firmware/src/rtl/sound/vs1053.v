@@ -1,5 +1,12 @@
 /**
  * VS1053 pseudo-parallel interface
+ *
+ * Статус регистр (bus_addr=0), чтение (bus_we_n = 1):
+ * - Bit [6:0] — количество байт в FIFO.
+ * - Bit 7 — флаг переполнения FIFO (fifo_full).
+ * Статус регистр (bus_addr=0), запись (bus_we_n = 1):
+ * - Bit 7 — 1 запускает процедуру полного аппаратного и программного рестарта VS1053. 
+ *   Остальные биты игнорируются.
  */
 module vs1053 (
     input  wire        clk,
@@ -25,6 +32,7 @@ module vs1053 (
 wire [8:0] fifo_count;
 wire [7:0] fifo_rdata;
 wire fifo_rd_en;
+wire soft_reset;
 vs1053_host_interface vs1053_host_interface(
     .clk(clk),
     .rst_n(rst_n),
@@ -33,6 +41,7 @@ vs1053_host_interface vs1053_host_interface(
     .bus_addr(bus_addr),
     .bus_din(bus_din),
     .bus_dout(bus_dout),
+    .soft_reset(soft_reset),
     .fifo_count(fifo_count),
     .fifo_rd_en(fifo_rd_en),
     .fifo_rdata(fifo_rdata)
@@ -59,6 +68,7 @@ vs1053_spi_master vs1053_spi_master(
 vs1053_controller vs1053_controller(
     .clk(clk),
     .rst_n(rst_n),
+    .soft_reset(soft_reset),
 
     .vs_dreq(dreq),
     .vs_xreset(xreset),
@@ -90,6 +100,9 @@ module vs1053_host_interface (
     input  wire [7:0]  bus_din,
     output reg  [7:0]  bus_dout,
     
+    // Сигнал программного сброса для автомата управления
+    output reg         soft_reset,
+
     // Интерфейс к контроллеру VS1053
     output wire [8:0]  fifo_count,
     input  wire        fifo_rd_en,
@@ -100,6 +113,7 @@ module vs1053_host_interface (
     reg [7:0]  fifo_wdata;
     wire       fifo_full;
     wire       fifo_empty;
+    wire       fifo_clear;
 
     // Логика записи и чтения по параллельной шине
     always @(posedge clk or negedge rst_n) begin
@@ -107,8 +121,10 @@ module vs1053_host_interface (
             bus_dout   <= 8'h00;
             fifo_wr_en <= 1'b0;
             fifo_wdata <= 8'h00;
+            soft_reset <= 1'b0;
         end else begin
             fifo_wr_en <= 1'b0; // Импульс на один такт
+            soft_reset <= 1'b0;
 
             // TODO: чтобы исключить повторный захват данных, 
             // нужно ловить фронт - ввести регистры prev_cs_n, prev_we_n
@@ -120,6 +136,10 @@ module vs1053_host_interface (
                         if (!fifo_full) begin
                             fifo_wr_en <= 1'b1;
                             fifo_wdata <= bus_din;
+                        end
+                    end else begin // Запись в регистр статуса
+                        if (bus_din[7] == 1'b1) begin
+                            soft_reset <= 1'b1; // Инициируем сброс подсистемы VS1053
                         end
                     end
                 end else begin
@@ -147,9 +167,10 @@ module vs1053_host_interface (
     assign fifo_full  = (count == 8'd128);
     assign fifo_empty = (count == 8'd0);
     assign fifo_rdata = storage[rd_ptr];
+    assign fifo_clear = !rst_n || soft_reset;
 
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
+    always @(posedge clk or posedge fifo_clear) begin
+        if (fifo_clear) begin
             wr_ptr <= 0;
             rd_ptr <= 0;
             count  <= 0;
@@ -256,6 +277,7 @@ endmodule
 module vs1053_controller (
     input  wire        clk,
     input  wire        rst_n,
+    input  wire        soft_reset,
     
     // Интерфейс к VS1053
     input  wire        vs_dreq,
@@ -313,6 +335,17 @@ module vs1053_controller (
             spi_start    <= 1'b0;
             spi_tx_data  <= 8'h00;
             spi_speed    <= 1'b0; // Начинаем на медленной скорости
+            fifo_rd_en   <= 1'b0;
+        end else if (soft_reset) begin // Принудительный сброс всей периферии VS1053
+            state        <= ST_RESET;
+            rst_timer    <= 0;
+            byte_cnt     <= 0;
+            cmd_step     <= 0;
+            vs_xreset    <= 1'b0;
+            vs_xcs       <= 1'b1;
+            vs_xdcs      <= 1'b1;
+            spi_start    <= 1'b0;
+            spi_speed    <= 1'b0; // Возвращаем медленную скорость для SCI конфигурации
             fifo_rd_en   <= 1'b0;
         end else begin
             spi_start  <= 1'b0;
