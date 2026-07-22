@@ -1,18 +1,17 @@
 /**
  * VS1053 pseudo-parallel interface
  *
- * Статус регистр (bus_addr=0), чтение (bus_we_n = 1):
- * - Bit [6:0] — количество байт в FIFO.
- * - Bit 7 — флаг переполнения FIFO (fifo_full).
- * Статус регистр (bus_addr=0), запись (bus_we_n = 1):
- * - Bit 7 — 1 запускает процедуру полного аппаратного и программного рестарта VS1053. 
- *   Остальные биты игнорируются.
+ * Status register (bus_addr=0), read (bus_we_n = 1):
+ * - Bit [6:0] — count of 32-bytes items in the FIFO (0-127).
+ * - Bit 7 — FIFO overflow flag (fifo_full).
+ * Status register (bus_addr=0), write (bus_we_n = 0):
+ * - Bit 7 — 1 soft reset for VS1053.
  */
 module vs1053 (
     input  wire        clk,
     input  wire        rst_n,
 
-    // физический интерфейс с vs1053
+    // vs1053 pins
     output wire        spi_sclk,
     output wire        spi_mosi,
     input  wire        spi_miso,
@@ -21,15 +20,15 @@ module vs1053 (
     output wire        xdcs,
     output wire        xcs,
 
-    // параллельная шина
+    // parallel bus
     input  wire        bus_cs_n,
     input  wire        bus_we_n,
-    input  wire        bus_addr,     // 0: Статус, 1: Данные
+    input  wire        bus_addr,     // 0: status, 1: data
     input  wire [7:0]  bus_din,
     output reg  [7:0]  bus_dout
 );
 
-wire [8:0] fifo_count;
+wire [11:0] fifo_count;
 wire [7:0] fifo_rdata;
 wire fifo_rd_en;
 wire soft_reset;
@@ -93,103 +92,74 @@ module vs1053_host_interface (
     input  wire        clk,
     input  wire        rst_n,
     
-    // Кастомная параллельная шина
     input  wire        bus_cs_n,
     input  wire        bus_we_n,
-    input  wire        bus_addr,     // 0: Статус, 1: Данные
+    input  wire        bus_addr,
     input  wire [7:0]  bus_din,
     output reg  [7:0]  bus_dout,
     
-    // Сигнал программного сброса для автомата управления
     output reg         soft_reset,
 
-    // Интерфейс к контроллеру VS1053
-    output wire [8:0]  fifo_count,
+    output wire [11:0] fifo_count,
     input  wire        fifo_rd_en,
     output wire [7:0]  fifo_rdata
 );
 
     reg        fifo_wr_en;
     reg [7:0]  fifo_wdata;
-    wire       fifo_full;
-    wire       fifo_empty;
-    wire       fifo_clear;
+    wire       fifo_full, fifo_empty, fifo_clear;
 
-    // Логика записи и чтения по параллельной шине
+    assign fifo_clear = !rst_n || soft_reset;
+
+    reg prev_cs_n;
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             bus_dout   <= 8'h00;
             fifo_wr_en <= 1'b0;
             fifo_wdata <= 8'h00;
             soft_reset <= 1'b0;
+            prev_cs_n  <= 1'b1;
         end else begin
-            fifo_wr_en <= 1'b0; // Импульс на один такт
+            fifo_wr_en <= 1'b0;
             soft_reset <= 1'b0;
+            prev_cs_n <= bus_cs_n;
 
-            // TODO: чтобы исключить повторный захват данных, 
-            // нужно ловить фронт - ввести регистры prev_cs_n, prev_we_n
-
-            if (!bus_cs_n) begin
-                if (!bus_we_n) begin
-                    // Цикл ЗАПИСИ
-                    if (bus_addr == 1'b1) begin // Запись в регистр данных
+            if (!bus_cs_n & prev_cs_n) begin
+                if (!bus_we_n) begin // write
+                    if (bus_addr == 1'b1) begin // data
                         if (!fifo_full) begin
                             fifo_wr_en <= 1'b1;
                             fifo_wdata <= bus_din;
                         end
-                    end else begin // Запись в регистр статуса
+                    end else begin // status
                         if (bus_din[7] == 1'b1) begin
-                            soft_reset <= 1'b1; // Инициируем сброс подсистемы VS1053
+                            soft_reset <= 1'b1;
                         end
                     end
-                end else begin
-                    // Цикл ЧТЕНИЯ
+                end else begin // read
                     if (bus_addr == 1'b0) begin
-                        // Регистр статуса: возвращает кол-во байт в FIFO
-                        // Если FIFO заполнено, верхний бит покажет статус full
-                        bus_dout <= {fifo_full, fifo_count[6:0]}; 
+                        bus_dout <= {fifo_full, fifo_count[11:5]};
                     end else begin
-                        bus_dout <= 8'hFF; // Регистр данных не предназначен для чтения
+                        bus_dout <= 8'hFF;
                     end
                 end
             end
         end
     end
 
-    // Простая программная модель FIFO (TODO: заменить на модуль fifo, размер увеличить до >=2кБ)
-    // Размер: 128 байт (достаточно для демонстрации, fifo_count = 8 бит)
-    reg [7:0]  storage [0:127];
-    reg [6:0]  wr_ptr;
-    reg [6:0]  rd_ptr;
-    reg [7:0]  count;
+    // 4kB FIFO
+    fifo #(.DATA_WIDTH(8), .ADDR_WIDTH(12)) fifo(
+        .clk(clk),
+        .reset(fifo_clear),
+        .rd(fifo_rd_en),
+        .wr(fifo_wr_en),
+        .din(fifo_wdata),
+        .dout(fifo_rdata),
+        .full(fifo_full),
+        .empty(fifo_empty),
+        .data_count(fifo_count)
+    );
 
-    assign fifo_count = count;
-    assign fifo_full  = (count == 8'd128);
-    assign fifo_empty = (count == 8'd0);
-    assign fifo_rdata = storage[rd_ptr];
-    assign fifo_clear = !rst_n || soft_reset;
-
-    always @(posedge clk or posedge fifo_clear) begin
-        if (fifo_clear) begin
-            wr_ptr <= 0;
-            rd_ptr <= 0;
-            count  <= 0;
-        end else begin
-            if (fifo_wr_en && !fifo_full) begin
-                storage[wr_ptr] <= fifo_wdata;
-                wr_ptr <= wr_ptr + 1'b1;
-            end
-            if (fifo_rd_en && !fifo_empty) begin
-                rd_ptr <= rd_ptr + 1'b1;
-            end
-            
-            case ({fifo_wr_en && !fifo_full, fifo_rd_en && !fifo_empty})
-                2'b10: count <= count + 1'b1;
-                2'b01: count <= count - 1'b1;
-                default: count <= count;
-            endcase
-        end
-    end
 endmodule
 
 // ------------------------------------------------------------
@@ -198,18 +168,15 @@ module vs1053_spi_master (
     input  wire        clk,
     input  wire        rst_n,
     
-    // Управление скоростью
-    input  wire        speed_sel,   // 0: Медленно (команды), 1: Быстро (данные)
+    input  wire        speed_sel,   // 0: slow (commands), 1: fast (data)
     
-    // Внутренний интерфейс управления
     input  wire [7:0]  tx_data,
     input  wire        start,
     output reg         busy,
     
-    // Физические пины SPI к VS1053
     output reg         spi_sclk,
     output reg         spi_mosi,
-    input  wire        spi_miso     // Не используется для SDI, но нужен для SCI
+    input  wire        spi_miso
 );
 
     reg [7:0]  shifter;
@@ -217,7 +184,6 @@ module vs1053_spi_master (
     reg [7:0]  clk_div;
     reg        sclk_edge;
     
-    // Генератор гибкого делителя частоты (SPI Mode 0: данные стабильны на переднем фронте SCLK)
     wire [7:0] max_div = speed_sel ? 8'd7 : 8'd28; // clk = 28MHz: 1=2.0MHz, 0=500kHz
 
     always @(posedge clk or negedge rst_n) begin
@@ -238,7 +204,6 @@ module vs1053_spi_master (
         end
     end
 
-    // Конечный автомат отправки битов
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             busy     <= 0;
@@ -252,19 +217,19 @@ module vs1053_spi_master (
                 busy     <= 1'b1;
                 bit_cnt  <= 0;
                 spi_sclk <= 0;
-                spi_mosi <= tx_data[7]; // Выставляем MSB сразу
+                spi_mosi <= tx_data[7]; // MSB
             end else if (busy && sclk_edge) begin
                 if (spi_sclk == 1'b0) begin
-                    spi_sclk <= 1'b1; // Передний фронт: VS1053 читает данные
+                    spi_sclk <= 1'b1; // rising edge: VS1053 reading data
                 end else begin
-                    spi_sclk <= 1'b0; // Задний фронт: сдвигаем данные
+                    spi_sclk <= 1'b0; // falling edge: shift data
                     shifter  <= {shifter[6:0], 1'b0};
                     bit_cnt  <= bit_cnt + 1'b1;
                     
                     if (bit_cnt == 3'd7) begin
-                        busy <= 1'b0; // Передача байта завершена
+                        busy <= 1'b0; // transaction end
                     end else begin
-                        spi_mosi <= shifter[6]; // Выставляем следующий бит
+                        spi_mosi <= shifter[6]; // next bit
                     end
                 end
             end
@@ -279,25 +244,22 @@ module vs1053_controller (
     input  wire        rst_n,
     input  wire        soft_reset,
     
-    // Интерфейс к VS1053
     input  wire        vs_dreq,
     output reg         vs_xreset,
     output reg         vs_xdcs,
     output reg         vs_xcs,
     
-    // Интерфейс к SPI Master
     output reg  [7:0]  spi_tx_data,
     output reg         spi_start,
     input  wire        spi_busy,
-    output reg         spi_speed,    // Команда изменения скорости для SPI мастера
+    output reg         spi_speed,
     
-    // Интерфейс к FIFO
-    input  wire [8:0]  fifo_count,
+    input  wire [11:0] fifo_count,
     output reg         fifo_rd_en,
     input  wire [7:0]  fifo_rdata
 );
 
-    // Состояния FSM
+    // FSM state
     localparam ST_RESET      = 0,
                ST_WAIT_DREQ1 = 1,
                ST_WRITE_CLK  = 2,
@@ -313,13 +275,13 @@ module vs1053_controller (
     reg [5:0]  byte_cnt;
     reg [1:0]  cmd_step;
 
-    // Таблица инициализации регистров VS1053 [Режим записи SCI (8 бит) + Адрес (8 бит) + Данные (16 бит)]
-    // Порядок байт для отправки команд SCI: 0x02 (запись), затем Адрес, затем MSB данных, затем LSB данных.
+    // VS1053 regs init table [Write mode SCI (8 bit) + Addr (8 bit) + Data (16 bit)]
+    // Bytes order to send SCI commands: 0x02 (write), Addr, MSB data, LSB data.
     reg [7:0] cmd_bytes[0:7];
     initial begin
-        // Команда 1: Пишем в SCI_CLOCKF (Адрес 0x03) значение 0x8800 (XTALI x 3.5)
+        // Cmd 1: Write SCI_CLOCKF (Addr 0x03) value 0x8800 (XTALI x 3.5)
         cmd_bytes[0] = 8'h02; cmd_bytes[1] = 8'h03; cmd_bytes[2] = 8'h88; cmd_bytes[3] = 8'h00;
-        // Команда 2: Пишем в SCI_MODE (Адрес 0x00) значение 0x0820 (SM_SDINEW = 1)
+        // Cmd 2: Write SCI_MODE (Addr 0x00) value 0x0820 (SM_SDINEW = 1)
         cmd_bytes[4] = 8'h02; cmd_bytes[5] = 8'h00; cmd_bytes[6] = 8'h08; cmd_bytes[7] = 8'h20;
     end
 
@@ -334,9 +296,9 @@ module vs1053_controller (
             vs_xdcs      <= 1'b1;
             spi_start    <= 1'b0;
             spi_tx_data  <= 8'h00;
-            spi_speed    <= 1'b0; // Начинаем на медленной скорости
+            spi_speed    <= 1'b0;
             fifo_rd_en   <= 1'b0;
-        end else if (soft_reset) begin // Принудительный сброс всей периферии VS1053
+        end else if (soft_reset) begin
             state        <= ST_RESET;
             rst_timer    <= 0;
             byte_cnt     <= 0;
@@ -345,7 +307,7 @@ module vs1053_controller (
             vs_xcs       <= 1'b1;
             vs_xdcs      <= 1'b1;
             spi_start    <= 1'b0;
-            spi_speed    <= 1'b0; // Возвращаем медленную скорость для SCI конфигурации
+            spi_speed    <= 1'b0;
             fifo_rd_en   <= 1'b0;
         end else begin
             spi_start  <= 1'b0;
@@ -354,7 +316,7 @@ module vs1053_controller (
             case (state)
                 ST_RESET: begin
                     vs_xreset <= 1'b0;
-                    if (rst_timer < 24'h0FFFFF) begin // Удерживаем сброс
+                    if (rst_timer < 24'h0FFFFF) begin // keep reset
                         rst_timer <= rst_timer + 1'b1;
                     end else begin
                         vs_xreset <= 1'b1;
@@ -366,7 +328,7 @@ module vs1053_controller (
                     if (vs_dreq) begin
                         state    <= ST_WRITE_CLK;
                         cmd_step <= 0;
-                        vs_xcs   <= 1'b0; // Активируем выбор команд SCI
+                        vs_xcs   <= 1'b0;
                     end
                 end
 
@@ -395,9 +357,9 @@ module vs1053_controller (
 
                 ST_WAIT_DREQ2: begin
                     if (!spi_busy) begin
-                        vs_xcs <= 1'b1; // Деактивируем SCI
+                        vs_xcs <= 1'b1;
                         if (vs_dreq) begin
-                            spi_speed <= 1'b1; // Переключаем SPI на высокую скорость для звука!
+                            spi_speed <= 1'b1;
                             state     <= ST_IDLE;
                         end
                     end
@@ -406,15 +368,15 @@ module vs1053_controller (
                 ST_IDLE: begin
                     vs_xdcs  <= 1'b1;
                     byte_cnt <= 0;
-                    // Ждем готовности чипа (DREQ=1) И накопления 32 байт в FIFO
+                    // waiting for DREQ=1 and 32 bytes in the fifo
                     if (vs_dreq && (fifo_count >= 9'd32)) begin
-                        fifo_rd_en <= 1'b1; // Делаем упреждающее чтение первого байта
+                        fifo_rd_en <= 1'b1; // read ahead of the first byte from the fifo
                         state      <= ST_FIFO_READ;
                     end
                 end
 
                 ST_FIFO_READ: begin
-                    vs_xdcs <= 1'b0; // Включаем SDI передачу аудио-данных
+                    vs_xdcs <= 1'b0;
                     state   <= ST_SPI_START;
                 end
 
@@ -428,10 +390,10 @@ module vs1053_controller (
                 ST_SPI_WAIT: begin
                     if (!spi_busy) begin
                         if (byte_cnt < 6'd32) begin
-                            fifo_rd_en <= 1'b1; // Запрашиваем следующий байт
+                            fifo_rd_en <= 1'b1; // fetch next byte from the fifo
                             state      <= ST_FIFO_READ;
                         end else begin
-                            vs_xdcs <= 1'b1; // Отпускаем шину данных звука
+                            vs_xdcs <= 1'b1;
                             state   <= ST_IDLE;
                         end
                     end
