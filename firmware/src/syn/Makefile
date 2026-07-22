@@ -12,7 +12,8 @@ CONSTRAINTS_A   = karabas-megabuzz.ucf
 CONSTRAINTS_A1  = karabas-megabuzz-a1.ucf
 CONSTRAINTS_A2  = karabas-megabuzz-a2.ucf
 
-VERILOG_SOURCES_COMMON= ../rtl/dac/pcm5102.v\
+VERILOG_SOURCES_COMMON= ../rtl/megabuzz.v\
+                        ../rtl/dac/pcm5102.v\
                         ../rtl/sound/gs_top.v\
                         ../rtl/sound/gs.v\
                         ../rtl/sound/audio_mixer.v\
@@ -71,14 +72,9 @@ VERILOG_SOURCES_COMMON= ../rtl/dac/pcm5102.v\
                         ../rtl/ram/dprom.v\
                         ../rtl/ram/dpram.v
 
-VERILOG_SOURCES_A  =    ../rtl/top.v\
-                        $(VERILOG_SOURCES_COMMON)
-
-VERILOG_SOURCES_A1 =    ../rtl/top_a1.v\
-                        $(VERILOG_SOURCES_COMMON)
-
-VERILOG_SOURCES_A2 =    ../rtl/top_a2.v\
-                        $(VERILOG_SOURCES_COMMON)
+VERILOG_SOURCES_A  =    $(VERILOG_SOURCES_COMMON)
+VERILOG_SOURCES_A1 =    $(VERILOG_SOURCES_COMMON)
+VERILOG_SOURCES_A2 =    $(VERILOG_SOURCES_COMMON)
 
 VHDL_SOURCES    =       ../rtl/T80/T80.vhd\
                         ../rtl/T80/T80_ALU.vhd\
@@ -103,7 +99,9 @@ CFG2_ROM = cfg2.rom
 
 # ----------------------------------------------
 
-.PHONY: all25_a2 all25_a1 all25_a all16_a2 all16_a1 all16_a clean
+.PHONY: all all25_a2 all25_a1 all25_a all16_a2 all16_a1 all16_a
+
+all: all25_a2 all25_a1 all25_a all16_a2 all16_a1 all16_a
 
 all16_a: $(BUILD_DIR16)/$(PROJECT_A).bit
 all16_a1: $(BUILD_DIR16)/$(PROJECT_A1).bit
@@ -156,7 +154,7 @@ $(BUILD_DIR16)/$(PROJECT_A).xst: | $(BUILD_DIR16)
 	@echo "-ofn $(PROJECT_A).ngc" >> $@
 	@echo "-ofmt NGC" >> $@
 	@echo "-p $(TARGET_PART16)" >> $@
-	@echo "-top $(PROJECT_A)" >> $@
+	@echo "-top karabas_megabuzz" >> $@
 	@echo "-opt_mode Speed" >> $@
 	@echo "-opt_level 1" >> $@
 	@echo "-define {HW_A}" >> $@
@@ -167,7 +165,7 @@ $(BUILD_DIR16)/$(PROJECT_A1).xst: | $(BUILD_DIR16)
 	@echo "-ofn $(PROJECT_A1).ngc" >> $@
 	@echo "-ofmt NGC" >> $@
 	@echo "-p $(TARGET_PART16)" >> $@
-	@echo "-top $(PROJECT_A1)" >> $@
+	@echo "-top karabas_megabuzz" >> $@
 	@echo "-opt_mode Speed" >> $@
 	@echo "-opt_level 1" >> $@
 	@echo "-define {HW_A1}" >> $@
@@ -178,7 +176,7 @@ $(BUILD_DIR16)/$(PROJECT_A2).xst: | $(BUILD_DIR16)
 	@echo "-ofn $(PROJECT_A2).ngc" >> $@
 	@echo "-ofmt NGC" >> $@
 	@echo "-p $(TARGET_PART16)" >> $@
-	@echo "-top $(PROJECT_A2)" >> $@
+	@echo "-top karabas_megabuzz" >> $@
 	@echo "-opt_mode Speed" >> $@
 	@echo "-opt_level 1" >> $@
 	@echo "-define {HW_A2}" >> $@
@@ -189,7 +187,7 @@ $(BUILD_DIR25)/$(PROJECT_A).xst: | $(BUILD_DIR25)
 	@echo "-ofn $(PROJECT_A).ngc" >> $@
 	@echo "-ofmt NGC" >> $@
 	@echo "-p $(TARGET_PART25)" >> $@
-	@echo "-top $(PROJECT_A)" >> $@
+	@echo "-top karabas_megabuzz" >> $@
 	@echo "-opt_mode Speed" >> $@
 	@echo "-opt_level 1" >> $@
 	@echo "-define {HW_A}" >> $@
@@ -200,7 +198,7 @@ $(BUILD_DIR25)/$(PROJECT_A1).xst: | $(BUILD_DIR25)
 	@echo "-ofn $(PROJECT_A1).ngc" >> $@
 	@echo "-ofmt NGC" >> $@
 	@echo "-p $(TARGET_PART25)" >> $@
-	@echo "-top $(PROJECT_A1)" >> $@
+	@echo "-top karabas_megabuzz" >> $@
 	@echo "-opt_mode Speed" >> $@
 	@echo "-opt_level 1" >> $@
 	@echo "-define {HW_A1}" >> $@
@@ -211,7 +209,7 @@ $(BUILD_DIR25)/$(PROJECT_A2).xst: | $(BUILD_DIR25)
 	@echo "-ofn $(PROJECT_A2).ngc" >> $@
 	@echo "-ofmt NGC" >> $@
 	@echo "-p $(TARGET_PART25)" >> $@
-	@echo "-top $(PROJECT_A2)" >> $@
+	@echo "-top karabas_megabuzz" >> $@
 	@echo "-opt_mode Speed" >> $@
 	@echo "-opt_level 1" >> $@
 	@echo "-define {HW_A2}" >> $@
@@ -220,26 +218,44 @@ $(BUILD_DIR25)/$(PROJECT_A2).xst: | $(BUILD_DIR25)
 $(BUILD_DIR16)/$(PROJECT_A).ngc: $(BUILD_DIR16)/$(PROJECT_A).prj $(BUILD_DIR16)/$(PROJECT_A).xst $(VERILOG_SOURCES_A) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
 	cd $(BUILD_DIR16) && $(ISE_ENV) xst -ifn $(PROJECT_A).xst -ofn $(PROJECT_A).syr
+	@rm -f $(BUILD_DIR16)/netlist.lst
+	@rm -f $(BUILD_DIR16)/xsc_report.xml
+	@rm -rf $(BUILD_DIR16)/xst
 
 $(BUILD_DIR16)/$(PROJECT_A1).ngc: $(BUILD_DIR16)/$(PROJECT_A1).prj $(BUILD_DIR16)/$(PROJECT_A1).xst $(VERILOG_SOURCES_A1) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
 	cd $(BUILD_DIR16) && $(ISE_ENV) xst -ifn $(PROJECT_A1).xst -ofn $(PROJECT_A1).syr
+	@rm -f $(BUILD_DIR16)/netlist.lst
+	@rm -f $(BUILD_DIR16)/xsc_report.xml
+	@rm -rf $(BUILD_DIR16)/xst
 
 $(BUILD_DIR16)/$(PROJECT_A2).ngc: $(BUILD_DIR16)/$(PROJECT_A2).prj $(BUILD_DIR16)/$(PROJECT_A2).xst $(VERILOG_SOURCES_A2) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
 	cd $(BUILD_DIR16) && $(ISE_ENV) xst -ifn $(PROJECT_A2).xst -ofn $(PROJECT_A2).syr
+	@rm -f $(BUILD_DIR16)/netlist.lst
+	@rm -f $(BUILD_DIR16)/xsc_report.xml
+	@rm -rf $(BUILD_DIR16)/xst
 
 $(BUILD_DIR25)/$(PROJECT_A).ngc: $(BUILD_DIR25)/$(PROJECT_A).prj $(BUILD_DIR25)/$(PROJECT_A).xst $(VERILOG_SOURCES_A) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
 	cd $(BUILD_DIR25) && $(ISE_ENV) xst -ifn $(PROJECT_A).xst -ofn $(PROJECT_A).syr
+	@rm -f $(BUILD_DIR25)/netlist.lst
+	@rm -f $(BUILD_DIR25)/xsc_report.xml
+	@rm -rf $(BUILD_DIR25)/xst
 
 $(BUILD_DIR25)/$(PROJECT_A1).ngc: $(BUILD_DIR25)/$(PROJECT_A1).prj $(BUILD_DIR25)/$(PROJECT_A1).xst $(VERILOG_SOURCES_A1) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
 	cd $(BUILD_DIR25) && $(ISE_ENV) xst -ifn $(PROJECT_A1).xst -ofn $(PROJECT_A1).syr
+	@rm -f $(BUILD_DIR25)/netlist.lst
+	@rm -f $(BUILD_DIR25)/xsc_report.xml
+	@rm -rf $(BUILD_DIR25)/xst
 
 $(BUILD_DIR25)/$(PROJECT_A2).ngc: $(BUILD_DIR25)/$(PROJECT_A2).prj $(BUILD_DIR25)/$(PROJECT_A2).xst $(VERILOG_SOURCES_A2) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
 	cd $(BUILD_DIR25) && $(ISE_ENV) xst -ifn $(PROJECT_A2).xst -ofn $(PROJECT_A2).syr
+	@rm -f $(BUILD_DIR25)/netlist.lst
+	@rm -f $(BUILD_DIR25)/xsc_report.xml
+	@rm -rf $(BUILD_DIR25)/xst
 
 # 3. NGDBUILD
 $(BUILD_DIR16)/$(PROJECT_A).ngd: $(BUILD_DIR16)/$(PROJECT_A).ngc $(CONSTRAINTS_A)
@@ -346,23 +362,6 @@ $(BUILD_DIR25)/$(PROJECT_A2).bit: $(BUILD_DIR25)/$(PROJECT_A2).ncd
 	@echo "=== GENERATING BITSTREAM ==="
 	cd $(BUILD_DIR25) && $(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk $(PROJECT_A2).ncd $(PROJECT_A2).bit
 	@echo "=== BUILD SUCCESSFULLY COMPLETED ==="
-
-# 1. Синтез через Yosys (генерация EDIF)
-#$(BUILD_DIR25)/$(PROJECT_A2).edf: $(SOURCES) | $(BUILD_DIR25)
-#	@echo "=== RUNNING YOSYS SYNTHESIS ==="
-#	yosys -m ghdl -p "\
-#        verilog_defines -DHW_A2; \
-#		read_verilog -lib +/xilinx/cells_sim.v; \
-#		$(foreach f,$(VHDL_SOURCES),ghdl $(f);) \
-#		$(foreach f,$(VERILOG_SOURCES_A2),read_verilog $(f);) \
-#		hierarchy -top $(TOP_MODULE); \
-#		synth_xilinx -family xc6s -ise; \
-#		write_edif $@"
-
-# 2. NGDBUILD: Слияние EDIF-нетлиста и файла ограничений UCF в формат NGD
-#$(BUILD_DIR25)/$(PROJECT_A2).ngd: $(BUILD_DIR25)/$(PROJECT_A2).edf $(CONSTRAINTS_A2)
-#	@echo "=== RUNNING NGDBUILD (ISE) ==="
-#	cd $(BUILD_DIR25) && $(ISE_ENV) ngdbuild -p $(TARGET_PART25) -uc $(CONSTRAINTS_A2) $(PROJECT_A2).edf $(PROJECT_A2).ngd
 
 # work dir
 $(BUILD_DIR16):
