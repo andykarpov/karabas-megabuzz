@@ -363,7 +363,7 @@ $(BUILD_DIR25)/$(PROJECT_A2).bit: $(BUILD_DIR25)/$(PROJECT_A2).ncd
 	cd $(BUILD_DIR25) && $(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk $(PROJECT_A2).ncd $(PROJECT_A2).bit
 	@echo "=== BUILD SUCCESSFULLY COMPLETED ==="
 
-# work dir
+# Work dir creation
 $(BUILD_DIR16):
 	mkdir -p $(BUILD_DIR16)
 
@@ -376,6 +376,7 @@ clean:
 	rm -rf $(BUILD_DIR16)
 	rm -f xilinx_device_details.xml
 
+# Flash
 flash16: $(BUILD_DIR16)/$(PROJECT_A).bin
 	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx16.bit; jtagspi_program $(BUILD_DIR16)/$(PROJECT_A).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
