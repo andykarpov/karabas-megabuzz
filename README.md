@@ -41,6 +41,10 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
     * [x] Added 128kB SRAM chip for DivMMC
     * [x] Added 8kb EEPROM chip to store configuration
 
+* Rev.A3 - current dev version
+
+    * [x] Added VS1053 IC
+
 ### Related projects
 
 * Karabas-OPL3 - [link](https://github.com/andykarpov/karabas-opl3)
