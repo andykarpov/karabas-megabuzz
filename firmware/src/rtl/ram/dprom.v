@@ -2,9 +2,9 @@
 
 module dprom #(parameter DATAWIDTH=8, ADDRWIDTH=8, NUMWORDS=1<<ADDRWIDTH, MEM_INIT_FILE="")
 (
-	input	                 clock,
-	input	 [ADDRWIDTH-1:0] address_a,
-	input	 [DATAWIDTH-1:0] data_a,
+	input wire                 clock,
+	input wire [ADDRWIDTH-1:0] address_a,
+	input wire [DATAWIDTH-1:0] data_a,
 	output reg [DATAWIDTH-1:0] q_a
 );
 

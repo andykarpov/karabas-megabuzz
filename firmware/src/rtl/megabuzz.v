@@ -17,20 +17,64 @@
 --                                                 #  #  #  ######  #####  #     # ######   #####  ####### #######
 --
 -- https://github.com/andykarpov/karabas-megabuzz
--- FPGA firmware for Karabas-MegaBuzz soundcard revA2
+-- FPGA firmware for Karabas-MegaBuzz soundcard revA,A1,A2
 --
 -- @author Andy Karpov <andy.karpov@gmail.com>
 -- EU, 2026
 ------------------------------------------------------------------------------------------------------------------*/
 `default_nettype none
 
-module karabas_megabuzz_a2(
+module karabas_megabuzz(
     input wire          clk,
-    input wire  [5:5]   cfg_n,
     input wire          btn_reset_n,
-    input wire          btn_nmi_n,
 
+`ifdef HW_A
+    input wire  [4:0]   cfg_n,
+    inout wire  [8:1]   tp,
+    input wire          bus_dos_n,
+    input wire          bus_iodos_n,
+`endif
+
+`ifdef HW_A1
+    input wire  [5:0]   cfg_n,
     output wire         o_reset_n,
+    input wire          btn_nmi_n,
+    output wire         psram_cs_n,
+    output wire         sd_cs_n,
+    output wire         sd_clk,
+    inout wire          sd_di,
+    inout wire          sd_do,
+    input wire          sd_det_n,
+    output wire         led1,
+    inout wire  [4:1]   tp,
+    inout wire          bus_nmi_n,
+    output wire         bus_romcs_n,
+    input wire          bus_f14,
+`endif
+
+`ifdef HW_A2
+    input wire  [5:5]   cfg_n,
+    output wire         o_reset_n,
+    input wire          btn_nmi_n,
+    output wire [16:13] mmc_mem_a,
+    output wire         mmc_mem_cs_n,
+    output wire         mmc_mem_rd_n,
+    output wire         mmc_mem_wr_n,
+    inout wire          sda,
+    inout wire          scl,
+    output wire         psram_cs_n,
+    output wire         sd_cs_n,
+    output wire         sd_clk,
+    inout wire          sd_di,
+    inout wire          sd_do,
+    input wire          sd_det_n,
+    output wire         led1,
+    inout wire  [4:1]   tp,
+    inout wire          bus_nmi_n,
+    output wire         bus_romcs_n,
+    input wire          bus_f14,
+`endif
+
     input wire          bus_rst_n,
     input wire  [15:0]  bus_a,
     inout wire  [7:0]   bus_d,
@@ -41,9 +85,6 @@ module karabas_megabuzz_a2(
     input wire          bus_m1_n,
     output wire         bus_wait_n,
     output wire         bus_iorqge_n,
-    inout wire          bus_nmi_n,
-    output wire         bus_romcs_n,
-    input wire          bus_f14,
 
     output wire         midi_clk,
     output wire         midi_tx,
@@ -53,14 +94,6 @@ module karabas_megabuzz_a2(
     inout wire  [7:0]   mem_d,
     output wire         mem_wr_n,
     output wire         mem_rd_n,
-
-    output wire [16:13] mmc_mem_a,
-    output wire         mmc_mem_cs_n,
-    output wire         mmc_mem_rd_n,
-    output wire         mmc_mem_wr_n,
-
-    inout wire          sda,
-    inout wire          scl,
 
     output wire         opl3_clk,
     output wire [1:0]   opl3_a,
@@ -84,44 +117,99 @@ module karabas_megabuzz_a2(
     inout wire          flash_miso,
     inout wire          flash_hold_n,
     inout wire          flash_wp_n,
-    output wire         psram_cs_n,
-
-    output wire         sd_cs_n,
-    output wire         sd_clk,
-    inout wire          sd_di,
-    inout wire          sd_do,
-    input wire          sd_det_n,
 
     output wire [7:0]   led_meter_l,
-    output wire [7:0]   led_meter_r,
-
-    output wire         led1,
-
-    inout wire  [4:1]   tp
+    output wire [7:0]   led_meter_r
 );
 
 // unused signals
 assign flash_hold_n = 1'b1;
 assign flash_wp_n   = 1'b1;
-assign psram_cs_n   = 1'b1;
-assign tp[4:1]      = 4'bz;
-assign led1         = sd_cs_n;
-assign sda          = 1'bz;
-assign scl          = 1'b1;
 
-// config bits expanded to named signals
-wire [7:0] cfg_byte; // todo: fetch cfg from flash (default) + eeprom
-wire divmmc_en      = cfg_byte[0];
-wire zc_en          = cfg_byte[1];
-wire soundrive_en   = cfg_byte[2];
-wire beeper_en      = cfg_byte[3];
-wire saa_en         = cfg_byte[4];
-wire gs_en          = cfg_byte[5];
-wire turbosound_en  = cfg_byte[6];
-wire midi_en        = cfg_byte[6]; // depends on AY port
-wire opl3_en        = cfg_byte[7];
+`ifdef HW_A
+    // unused signals
+    assign tp[8:2]      = 7'bz;
+    assign tp[1]        = ~reset; // hotfix revA - opl3 reset
+    // config bits expanded to named signals
+    wire divmmc_en      = 0;
+    wire zc_en          = 0;
+    wire soundrive_en   = cfg_n[0];
+    wire beeper_en      = cfg_n[0];
+    wire saa_en         = cfg_n[1];
+    wire gs_en          = cfg_n[2];
+    wire turbosound_en  = cfg_n[3];
+    wire midi_en        = cfg_n[3]; // depends on AY port
+    wire opl3_en        = cfg_n[4];
+    wire vu_reverse     = tp[2];
+    // fake signals
+    wire o_reset_n;
+    wire psram_cs_n;
+    wire btn_nmi_n = 1;
+    wire sd_cs_n;
+    wire sd_clk;
+    wire sd_di;
+    wire sd_do;
+    wire sd_det_n = 1;
+    wire led1;
+    wire [16:13] mmc_mem_a;
+    wire [7:0] mmc_mem_d;
+    wire mmc_mem_cs_n;
+    wire mmc_mem_rd_n;
+    wire mmc_mem_wr_n;
+    wire sda;
+    wire scl;
+    wire bus_nmi_n;
+    wire bus_romcs_n;
+    wire bus_f14;
+`endif
 
-wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
+`ifdef HW_A1
+    // unused signals
+    assign psram_cs_n   = 1'b1;
+    assign tp[4:1]      = 4'bz;
+    // sd led
+    assign led1         = sd_cs_n;
+    // config bits expanded to named signals
+    wire divmmc_en      = cfg_n[0];
+    wire zc_en          = cfg_n[0];
+    wire soundrive_en   = cfg_n[1];
+    wire beeper_en      = cfg_n[1];
+    wire saa_en         = cfg_n[1];
+    wire gs_en          = cfg_n[2];
+    wire turbosound_en  = cfg_n[3];
+    wire midi_en        = cfg_n[3]; // depends on AY port
+    wire opl3_en        = cfg_n[4];
+    wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
+    // fake signals
+    wire [16:13] mmc_mem_a;
+    wire [7:0] mmc_mem_d;
+    wire mmc_mem_cs_n;
+    wire mmc_mem_rd_n;
+    wire mmc_mem_wr_n;
+    wire sda;
+    wire scl;
+`endif
+
+`ifdef HW_A2
+    // unused signals
+    assign psram_cs_n   = 1'b1;
+    assign tp[4:1]      = 4'bz;
+    assign sda          = 1'bz;
+    assign scl          = 1'b1;
+    // sd led
+    assign led1         = sd_cs_n;
+    // config bits expanded to named signals
+    wire divmmc_en      = cfg_byte[0];
+    wire zc_en          = cfg_byte[1];
+    wire soundrive_en   = cfg_byte[2];
+    wire beeper_en      = cfg_byte[3];
+    wire saa_en         = cfg_byte[4];
+    wire gs_en          = cfg_byte[5];
+    wire turbosound_en  = cfg_byte[6];
+    wire midi_en        = cfg_byte[6]; // depends on AY port
+    wire opl3_en        = cfg_byte[7];
+    wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
+`endif
 
 // pll
 wire clk_bus, clk_mem, clk12, locked, areset;
@@ -200,6 +288,7 @@ flash flash(
 wire [20:0] loader_ram_a;
 wire [7:0] loader_ram_do;
 wire loader_act, loader_reset, loader_ram_wr;
+wire [7:0] cfg_byte; 
 loader loader(
     .CLK              (clk_bus),
     .RESET            (areset),
@@ -372,7 +461,7 @@ gs_top gs_inst(
     .sram_a           (mem_a),
     .sram_wr_n        (mem_wr_n),
     .sram_rd_n        (mem_rd_n),
-     
+
     .loader_act       (loader_act),
     .loader_ram_a     (loader_ram_a),
     .loader_ram_do    (loader_ram_do),
@@ -433,7 +522,7 @@ audio_mixer audio_mixer_inst(
     .clk              (clk_bus),
 
     .mute             (mute), 
-    .mode             (2'b00), // abc/acb/mono ? 
+    .mode             (2'b00), // todo: abc/acb/mono ? 
     
     .soundrive_en     (soundrive_en),
     .beeper_en        (beeper_en),
@@ -500,10 +589,12 @@ zc_divmmc zc_divmmc(
     .bus_nmi_n        (bus_nmi_n),
     .btn_nmi_n        (btn_nmi_n),
 
+`ifdef HW_A2
     .ram_a            (mmc_mem_a),
     .ram_cs_n         (mmc_mem_cs_n),
     .ram_rd_n         (mmc_mem_rd_n),
     .ram_wr_n         (mmc_mem_wr_n),
+`endif
 
     .sd_clk           (sd_clk),
     .sd_do            (sd_do),
