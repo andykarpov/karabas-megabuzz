@@ -25,7 +25,7 @@ module vs1053 (
     input  wire        bus_we_n,
     input  wire        bus_addr,     // 0: status, 1: data
     input  wire [7:0]  bus_din,
-    output reg  [7:0]  bus_dout
+    output wire [7:0]  bus_dout
 );
 
 wire [11:0] fifo_count;
@@ -72,12 +72,12 @@ vs1053_controller vs1053_controller(
     .vs_dreq(dreq),
     .vs_xreset(xreset),
     .vs_xdcs(xdcs),
-    .cs_xcs(xcs),
+    .vs_xcs(xcs),
 
     .spi_tx_data(tx_data),
     .spi_start(start),
     .spi_busy(busy),
-    .spi_speed(speed),
+    .spi_speed(speed_sel),
 
     .fifo_count(fifo_count),
     .fifo_rd_en(fifo_rd_en),
