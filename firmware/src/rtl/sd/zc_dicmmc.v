@@ -1,3 +1,9 @@
+`ifdef HW_A3
+    `define HW_A2_A3
+`elsif HW_A2
+    `define HW_A2_A3
+`endif
+
 module zc_divmmc(
     input wire clk,
     input wire clk_mem,
@@ -16,7 +22,7 @@ module zc_divmmc(
     inout wire bus_nmi_n,
     input wire btn_nmi_n,
 
-`ifdef HW_A2
+`ifdef HW_A2_A3
     output wire [16:13] ram_a,
     output wire ram_cs_n,
     output wire ram_rd_n,
@@ -158,14 +164,8 @@ wire is_rom = (divmmc_en & ~bus_mreq_n & (bus_a[15:14] == 2'b00)) ? 1 : 0;
 wire [7:0] rom_do;
 sprom #(.ADDRWIDTH(13), .MEM_INIT_FILE("esxdos.mem")) esxdos_rom(.clock(clk_mem), .address(bus_a[12:0]), .q(rom_do));
 
-// rev A2 uses its own 128k ram chip + 1982 rom instead of default rom 
-`ifdef HW_A2
-
-//wire [7:0] zxrom_do;
-//sprom #(.ADDRWIDTH(14), .MEM_INIT_FILE("1982.mem")) zx_rom(.clock(clk_mem), .address(bus_a[13:0]), .q(zxrom_do));
-//assign divmmc_mem = (is_rom_divmmc | is_rom) ? 1 : 0;
-//assign divmmc_dout = (is_rom_divmmc) ? rom_do : zxrom_do;
-//assign divmmc_zxrom_block = divmmc_en & (is_rom | automap | conmem);
+// rev A2,A3 uses its own 128k ram chip
+`ifdef HW_A2_A3
 
 assign divmmc_mem = is_rom_divmmc;
 assign divmmc_dout = rom_do;

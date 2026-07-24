@@ -75,6 +75,37 @@ module karabas_megabuzz(
     input wire          bus_f14,
 `endif
 
+`ifdef HW_A3
+    input wire  [5:5]   cfg_n,
+    output wire         o_reset_n,
+    input wire          btn_nmi_n,
+    output wire [16:13] mmc_mem_a,
+    output wire         mmc_mem_cs_n,
+    output wire         mmc_mem_rd_n,
+    output wire         mmc_mem_wr_n,
+    inout wire          sda,
+    inout wire          scl,
+    output wire         psram_cs_n,
+    output wire         sd_cs_n,
+    output wire         sd_clk,
+    inout wire          sd_di,
+    inout wire          sd_do,
+    input wire          sd_det_n,
+    output wire         led1,
+    inout wire  [4:1]   tp,
+    inout wire          bus_nmi_n,
+    output wire         bus_romcs_n,
+    input wire          bus_f14,
+    output wire         vs_clk,
+    output wire         vs_reset_n,
+    output wire         vs_cs_n,
+    output wire         vs_dcs_n,
+    input wire          vs_dreq,
+    output wire         vs_mosi,
+    input wire          vs_miso,
+    output wire         vs_sclk,
+`endif
+
     input wire          bus_rst_n,
     input wire  [15:0]  bus_a,
     inout wire  [7:0]   bus_d,
@@ -140,6 +171,7 @@ assign flash_wp_n   = 1'b1;
     wire turbosound_en  = cfg_n[3];
     wire midi_en        = cfg_n[3]; // depends on AY port
     wire opl3_en        = cfg_n[4];
+    wire vs1053_en      = 0;
     wire vu_reverse     = tp[2];
     // fake signals
     wire o_reset_n;
@@ -161,6 +193,14 @@ assign flash_wp_n   = 1'b1;
     wire bus_nmi_n;
     wire bus_romcs_n;
     wire bus_f14;
+    wire vs_clk;
+    wire vs_reset_n;
+    wire vs_cs_n;
+    wire vs_dcs_n;
+    wire vs_dreq = 0;
+    wire vs_mosi;
+    wire vs_miso;
+    wire vs_sclk;
 `endif
 
 `ifdef HW_A1
@@ -179,6 +219,7 @@ assign flash_wp_n   = 1'b1;
     wire turbosound_en  = cfg_n[3];
     wire midi_en        = cfg_n[3]; // depends on AY port
     wire opl3_en        = cfg_n[4];
+    wire vs1053_en      = 0;
     wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
     // fake signals
     wire [16:13] mmc_mem_a;
@@ -188,6 +229,14 @@ assign flash_wp_n   = 1'b1;
     wire mmc_mem_wr_n;
     wire sda;
     wire scl;
+    wire vs_clk;
+    wire vs_reset_n;
+    wire vs_cs_n;
+    wire vs_dcs_n;
+    wire vs_dreq = 0;
+    wire vs_mosi;
+    wire vs_miso;
+    wire vs_sclk;
 `endif
 
 `ifdef HW_A2
@@ -208,6 +257,37 @@ assign flash_wp_n   = 1'b1;
     wire turbosound_en  = cfg_byte[6];
     wire midi_en        = cfg_byte[6]; // depends on AY port
     wire opl3_en        = cfg_byte[7];
+    wire vs1053_en      = 0;
+    wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
+    wire vs_clk;
+    wire vs_reset_n;
+    wire vs_cs_n;
+    wire vs_dcs_n;
+    wire vs_dreq = 0;
+    wire vs_mosi;
+    wire vs_miso;
+    wire vs_sclk;
+`endif
+
+`ifdef HW_A3
+    // unused signals
+    assign psram_cs_n   = 1'b1;
+    assign tp[4:1]      = 4'bz;
+    assign sda          = 1'bz;
+    assign scl          = 1'b1;
+    // sd led
+    assign led1         = sd_cs_n;
+    // config bits expanded to named signals
+    wire divmmc_en      = cfg_byte[0];
+    wire zc_en          = cfg_byte[1];
+    wire soundrive_en   = cfg_byte[2];
+    wire beeper_en      = cfg_byte[3];
+    wire saa_en         = cfg_byte[4];
+    wire gs_en          = cfg_byte[5];
+    wire turbosound_en  = cfg_byte[6];
+    wire midi_en        = cfg_byte[6]; // depends on AY port
+    wire opl3_en        = cfg_byte[7];
+    wire vs1053_en      = 1;
     wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
 `endif
 
@@ -340,6 +420,9 @@ i2s_transceiver adc_inst(
 
 ODDR2 oddr_adc2(.Q(adc_clk), .C0(clk_bus), .C1(~clk_bus), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
 ODDR2 oddr_midi(.Q(midi_clk), .C0(clk12), .C1(~clk12), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
+`ifdef HW_A3
+ODDR2 oddr_vs(.Q(vs_clk), .C0(clk12), .C1(~clk12), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
+`endif
 
 // ------- SOUNDRIVE ----------
 wire [7:0] covox_a, covox_b, covox_c, covox_d, covox_fb;
@@ -500,6 +583,25 @@ opl3 opl3_inst(
     .out_r            (opl3_r)
 );
 
+wire vs_bus_cs_n, vs_bus_we_n, vs_bus_addr;
+wire [7:0] vs_bus_di, vs_bus_do;
+vs1053 vs1053(
+    .clk              (clk_bus),
+    .rst_n            (~reset),
+    .spi_sclk         (vs_sclk),
+    .spi_mosi         (vs_mosi),
+    .spi_miso         (vs_miso),
+    .dreq             (vs_dreq),
+    .xreset           (vs_reset_n),
+    .xdcs             (vs_dcs_n),
+    .xcs              (vs_cs_n),
+    .bus_cs_n         (vs_bus_cs_n),
+    .bus_we_n         (vs_bus_we_n),
+    .bus_addr         (vs_bus_addr),
+    .bus_din          (vs_bus_di),
+    .bus_dout         (vs_bus_do)
+);
+
 // midi activity detector
 wire midi_active;
 midi_tx_sensor midi_tx_sensor(
@@ -507,6 +609,15 @@ midi_tx_sensor midi_tx_sensor(
     .reset            (reset),
     .midi_in          (midi_tx),
     .midi_active      (midi_active)
+);
+
+// vs1053 activity detector
+wire vs_active;
+midi_tx_sensor vs_sensor(
+    .clk              (clk_bus),
+    .reset            (reset),
+    .midi_in          (vs_dreq),
+    .midi_active      (vs_active)
 );
 
 // audio muter on reset
@@ -529,7 +640,7 @@ audio_mixer audio_mixer_inst(
     .turbosound_en    (turbosound_en),
     .saa_en           (saa_en),
     .gs_en            (gs_en),
-    .midi_en          (midi_en & midi_active),
+    .midi_en          ((midi_en & midi_active) | (vs1053_en & vs_active)),
     .opl3_en          (opl3_en),
     
     .speaker          (beeper),
@@ -594,6 +705,11 @@ zc_divmmc zc_divmmc(
     .ram_cs_n         (mmc_mem_cs_n),
     .ram_rd_n         (mmc_mem_rd_n),
     .ram_wr_n         (mmc_mem_wr_n),
+`elsif HW_A3
+    .ram_a            (mmc_mem_a),
+    .ram_cs_n         (mmc_mem_cs_n),
+    .ram_rd_n         (mmc_mem_rd_n),
+    .ram_wr_n         (mmc_mem_wr_n),
 `endif
 
     .sd_clk           (sd_clk),
@@ -618,14 +734,20 @@ wire port_fffd_full = (bus_a[15:13] == 3'b111) & (bus_a[3:0] == 4'b1101) & turbo
 wire port_gs = ((bus_a[7:0] == 8'hB3) | (bus_a[7:0] == 8'hBB)) & gs_en & ~loader_act;
 // opl3 (c4,c5,c6,c7)
 wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en;
-// zc + divmmc
+// zc + divmmc (57,77,E3,EB)
 wire port_zc = (((bus_a[7:0] == 8'h77) & (zc_en | divmmc_en)) | 
                 ((bus_a[7:0] == 8'h57) & (zc_en | divmmc_en)) | 
                 ((bus_a[7:0] == 8'hEB) & divmmc_en));
 wire port_mmc = ((bus_a[7:0] == 8'hE3) | (bus_a[7:0] == 8'hE7)) & divmmc_en;
+// vs1053 ports (3b,37)
+wire port_vs = (bus_a[7:0] == 8'h3B | bus_a[7:0] == 8'h37) & vs1053_en;
+assign vs_bus_di = bus_d;
+assign vs_bus_cs_n = ~(port_vs & ~bus_iorq_n & (~bus_rd_n | ~bus_wr_n));
+assign vs_bus_we_n = ~(port_vs & ~bus_iorq_n & ~bus_wr_n);
+assign vs_bus_addr = (bus_a[7:0] == 8'h3B) ? 0 : 1;
 
 // iorqge
-assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc) ? 1'b0 : 1'b1;
+assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc | port_vs) ? 1'b0 : 1'b1;
 
 // BUS
 assign bus_d = 
@@ -633,6 +755,7 @@ assign bus_d =
      (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zc) ? zc_do_bus : // ZC + DivMMC
      (ioreq_rd & port_fffd) ? ts_do : // TS
      (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_gs) ? gs_do_bus : // GS
+     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_vs) ? vs_bus_do : // VS1053
      8'bzzzzzzzz;
      
 // wait (from zc)
