@@ -45,6 +45,19 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
     * [x] Added VS1053 IC
 
+
+### How-to & Documentation
+
+Please [read the manual](HOWTO.md) how to flash your card with alt tools, like Altera Usb Blaster + openocd.
+
+Some links to the documentation files:
+
+    * revA: [Schematics](docs/karabas-megabuzz-revA.pdf), [interactive BOM](docs/karabas-megabuzz-revA-ibom.html)
+    * revA1: [Schematics](docs/karabas-megabuzz-revA1.pdf), [interactive BOM](docs/karabas-megabuzz-revA1-ibom.html)
+    * revA2: [Schematics](docs/karabas-megabuzz-revA2.pdf), [interactive BOM](docs/karabas-megabuzz-revA2-ibom.html)
+    * revA3: [Schematics](docs/karabas-megabuzz-revA3.pdf), [interactive BOM](docs/karabas-megabuzz-revA3-ibom.html)
+
+
 ### Related projects
 
 * Karabas-OPL3 - [link](https://github.com/andykarpov/karabas-opl3)
