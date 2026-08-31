@@ -1,0 +1,563 @@
+// ================================================================================ //
+// The NEORV32 RISC-V Processor - https://github.com/stnolting/neorv32              //
+// Copyright (c) NEORV32 contributors.                                              //
+// Copyright (c) 2020 - 2026 Stephan Nolting. All rights reserved.                  //
+// Licensed under the BSD-3-Clause license, see LICENSE for details.                //
+// SPDX-License-Identifier: BSD-3-Clause                                            //
+// ================================================================================ //
+
+/**
+ * @file neorv32_csr.h
+ * @brief Control and Status Registers (CSR) definitions.
+ */
+
+#ifndef NEORV32_CSR_H
+#define NEORV32_CSR_H
+
+#include <neorv32.h>
+#include <stdint.h>
+
+/**********************************************************************//**
+ * Available CPU Control and Status Registers (CSRs)
+ **************************************************************************/
+enum NEORV32_CSR_enum {
+  /* floating-point unit control and status */
+  CSR_FFLAGS         = 0x001, /**< 0x001 - fflags: Floating-point accrued exception flags */
+  CSR_FRM            = 0x002, /**< 0x002 - frm:    Floating-point dynamic rounding mode */
+  CSR_FCSR           = 0x003, /**< 0x003 - fcsr:   Floating-point control/status register (frm + fflags) */
+
+  /* machine control and status */
+  CSR_MSTATUS        = 0x300, /**< 0x300 - mstatus:    Machine status register */
+  CSR_MISA           = 0x301, /**< 0x301 - misa:       Machine ISA and extensions */
+  CSR_MIE            = 0x304, /**< 0x304 - mie:        Machine interrupt-enable register */
+  CSR_MTVEC          = 0x305, /**< 0x305 - mtvec:      Machine trap-handler base address */
+  CSR_MCOUNTEREN     = 0x306, /**< 0x305 - mcounteren: Machine counter enable register */
+  CSR_MSTATUSH       = 0x310, /**< 0x310 - mstatush:   Machine status register - high word */
+
+  /* machine counter control */
+  CSR_MCOUNTINHIBIT  = 0x320, /**< 0x320 - mcountinhibit: Machine counter-inhibit register */
+  CSR_MCYCLECFG      = 0x321, /**< 0x321 - mcyclecfg:     Machine cycle counter privilege mode filtering - low word */
+  CSR_MINSTRETCFG    = 0x322, /**< 0x322 - minstretcfg:   Machine instret counter privilege mode filtering - low word */
+
+  /* machine configuration */
+  CSR_MENVCFG        = 0x30a, /**< 0x30a - menvcfg:  Machine environment configuration register low word */
+  CSR_MENVCFGH       = 0x31a, /**< 0x31a - menvcfgh: Machine environment configuration register high word */
+
+  /* hardware performance monitors - event configuration */
+  CSR_MHPMEVENT3     = 0x323, /**< 0x323 - mhpmevent3:  Machine hardware performance monitor event selector 3  low word */
+  CSR_MHPMEVENT4     = 0x324, /**< 0x324 - mhpmevent4:  Machine hardware performance monitor event selector 4  low word */
+  CSR_MHPMEVENT5     = 0x325, /**< 0x325 - mhpmevent5:  Machine hardware performance monitor event selector 5  low word */
+  CSR_MHPMEVENT6     = 0x326, /**< 0x326 - mhpmevent6:  Machine hardware performance monitor event selector 6  low word */
+  CSR_MHPMEVENT7     = 0x327, /**< 0x327 - mhpmevent7:  Machine hardware performance monitor event selector 7  low word */
+  CSR_MHPMEVENT8     = 0x328, /**< 0x328 - mhpmevent8:  Machine hardware performance monitor event selector 8  low word */
+  CSR_MHPMEVENT9     = 0x329, /**< 0x329 - mhpmevent9:  Machine hardware performance monitor event selector 9  low word */
+  CSR_MHPMEVENT10    = 0x32a, /**< 0x32a - mhpmevent10: Machine hardware performance monitor event selector 10 low word */
+  CSR_MHPMEVENT11    = 0x32b, /**< 0x32b - mhpmevent11: Machine hardware performance monitor event selector 11 low word */
+  CSR_MHPMEVENT12    = 0x32c, /**< 0x32c - mhpmevent12: Machine hardware performance monitor event selector 12 low word */
+  CSR_MHPMEVENT13    = 0x32d, /**< 0x32d - mhpmevent13: Machine hardware performance monitor event selector 13 low word */
+  CSR_MHPMEVENT14    = 0x32e, /**< 0x32e - mhpmevent14: Machine hardware performance monitor event selector 14 low word */
+  CSR_MHPMEVENT15    = 0x32f, /**< 0x32f - mhpmevent15: Machine hardware performance monitor event selector 15 low word */
+  CSR_MHPMEVENT16    = 0x330, /**< 0x330 - mhpmevent16: Machine hardware performance monitor event selector 16 low word */
+  CSR_MHPMEVENT17    = 0x331, /**< 0x331 - mhpmevent17: Machine hardware performance monitor event selector 17 low word */
+  CSR_MHPMEVENT18    = 0x332, /**< 0x332 - mhpmevent18: Machine hardware performance monitor event selector 18 low word */
+  CSR_MHPMEVENT19    = 0x333, /**< 0x333 - mhpmevent19: Machine hardware performance monitor event selector 19 low word */
+  CSR_MHPMEVENT20    = 0x334, /**< 0x334 - mhpmevent20: Machine hardware performance monitor event selector 20 low word */
+  CSR_MHPMEVENT21    = 0x335, /**< 0x335 - mhpmevent21: Machine hardware performance monitor event selector 21 low word */
+  CSR_MHPMEVENT22    = 0x336, /**< 0x336 - mhpmevent22: Machine hardware performance monitor event selector 22 low word */
+  CSR_MHPMEVENT23    = 0x337, /**< 0x337 - mhpmevent23: Machine hardware performance monitor event selector 23 low word */
+  CSR_MHPMEVENT24    = 0x338, /**< 0x338 - mhpmevent24: Machine hardware performance monitor event selector 24 low word */
+  CSR_MHPMEVENT25    = 0x339, /**< 0x339 - mhpmevent25: Machine hardware performance monitor event selector 25 low word */
+  CSR_MHPMEVENT26    = 0x33a, /**< 0x33a - mhpmevent26: Machine hardware performance monitor event selector 26 low word */
+  CSR_MHPMEVENT27    = 0x33b, /**< 0x33b - mhpmevent27: Machine hardware performance monitor event selector 27 low word */
+  CSR_MHPMEVENT28    = 0x33c, /**< 0x33c - mhpmevent28: Machine hardware performance monitor event selector 28 low word */
+  CSR_MHPMEVENT29    = 0x33d, /**< 0x33d - mhpmevent29: Machine hardware performance monitor event selector 29 low word */
+  CSR_MHPMEVENT30    = 0x33e, /**< 0x33e - mhpmevent30: Machine hardware performance monitor event selector 30 low word */
+  CSR_MHPMEVENT31    = 0x33f, /**< 0x33f - mhpmevent31: Machine hardware performance monitor event selector 31 low word */
+
+  /* machine trap control */
+  CSR_MSCRATCH       = 0x340, /**< 0x340 - mscratch: Machine scratch register */
+  CSR_MEPC           = 0x341, /**< 0x341 - mepc:     Machine exception program counter */
+  CSR_MCAUSE         = 0x342, /**< 0x342 - mcause:   Machine trap cause (#NEORV32_EXCEPTION_CODES_enum) */
+  CSR_MTVAL          = 0x343, /**< 0x343 - mtval:    Machine trap value */
+  CSR_MIP            = 0x344, /**< 0x344 - mip:      Machine interrupt pending register (#NEORV32_CSR_MIP_enum) */
+
+  /* physical memory protection */
+  CSR_PMPCFG0        = 0x3a0, /**< 0x3a0 - pmpcfg0: Physical memory protection configuration register 0: regions 0..3 */
+  CSR_PMPCFG1        = 0x3a1, /**< 0x3a1 - pmpcfg1: Physical memory protection configuration register 1: regions 4..7 */
+  CSR_PMPCFG2        = 0x3a2, /**< 0x3a2 - pmpcfg2: Physical memory protection configuration register 2: regions 8..11 */
+  CSR_PMPCFG3        = 0x3a3, /**< 0x3a3 - pmpcfg3: Physical memory protection configuration register 3: regions 12..15 */
+
+  CSR_PMPADDR0       = 0x3b0, /**< 0x3b0 - pmpaddr0: Physical memory protection address register 0 */
+  CSR_PMPADDR1       = 0x3b1, /**< 0x3b1 - pmpaddr1: Physical memory protection address register 1 */
+  CSR_PMPADDR2       = 0x3b2, /**< 0x3b2 - pmpaddr2: Physical memory protection address register 2 */
+  CSR_PMPADDR3       = 0x3b3, /**< 0x3b3 - pmpaddr3: Physical memory protection address register 3 */
+  CSR_PMPADDR4       = 0x3b4, /**< 0x3b4 - pmpaddr4: Physical memory protection address register 4 */
+  CSR_PMPADDR5       = 0x3b5, /**< 0x3b5 - pmpaddr5: Physical memory protection address register 5 */
+  CSR_PMPADDR6       = 0x3b6, /**< 0x3b6 - pmpaddr6: Physical memory protection address register 6 */
+  CSR_PMPADDR7       = 0x3b7, /**< 0x3b7 - pmpaddr7: Physical memory protection address register 7 */
+  CSR_PMPADDR8       = 0x3b8, /**< 0x3b8 - pmpaddr8: Physical memory protection address register 8 */
+  CSR_PMPADDR9       = 0x3b9, /**< 0x3b9 - pmpaddr9: Physical memory protection address register 9 */
+  CSR_PMPADDR10      = 0x3ba, /**< 0x3ba - pmpaddr10: Physical memory protection address register 10 */
+  CSR_PMPADDR11      = 0x3bb, /**< 0x3bb - pmpaddr11: Physical memory protection address register 11 */
+  CSR_PMPADDR12      = 0x3bc, /**< 0x3bc - pmpaddr12: Physical memory protection address register 12 */
+  CSR_PMPADDR13      = 0x3bd, /**< 0x3bd - pmpaddr13: Physical memory protection address register 13 */
+  CSR_PMPADDR14      = 0x3be, /**< 0x3be - pmpaddr14: Physical memory protection address register 14 */
+  CSR_PMPADDR15      = 0x3bf, /**< 0x3bf - pmpaddr15: Physical memory protection address register 15 */
+
+  /* machine counter control - continued */
+  CSR_MCYCLECFGH     = 0x721, /**< 0x721 - mcyclecfgh:   Machine cycle counter privilege mode filtering - high word */
+  CSR_MINSTRETCFGH   = 0x722, /**< 0x722 - minstretcfgh: Machine instret counter privilege mode filtering - high word */
+
+  /* on-chip debugger - hardware trigger module */
+  CSR_TSELECT        = 0x7a0, /**< 0x7a0 - tselect:  Trigger select */
+  CSR_TDATA1         = 0x7a1, /**< 0x7a1 - tdata1:   Trigger data register 0 */
+  CSR_TDATA2         = 0x7a2, /**< 0x7a2 - tdata2:   Trigger data register 1 */
+  CSR_TINFO          = 0x7a4, /**< 0x7a4 - tinfo:    Trigger info */
+
+  /* CPU debug mode CSRs - not accessible by software running outside of debug mode */
+  CSR_DCSR           = 0x7b0, /**< 0x7b0 - dcsr:      Debug status and control register */
+  CSR_DPC            = 0x7b1, /**< 0x7b1 - dpc:       Debug program counter */
+  CSR_DSCRATCH0      = 0x7b2, /**< 0x7b2 - dscratch0: Debug scratch register */
+
+  /* machine counters and timers */
+  CSR_MCYCLE         = 0xb00, /**< 0xb00 - mcycle:        Machine cycle counter low word */
+  CSR_MINSTRET       = 0xb02, /**< 0xb02 - minstret:      Machine instructions-retired counter low word */
+  CSR_MHPMCOUNTER3   = 0xb03, /**< 0xb03 - mhpmcounter3:  Machine hardware performance monitor 3  counter low word */
+  CSR_MHPMCOUNTER4   = 0xb04, /**< 0xb04 - mhpmcounter4:  Machine hardware performance monitor 4  counter low word */
+  CSR_MHPMCOUNTER5   = 0xb05, /**< 0xb05 - mhpmcounter5:  Machine hardware performance monitor 5  counter low word */
+  CSR_MHPMCOUNTER6   = 0xb06, /**< 0xb06 - mhpmcounter6:  Machine hardware performance monitor 6  counter low word */
+  CSR_MHPMCOUNTER7   = 0xb07, /**< 0xb07 - mhpmcounter7:  Machine hardware performance monitor 7  counter low word */
+  CSR_MHPMCOUNTER8   = 0xb08, /**< 0xb08 - mhpmcounter8:  Machine hardware performance monitor 8  counter low word */
+  CSR_MHPMCOUNTER9   = 0xb09, /**< 0xb09 - mhpmcounter9:  Machine hardware performance monitor 9  counter low word */
+  CSR_MHPMCOUNTER10  = 0xb0a, /**< 0xb0a - mhpmcounter10: Machine hardware performance monitor 10 counter low word */
+  CSR_MHPMCOUNTER11  = 0xb0b, /**< 0xb0b - mhpmcounter11: Machine hardware performance monitor 11 counter low word */
+  CSR_MHPMCOUNTER12  = 0xb0c, /**< 0xb0c - mhpmcounter12: Machine hardware performance monitor 12 counter low word */
+  CSR_MHPMCOUNTER13  = 0xb0d, /**< 0xb0d - mhpmcounter13: Machine hardware performance monitor 13 counter low word */
+  CSR_MHPMCOUNTER14  = 0xb0e, /**< 0xb0e - mhpmcounter14: Machine hardware performance monitor 14 counter low word */
+  CSR_MHPMCOUNTER15  = 0xb0f, /**< 0xb0f - mhpmcounter15: Machine hardware performance monitor 15 counter low word */
+  CSR_MHPMCOUNTER16  = 0xb10, /**< 0xb10 - mhpmcounter16: Machine hardware performance monitor 16 counter low word */
+  CSR_MHPMCOUNTER17  = 0xb11, /**< 0xb11 - mhpmcounter17: Machine hardware performance monitor 17 counter low word */
+  CSR_MHPMCOUNTER18  = 0xb12, /**< 0xb12 - mhpmcounter18: Machine hardware performance monitor 18 counter low word */
+  CSR_MHPMCOUNTER19  = 0xb13, /**< 0xb13 - mhpmcounter19: Machine hardware performance monitor 19 counter low word */
+  CSR_MHPMCOUNTER20  = 0xb14, /**< 0xb14 - mhpmcounter20: Machine hardware performance monitor 20 counter low word */
+  CSR_MHPMCOUNTER21  = 0xb15, /**< 0xb15 - mhpmcounter21: Machine hardware performance monitor 21 counter low word */
+  CSR_MHPMCOUNTER22  = 0xb16, /**< 0xb16 - mhpmcounter22: Machine hardware performance monitor 22 counter low word */
+  CSR_MHPMCOUNTER23  = 0xb17, /**< 0xb17 - mhpmcounter23: Machine hardware performance monitor 23 counter low word */
+  CSR_MHPMCOUNTER24  = 0xb18, /**< 0xb18 - mhpmcounter24: Machine hardware performance monitor 24 counter low word */
+  CSR_MHPMCOUNTER25  = 0xb19, /**< 0xb19 - mhpmcounter25: Machine hardware performance monitor 25 counter low word */
+  CSR_MHPMCOUNTER26  = 0xb1a, /**< 0xb1a - mhpmcounter26: Machine hardware performance monitor 26 counter low word */
+  CSR_MHPMCOUNTER27  = 0xb1b, /**< 0xb1b - mhpmcounter27: Machine hardware performance monitor 27 counter low word */
+  CSR_MHPMCOUNTER28  = 0xb1c, /**< 0xb1c - mhpmcounter28: Machine hardware performance monitor 28 counter low word */
+  CSR_MHPMCOUNTER29  = 0xb1d, /**< 0xb1d - mhpmcounter29: Machine hardware performance monitor 29 counter low word */
+  CSR_MHPMCOUNTER30  = 0xb1e, /**< 0xb1e - mhpmcounter30: Machine hardware performance monitor 30 counter low word */
+  CSR_MHPMCOUNTER31  = 0xb1f, /**< 0xb1f - mhpmcounter31: Machine hardware performance monitor 31 counter low word */
+
+  CSR_MCYCLEH        = 0xb80, /**< 0xb80 - mcycleh:        Machine cycle counter high word */
+  CSR_MINSTRETH      = 0xb82, /**< 0xb82 - minstreth:      Machine instructions-retired counter high word */
+  CSR_MHPMCOUNTER3H  = 0xb83, /**< 0xb83 - mhpmcounter3 :  Machine hardware performance monitor 3  counter high word */
+  CSR_MHPMCOUNTER4H  = 0xb84, /**< 0xb84 - mhpmcounter4h:  Machine hardware performance monitor 4  counter high word */
+  CSR_MHPMCOUNTER5H  = 0xb85, /**< 0xb85 - mhpmcounter5h:  Machine hardware performance monitor 5  counter high word */
+  CSR_MHPMCOUNTER6H  = 0xb86, /**< 0xb86 - mhpmcounter6h:  Machine hardware performance monitor 6  counter high word */
+  CSR_MHPMCOUNTER7H  = 0xb87, /**< 0xb87 - mhpmcounter7h:  Machine hardware performance monitor 7  counter high word */
+  CSR_MHPMCOUNTER8H  = 0xb88, /**< 0xb88 - mhpmcounter8h:  Machine hardware performance monitor 8  counter high word */
+  CSR_MHPMCOUNTER9H  = 0xb89, /**< 0xb89 - mhpmcounter9h:  Machine hardware performance monitor 9  counter high word */
+  CSR_MHPMCOUNTER10H = 0xb8a, /**< 0xb8a - mhpmcounter10h: Machine hardware performance monitor 10 counter high word */
+  CSR_MHPMCOUNTER11H = 0xb8b, /**< 0xb8b - mhpmcounter11h: Machine hardware performance monitor 11 counter high word */
+  CSR_MHPMCOUNTER12H = 0xb8c, /**< 0xb8c - mhpmcounter12h: Machine hardware performance monitor 12 counter high word */
+  CSR_MHPMCOUNTER13H = 0xb8d, /**< 0xb8d - mhpmcounter13h: Machine hardware performance monitor 13 counter high word */
+  CSR_MHPMCOUNTER14H = 0xb8e, /**< 0xb8e - mhpmcounter14h: Machine hardware performance monitor 14 counter high word */
+  CSR_MHPMCOUNTER15H = 0xb8f, /**< 0xb8f - mhpmcounter15h: Machine hardware performance monitor 15 counter high word */
+  CSR_MHPMCOUNTER16H = 0xb90, /**< 0xb90 - mhpmcounter16h: Machine hardware performance monitor 16 counter high word */
+  CSR_MHPMCOUNTER17H = 0xb91, /**< 0xb91 - mhpmcounter17h: Machine hardware performance monitor 17 counter high word */
+  CSR_MHPMCOUNTER18H = 0xb92, /**< 0xb92 - mhpmcounter18h: Machine hardware performance monitor 18 counter high word */
+  CSR_MHPMCOUNTER19H = 0xb93, /**< 0xb93 - mhpmcounter19h: Machine hardware performance monitor 19 counter high word */
+  CSR_MHPMCOUNTER20H = 0xb94, /**< 0xb94 - mhpmcounter20h: Machine hardware performance monitor 20 counter high word */
+  CSR_MHPMCOUNTER21H = 0xb95, /**< 0xb95 - mhpmcounter21h: Machine hardware performance monitor 21 counter high word */
+  CSR_MHPMCOUNTER22H = 0xb96, /**< 0xb96 - mhpmcounter22h: Machine hardware performance monitor 22 counter high word */
+  CSR_MHPMCOUNTER23H = 0xb97, /**< 0xb97 - mhpmcounter23h: Machine hardware performance monitor 23 counter high word */
+  CSR_MHPMCOUNTER24H = 0xb98, /**< 0xb98 - mhpmcounter24h: Machine hardware performance monitor 24 counter high word */
+  CSR_MHPMCOUNTER25H = 0xb99, /**< 0xb99 - mhpmcounter25h: Machine hardware performance monitor 25 counter high word */
+  CSR_MHPMCOUNTER26H = 0xb9a, /**< 0xb9a - mhpmcounter26h: Machine hardware performance monitor 26 counter high word */
+  CSR_MHPMCOUNTER27H = 0xb9b, /**< 0xb9b - mhpmcounter27h: Machine hardware performance monitor 27 counter high word */
+  CSR_MHPMCOUNTER28H = 0xb9c, /**< 0xb9c - mhpmcounter28h: Machine hardware performance monitor 28 counter high word */
+  CSR_MHPMCOUNTER29H = 0xb9d, /**< 0xb9d - mhpmcounter29h: Machine hardware performance monitor 29 counter high word */
+  CSR_MHPMCOUNTER30H = 0xb9e, /**< 0xb9e - mhpmcounter30h: Machine hardware performance monitor 30 counter high word */
+  CSR_MHPMCOUNTER31H = 0xb9f, /**< 0xb9f - mhpmcounter31h: Machine hardware performance monitor 31 counter high word */
+
+  /* user counters and timers */
+  CSR_CYCLE          = 0xc00, /**< 0xc00 - cycle:        User cycle counter low word */
+  CSR_TIME           = 0xc01, /**< 0xc01 - time:         User system time counter low word */
+  CSR_INSTRET        = 0xc02, /**< 0xc02 - instret:      User instructions-retired counter low word */
+  CSR_HPMCOUNTER3    = 0xc03, /**< 0xc03 - hpmcounter3:  User hardware performance monitor 3  counter low word */
+  CSR_HPMCOUNTER4    = 0xc04, /**< 0xc04 - hpmcounter4:  User hardware performance monitor 4  counter low word */
+  CSR_HPMCOUNTER5    = 0xc05, /**< 0xc05 - hpmcounter5:  User hardware performance monitor 5  counter low word */
+  CSR_HPMCOUNTER6    = 0xc06, /**< 0xc06 - hpmcounter6:  User hardware performance monitor 6  counter low word */
+  CSR_HPMCOUNTER7    = 0xc07, /**< 0xc07 - hpmcounter7:  User hardware performance monitor 7  counter low word */
+  CSR_HPMCOUNTER8    = 0xc08, /**< 0xc08 - hpmcounter8:  User hardware performance monitor 8  counter low word */
+  CSR_HPMCOUNTER9    = 0xc09, /**< 0xc09 - hpmcounter9:  User hardware performance monitor 9  counter low word */
+  CSR_HPMCOUNTER10   = 0xc0a, /**< 0xc0a - hpmcounter10: User hardware performance monitor 10 counter low word */
+  CSR_HPMCOUNTER11   = 0xc0b, /**< 0xc0b - hpmcounter11: User hardware performance monitor 11 counter low word */
+  CSR_HPMCOUNTER12   = 0xc0c, /**< 0xc0c - hpmcounter12: User hardware performance monitor 12 counter low word */
+  CSR_HPMCOUNTER13   = 0xc0d, /**< 0xc0d - hpmcounter13: User hardware performance monitor 13 counter low word */
+  CSR_HPMCOUNTER14   = 0xc0e, /**< 0xc0e - hpmcounter14: User hardware performance monitor 14 counter low word */
+  CSR_HPMCOUNTER15   = 0xc0f, /**< 0xc0f - hpmcounter15: User hardware performance monitor 15 counter low word */
+  CSR_HPMCOUNTER16   = 0xc10, /**< 0xc10 - hpmcounter16: User hardware performance monitor 16 counter low word */
+  CSR_HPMCOUNTER17   = 0xc11, /**< 0xc11 - hpmcounter17: User hardware performance monitor 17 counter low word */
+  CSR_HPMCOUNTER18   = 0xc12, /**< 0xc12 - hpmcounter18: User hardware performance monitor 18 counter low word */
+  CSR_HPMCOUNTER19   = 0xc13, /**< 0xc13 - hpmcounter19: User hardware performance monitor 19 counter low word */
+  CSR_HPMCOUNTER20   = 0xc14, /**< 0xc14 - hpmcounter20: User hardware performance monitor 20 counter low word */
+  CSR_HPMCOUNTER21   = 0xc15, /**< 0xc15 - hpmcounter21: User hardware performance monitor 21 counter low word */
+  CSR_HPMCOUNTER22   = 0xc16, /**< 0xc16 - hpmcounter22: User hardware performance monitor 22 counter low word */
+  CSR_HPMCOUNTER23   = 0xc17, /**< 0xc17 - hpmcounter23: User hardware performance monitor 23 counter low word */
+  CSR_HPMCOUNTER24   = 0xc18, /**< 0xc18 - hpmcounter24: User hardware performance monitor 24 counter low word */
+  CSR_HPMCOUNTER25   = 0xc19, /**< 0xc19 - hpmcounter25: User hardware performance monitor 25 counter low word */
+  CSR_HPMCOUNTER26   = 0xc1a, /**< 0xc1a - hpmcounter26: User hardware performance monitor 26 counter low word */
+  CSR_HPMCOUNTER27   = 0xc1b, /**< 0xc1b - hpmcounter27: User hardware performance monitor 27 counter low word */
+  CSR_HPMCOUNTER28   = 0xc1c, /**< 0xc1c - hpmcounter28: User hardware performance monitor 28 counter low word */
+  CSR_HPMCOUNTER29   = 0xc1d, /**< 0xc1d - hpmcounter29: User hardware performance monitor 29 counter low word */
+  CSR_HPMCOUNTER30   = 0xc1e, /**< 0xc1e - hpmcounter30: User hardware performance monitor 30 counter low word */
+  CSR_HPMCOUNTER31   = 0xc1f, /**< 0xc1f - hpmcounter31: User hardware performance monitor 31 counter low word */
+
+  CSR_CYCLEH         = 0xc80, /**< 0xc80 - cycleh:        User cycle counter high word */
+  CSR_TIMEH          = 0xc81, /**< 0xc81 - timeh:         User system time counter high word */
+  CSR_INSTRETH       = 0xc82, /**< 0xc82 - instreth:      User instructions-retired counter high word */
+  CSR_HPMCOUNTER3H   = 0xc83, /**< 0xc83 - hpmcounter3 :  User hardware performance monitor 3  counter high word */
+  CSR_HPMCOUNTER4H   = 0xc84, /**< 0xc84 - hpmcounter4h:  User hardware performance monitor 4  counter high word */
+  CSR_HPMCOUNTER5H   = 0xc85, /**< 0xc85 - hpmcounter5h:  User hardware performance monitor 5  counter high word */
+  CSR_HPMCOUNTER6H   = 0xc86, /**< 0xc86 - hpmcounter6h:  User hardware performance monitor 6  counter high word */
+  CSR_HPMCOUNTER7H   = 0xc87, /**< 0xc87 - hpmcounter7h:  User hardware performance monitor 7  counter high word */
+  CSR_HPMCOUNTER8H   = 0xc88, /**< 0xc88 - hpmcounter8h:  User hardware performance monitor 8  counter high word */
+  CSR_HPMCOUNTER9H   = 0xc89, /**< 0xc89 - hpmcounter9h:  User hardware performance monitor 9  counter high word */
+  CSR_HPMCOUNTER10H  = 0xc8a, /**< 0xc8a - hpmcounter10h: User hardware performance monitor 10 counter high word */
+  CSR_HPMCOUNTER11H  = 0xc8b, /**< 0xc8b - hpmcounter11h: User hardware performance monitor 11 counter high word */
+  CSR_HPMCOUNTER12H  = 0xc8c, /**< 0xc8c - hpmcounter12h: User hardware performance monitor 12 counter high word */
+  CSR_HPMCOUNTER13H  = 0xc8d, /**< 0xc8d - hpmcounter13h: User hardware performance monitor 13 counter high word */
+  CSR_HPMCOUNTER14H  = 0xc8e, /**< 0xc8e - hpmcounter14h: User hardware performance monitor 14 counter high word */
+  CSR_HPMCOUNTER15H  = 0xc8f, /**< 0xc8f - hpmcounter15h: User hardware performance monitor 15 counter high word */
+  CSR_HPMCOUNTER16H  = 0xc90, /**< 0xc90 - hpmcounter16h: User hardware performance monitor 16 counter high word */
+  CSR_HPMCOUNTER17H  = 0xc91, /**< 0xc91 - hpmcounter17h: User hardware performance monitor 17 counter high word */
+  CSR_HPMCOUNTER18H  = 0xc92, /**< 0xc92 - hpmcounter18h: User hardware performance monitor 18 counter high word */
+  CSR_HPMCOUNTER19H  = 0xc93, /**< 0xc93 - hpmcounter19h: User hardware performance monitor 19 counter high word */
+  CSR_HPMCOUNTER20H  = 0xc94, /**< 0xc94 - hpmcounter20h: User hardware performance monitor 20 counter high word */
+  CSR_HPMCOUNTER21H  = 0xc95, /**< 0xc95 - hpmcounter21h: User hardware performance monitor 21 counter high word */
+  CSR_HPMCOUNTER22H  = 0xc96, /**< 0xc96 - hpmcounter22h: User hardware performance monitor 22 counter high word */
+  CSR_HPMCOUNTER23H  = 0xc97, /**< 0xc97 - hpmcounter23h: User hardware performance monitor 23 counter high word */
+  CSR_HPMCOUNTER24H  = 0xc98, /**< 0xc98 - hpmcounter24h: User hardware performance monitor 24 counter high word */
+  CSR_HPMCOUNTER25H  = 0xc99, /**< 0xc99 - hpmcounter25h: User hardware performance monitor 25 counter high word */
+  CSR_HPMCOUNTER26H  = 0xc9a, /**< 0xc9a - hpmcounter26h: User hardware performance monitor 26 counter high word */
+  CSR_HPMCOUNTER27H  = 0xc9b, /**< 0xc9b - hpmcounter27h: User hardware performance monitor 27 counter high word */
+  CSR_HPMCOUNTER28H  = 0xc9c, /**< 0xc9c - hpmcounter28h: User hardware performance monitor 28 counter high word */
+  CSR_HPMCOUNTER29H  = 0xc9d, /**< 0xc9d - hpmcounter29h: User hardware performance monitor 29 counter high word */
+  CSR_HPMCOUNTER30H  = 0xc9e, /**< 0xc9e - hpmcounter30h: User hardware performance monitor 30 counter high word */
+  CSR_HPMCOUNTER31H  = 0xc9f, /**< 0xc9f - hpmcounter31h: User hardware performance monitor 31 counter high word */
+
+  /* machine information */
+  CSR_MVENDORID      = 0xf11, /**< 0xf11 - mvendorid:  Machine vendor ID */
+  CSR_MARCHID        = 0xf12, /**< 0xf12 - marchid:    Machine architecture ID */
+  CSR_MIMPID         = 0xf13, /**< 0xf13 - mimpid:     Machine implementation ID */
+  CSR_MHARTID        = 0xf14, /**< 0xf14 - mhartid:    Machine hardware thread ID */
+  CSR_MCONFIGPTR     = 0xf15, /**< 0xf15 - mconfigptr: Machine configuration pointer register */
+
+  /* NEORV32-specific */
+  CSR_MXISA          = 0xfc0, /**< 0xfc0 - mxisa:  Machine extended ISA and extensions low word */
+  CSR_MXISAH         = 0xfc1  /**< 0xfc1 - mxisah: Machine extended ISA and extensions high word */
+};
+
+/**********************************************************************//**
+ * fflags (fcsr)</b> CSR (r/w): FPU accrued exception flags
+ **************************************************************************/
+enum NEORV32_CSR_FFLAGS_enum {
+  CSR_FFLAGS_NX = 0, /**< fflags CSR (0): NX - inexact (r/w) */
+  CSR_FFLAGS_UF = 1, /**< fflags CSR (1): UF - underflow (r/w) */
+  CSR_FFLAGS_OF = 2, /**< fflags CSR (2): OF - overflow (r/w) */
+  CSR_FFLAGS_DZ = 3, /**< fflags CSR (3): DZ - divide by zero (r/w) */
+  CSR_FFLAGS_NV = 4  /**< fflags CSR (4): NV - invalid operation (r/w) */
+};
+
+/**********************************************************************//**
+ * mcountern CSR (r/w): Machine counter-enable register
+ **************************************************************************/
+enum NEORV32_CSR_MCOUNTEREN_enum {
+  CSR_MCOUNTEREN_CY    = 0,  /**< mcountern CSR (0):  CY    - cycle counter (r/w) */
+  CSR_MCOUNTEREN_TM    = 1,  /**< mcountern CSR (1):  TM    - system time counter (r/w) */
+  CSR_MCOUNTEREN_IR    = 2,  /**< mcountern CSR (2):  IR    - instruction-retired counter (r/w) */
+  CSR_MCOUNTEREN_HPM3  = 3,  /**< mcountern CSR (3):  HPM3  - hardware performance counter 3  (r/w) */
+  CSR_MCOUNTEREN_HPM4  = 4,  /**< mcountern CSR (4):  HPM4  - hardware performance counter 4  (r/w) */
+  CSR_MCOUNTEREN_HPM5  = 5,  /**< mcountern CSR (5):  HPM5  - hardware performance counter 5  (r/w) */
+  CSR_MCOUNTEREN_HPM6  = 6,  /**< mcountern CSR (6):  HPM6  - hardware performance counter 6  (r/w) */
+  CSR_MCOUNTEREN_HPM7  = 7,  /**< mcountern CSR (7):  HPM7  - hardware performance counter 7  (r/w) */
+  CSR_MCOUNTEREN_HPM8  = 8,  /**< mcountern CSR (8):  HPM8  - hardware performance counter 8  (r/w) */
+  CSR_MCOUNTEREN_HPM9  = 9,  /**< mcountern CSR (9):  HPM9  - hardware performance counter 9  (r/w) */
+  CSR_MCOUNTEREN_HPM10 = 10, /**< mcountern CSR (10): HPM10 - hardware performance counter 10 (r/w) */
+  CSR_MCOUNTEREN_HPM11 = 11, /**< mcountern CSR (11): HPM11 - hardware performance counter 11 (r/w) */
+  CSR_MCOUNTEREN_HPM12 = 12, /**< mcountern CSR (12): HPM12 - hardware performance counter 12 (r/w) */
+  CSR_MCOUNTEREN_HPM13 = 13, /**< mcountern CSR (13): HPM13 - hardware performance counter 13 (r/w) */
+  CSR_MCOUNTEREN_HPM14 = 14, /**< mcountern CSR (14): HPM14 - hardware performance counter 14 (r/w) */
+  CSR_MCOUNTEREN_HPM15 = 15, /**< mcountern CSR (15): HPM15 - hardware performance counter 15 (r/w) */
+  CSR_MCOUNTEREN_HPM16 = 16, /**< mcountern CSR (16): HPM16 - hardware performance counter 16 (r/w) */
+  CSR_MCOUNTEREN_HPM17 = 17, /**< mcountern CSR (17): HPM17 - hardware performance counter 17 (r/w) */
+  CSR_MCOUNTEREN_HPM18 = 18, /**< mcountern CSR (18): HPM18 - hardware performance counter 18 (r/w) */
+  CSR_MCOUNTEREN_HPM19 = 19, /**< mcountern CSR (19): HPM19 - hardware performance counter 19 (r/w) */
+  CSR_MCOUNTEREN_HPM20 = 20, /**< mcountern CSR (20): HPM20 - hardware performance counter 20 (r/w) */
+  CSR_MCOUNTEREN_HPM21 = 21, /**< mcountern CSR (21): HPM21 - hardware performance counter 21 (r/w) */
+  CSR_MCOUNTEREN_HPM22 = 22, /**< mcountern CSR (22): HPM22 - hardware performance counter 22 (r/w) */
+  CSR_MCOUNTEREN_HPM23 = 23, /**< mcountern CSR (23): HPM23 - hardware performance counter 23 (r/w) */
+  CSR_MCOUNTEREN_HPM24 = 24, /**< mcountern CSR (24): HPM24 - hardware performance counter 24 (r/w) */
+  CSR_MCOUNTEREN_HPM25 = 25, /**< mcountern CSR (25): HPM25 - hardware performance counter 25 (r/w) */
+  CSR_MCOUNTEREN_HPM26 = 26, /**< mcountern CSR (26): HPM26 - hardware performance counter 26 (r/w) */
+  CSR_MCOUNTEREN_HPM27 = 27, /**< mcountern CSR (27): HPM27 - hardware performance counter 27 (r/w) */
+  CSR_MCOUNTEREN_HPM28 = 28, /**< mcountern CSR (28): HPM28 - hardware performance counter 28 (r/w) */
+  CSR_MCOUNTEREN_HPM29 = 29, /**< mcountern CSR (29): HPM29 - hardware performance counter 29 (r/w) */
+  CSR_MCOUNTEREN_HPM30 = 30, /**< mcountern CSR (30): HPM30 - hardware performance counter 30 (r/w) */
+  CSR_MCOUNTEREN_HPM31 = 31  /**< mcountern CSR (31): HPM31 - hardware performance counter 31 (r/w) */
+};
+
+/**********************************************************************//**
+ * mstatus CSR (r/w): Machine status - low word
+ **************************************************************************/
+enum NEORV32_CSR_MSTATUS_enum {
+  CSR_MSTATUS_MIE   =  3, /**< mstatus CSR  (3): MIE - Machine interrupt enable bit (r/w) */
+  CSR_MSTATUS_MPIE  =  7, /**< mstatus CSR  (7): MPIE - Machine previous interrupt enable bit (r/w) */
+  CSR_MSTATUS_MPP_L = 11, /**< mstatus CSR (11): MPP_L - Machine previous privilege mode bit low (r/w) */
+  CSR_MSTATUS_MPP_H = 12, /**< mstatus CSR (12): MPP_H - Machine previous privilege mode bit high (r/w) */
+  CSR_MSTATUS_MPRV  = 17, /**< mstatus CSR (17): MPRV - Use MPP as effective privilege for M-mode load/stores when set (r/w) */
+  CSR_MSTATUS_TW    = 21  /**< mstatus CSR (21): TW - Disallow execution of wfi instruction in user mode when set (r/w) */
+};
+
+/**********************************************************************//**
+ * mcountinhibitCSR (r/w): Machine counter-inhibit
+ **************************************************************************/
+enum NEORV32_CSR_MCOUNTINHIBIT_enum {
+  CSR_MCOUNTINHIBIT_CY    = 0,  /**< mcountinhibit CSR (0):  CY    - Disable auto-increment of [m]cycle[h]   CSR when set (r/w) */
+  CSR_MCOUNTINHIBIT_IR    = 2,  /**< mcountinhibit CSR (2):  IR    - Disable auto-increment of [m]instret[h] CSR when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM3  = 3,  /**< mcountinhibit CSR (3):  HPM3  - Disable auto-increment of hpmcnt3[h]  when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM4  = 4,  /**< mcountinhibit CSR (4):  HPM4  - Disable auto-increment of hpmcnt4[h]  when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM5  = 5,  /**< mcountinhibit CSR (5):  HPM5  - Disable auto-increment of hpmcnt5[h]  when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM6  = 6,  /**< mcountinhibit CSR (6):  HPM6  - Disable auto-increment of hpmcnt6[h]  when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM7  = 7,  /**< mcountinhibit CSR (7):  HPM7  - Disable auto-increment of hpmcnt7[h]  when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM8  = 8,  /**< mcountinhibit CSR (8):  HPM8  - Disable auto-increment of hpmcnt8[h]  when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM9  = 9,  /**< mcountinhibit CSR (9):  HPM9  - Disable auto-increment of hpmcnt9[h]  when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM10 = 10, /**< mcountinhibit CSR (10): HPM10 - Disable auto-increment of hpmcnt10[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM11 = 11, /**< mcountinhibit CSR (11): HPM11 - Disable auto-increment of hpmcnt11[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM12 = 12, /**< mcountinhibit CSR (12): HPM12 - Disable auto-increment of hpmcnt12[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM13 = 13, /**< mcountinhibit CSR (13): HPM13 - Disable auto-increment of hpmcnt13[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM14 = 14, /**< mcountinhibit CSR (14): HPM14 - Disable auto-increment of hpmcnt14[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM15 = 15, /**< mcountinhibit CSR (15): HPM15 - Disable auto-increment of hpmcnt15[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM16 = 16, /**< mcountinhibit CSR (16): HPM16 - Disable auto-increment of hpmcnt16[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM17 = 17, /**< mcountinhibit CSR (17): HPM17 - Disable auto-increment of hpmcnt17[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM18 = 18, /**< mcountinhibit CSR (18): HPM18 - Disable auto-increment of hpmcnt18[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM19 = 19, /**< mcountinhibit CSR (19): HPM19 - Disable auto-increment of hpmcnt19[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM20 = 20, /**< mcountinhibit CSR (20): HPM20 - Disable auto-increment of hpmcnt20[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM21 = 21, /**< mcountinhibit CSR (21): HPM21 - Disable auto-increment of hpmcnt21[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM22 = 22, /**< mcountinhibit CSR (22): HPM22 - Disable auto-increment of hpmcnt22[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM23 = 23, /**< mcountinhibit CSR (23): HPM23 - Disable auto-increment of hpmcnt23[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM24 = 24, /**< mcountinhibit CSR (24): HPM24 - Disable auto-increment of hpmcnt24[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM25 = 25, /**< mcountinhibit CSR (25): HPM25 - Disable auto-increment of hpmcnt25[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM26 = 26, /**< mcountinhibit CSR (26): HPM26 - Disable auto-increment of hpmcnt26[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM27 = 27, /**< mcountinhibit CSR (27): HPM27 - Disable auto-increment of hpmcnt27[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM28 = 28, /**< mcountinhibit CSR (28): HPM28 - Disable auto-increment of hpmcnt28[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM29 = 29, /**< mcountinhibit CSR (29): HPM29 - Disable auto-increment of hpmcnt29[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM30 = 30, /**< mcountinhibit CSR (30): HPM30 - Disable auto-increment of hpmcnt30[h] when set (r/w) */
+  CSR_MCOUNTINHIBIT_HPM31 = 31  /**< mcountinhibit CSR (31): HPM31 - Disable auto-increment of hpmcnt31[h] when set (r/w) */
+};
+
+/**********************************************************************//**
+ * mie CSR (r/w): Machine interrupt enable
+ **************************************************************************/
+enum NEORV32_CSR_MIE_enum {
+  CSR_MIE_MSIE    =  3, /**< mie CSR  (3): MSIE - Machine software interrupt enable (r/w) */
+  CSR_MIE_MTIE    =  7, /**< mie CSR  (7): MTIE - Machine timer interrupt enable bit (r/w) */
+  CSR_MIE_MEIE    = 11, /**< mie CSR (11): MEIE - Machine external interrupt enable bit (r/w) */
+  /* NEORV32-specific extension: Fast Interrupt Requests (FIRQ) */
+  CSR_MIE_FIRQ0E  = 16, /**< mie CSR (16): FIRQ0E - Fast interrupt channel 0 enable bit (r/w) */
+  CSR_MIE_FIRQ1E  = 17, /**< mie CSR (17): FIRQ1E - Fast interrupt channel 1 enable bit (r/w) */
+  CSR_MIE_FIRQ2E  = 18, /**< mie CSR (18): FIRQ2E - Fast interrupt channel 2 enable bit (r/w) */
+  CSR_MIE_FIRQ3E  = 19, /**< mie CSR (19): FIRQ3E - Fast interrupt channel 3 enable bit (r/w) */
+  CSR_MIE_FIRQ4E  = 20, /**< mie CSR (20): FIRQ4E - Fast interrupt channel 4 enable bit (r/w) */
+  CSR_MIE_FIRQ5E  = 21, /**< mie CSR (21): FIRQ5E - Fast interrupt channel 5 enable bit (r/w) */
+  CSR_MIE_FIRQ6E  = 22, /**< mie CSR (22): FIRQ6E - Fast interrupt channel 6 enable bit (r/w) */
+  CSR_MIE_FIRQ7E  = 23, /**< mie CSR (23): FIRQ7E - Fast interrupt channel 7 enable bit (r/w) */
+  CSR_MIE_FIRQ8E  = 24, /**< mie CSR (24): FIRQ8E - Fast interrupt channel 8 enable bit (r/w) */
+  CSR_MIE_FIRQ9E  = 25, /**< mie CSR (25): FIRQ9E - Fast interrupt channel 9 enable bit (r/w) */
+  CSR_MIE_FIRQ10E = 26, /**< mie CSR (26): FIRQ10E - Fast interrupt channel 10 enable bit (r/w) */
+  CSR_MIE_FIRQ11E = 27, /**< mie CSR (27): FIRQ11E - Fast interrupt channel 11 enable bit (r/w) */
+  CSR_MIE_FIRQ12E = 28, /**< mie CSR (28): FIRQ12E - Fast interrupt channel 12 enable bit (r/w) */
+  CSR_MIE_FIRQ13E = 29, /**< mie CSR (29): FIRQ13E - Fast interrupt channel 13 enable bit (r/w) */
+  CSR_MIE_FIRQ14E = 30, /**< mie CSR (30): FIRQ14E - Fast interrupt channel 14 enable bit (r/w) */
+  CSR_MIE_FIRQ15E = 31  /**< mie CSR (31): FIRQ15E - Fast interrupt channel 15 enable bit (r/w) */
+};
+
+/**********************************************************************//**
+ * mip CSR (r/-): Machine interrupt pending
+ **************************************************************************/
+enum NEORV32_CSR_MIP_enum {
+  CSR_MIP_MSIP    =  3, /**<  mip CSR  (3): MSIP - Machine software interrupt pending (r/-) */
+  CSR_MIP_MTIP    =  7, /**<  mip CSR  (7): MTIP - Machine timer interrupt pending (r/-) */
+  CSR_MIP_MEIP    = 11, /**<  mip CSR (11): MEIP - Machine external interrupt pending (r/-) */
+  /* NEORV32-specific extension: Fast Interrupt Requests (FIRQ) */
+  CSR_MIP_FIRQ0P  = 16, /**< mip CSR (16): FIRQ0P - Fast interrupt channel 0 pending (r/-) */
+  CSR_MIP_FIRQ1P  = 17, /**< mip CSR (17): FIRQ1P - Fast interrupt channel 1 pending (r/-) */
+  CSR_MIP_FIRQ2P  = 18, /**< mip CSR (18): FIRQ2P - Fast interrupt channel 2 pending (r/-) */
+  CSR_MIP_FIRQ3P  = 19, /**< mip CSR (19): FIRQ3P - Fast interrupt channel 3 pending (r/-) */
+  CSR_MIP_FIRQ4P  = 20, /**< mip CSR (20): FIRQ4P - Fast interrupt channel 4 pending (r/-) */
+  CSR_MIP_FIRQ5P  = 21, /**< mip CSR (21): FIRQ5P - Fast interrupt channel 5 pending (r/-) */
+  CSR_MIP_FIRQ6P  = 22, /**< mip CSR (22): FIRQ6P - Fast interrupt channel 6 pending (r/-) */
+  CSR_MIP_FIRQ7P  = 23, /**< mip CSR (23): FIRQ7P - Fast interrupt channel 7 pending (r/-) */
+  CSR_MIP_FIRQ8P  = 24, /**< mip CSR (24): FIRQ8P - Fast interrupt channel 8 pending (r/-) */
+  CSR_MIP_FIRQ9P  = 25, /**< mip CSR (25): FIRQ9P - Fast interrupt channel 9 pending (r/-) */
+  CSR_MIP_FIRQ10P = 26, /**< mip CSR (26): FIRQ10P - Fast interrupt channel 10 pending (r/-) */
+  CSR_MIP_FIRQ11P = 27, /**< mip CSR (27): FIRQ11P - Fast interrupt channel 11 pending (r/-) */
+  CSR_MIP_FIRQ12P = 28, /**< mip CSR (28): FIRQ12P - Fast interrupt channel 12 pending (r/-) */
+  CSR_MIP_FIRQ13P = 29, /**< mip CSR (29): FIRQ13P - Fast interrupt channel 13 pending (r/-) */
+  CSR_MIP_FIRQ14P = 30, /**< mip CSR (30): FIRQ14P - Fast interrupt channel 14 pending (r/-) */
+  CSR_MIP_FIRQ15P = 31  /**< mip CSR (31): FIRQ15P - Fast interrupt channel 15 pending (r/-) */
+};
+
+/**********************************************************************//**
+ * misa CSR (r/-): Machine instruction set extensions
+ **************************************************************************/
+enum NEORV32_CSR_MISA_enum {
+  CSR_MISA_A      =  0, /**< misa CSR  (0): A: Atomic memory accesses CPU extension available (r/-)*/
+  CSR_MISA_B      =  1, /**< misa CSR  (1): B: Bit manipulation CPU extension available (r/-)*/
+  CSR_MISA_C      =  2, /**< misa CSR  (2): C: Compressed instructions CPU extension available (r/-)*/
+  CSR_MISA_E      =  4, /**< misa CSR  (4): E: Embedded CPU extension available (r/-) */
+  CSR_MISA_I      =  8, /**< misa CSR  (8): I: Base integer ISA CPU extension available (r/-) */
+  CSR_MISA_M      = 12, /**< misa CSR (12): M: Multiplier/divider CPU extension available (r/-)*/
+  CSR_MISA_U      = 20, /**< misa CSR (20): U: User mode CPU extension available (r/-)*/
+  CSR_MISA_X      = 23, /**< misa CSR (23): X: Non-standard CPU extension available (r/-) */
+  CSR_MISA_MXL_LO = 30, /**< misa CSR (30): MXL.lo: CPU data width (r/-) */
+  CSR_MISA_MXL_HI = 31  /**< misa CSR (31): MXL.Hi: CPU data width (r/-) */
+};
+
+/**********************************************************************//**
+ * mxisa[h] CSR (r/-): Machine extended instruction set extensions (NEORV32-specific)
+ **************************************************************************/
+enum NEORV32_CSR_MXISA_enum {
+  CSR_MXISA_ZICSR     =  0, /**< mxisa CSR  (0): privileged architecture (r/-)*/
+  CSR_MXISA_ZIFENCEI  =  1, /**< mxisa CSR  (1): instruction stream sync (r/-)*/
+  CSR_MXISA_ZMMUL     =  2, /**< mxisa CSR  (2): hardware mul/div (r/-)*/
+  CSR_MXISA_XCFU      =  3, /**< mxisa CSR  (3): custom RISC-V instructions (r/-)*/
+  CSR_MXISA_ZKT       =  4, /**< mxisa CSR  (4): data independent execution time (of cryptography operations) (r/-)*/
+  CSR_MXISA_ZFINX     =  5, /**< mxisa CSR  (5): FPU using x registers (r/-)*/
+  CSR_MXISA_ZICOND    =  6, /**< mxisa CSR  (6): integer conditional operations (r/-)*/
+  CSR_MXISA_ZICNTR    =  7, /**< mxisa CSR  (7): standard instruction, cycle and time counter CSRs (r/-)*/
+  CSR_MXISA_SMPMP     =  8, /**< mxisa CSR  (8): physical memory protection (r/-)*/
+  CSR_MXISA_ZIHPM     =  9, /**< mxisa CSR  (9): hardware performance monitors (r/-)*/
+  CSR_MXISA_SDEXT     = 10, /**< mxisa CSR (10): RISC-V debug mode (r/-)*/
+  CSR_MXISA_SDTRIG    = 11, /**< mxisa CSR (11): RISC-V trigger module (r/-)*/
+  CSR_MXISA_ZBKX      = 12, /**< mxisa CSR (12): scalar cryptography - crossbar permutation (r/-)*/
+  CSR_MXISA_ZKND      = 13, /**< mxisa CSR (13): scalar cryptography - NIST AES decryption (r/-)*/
+  CSR_MXISA_ZKNE      = 14, /**< mxisa CSR (14): scalar cryptography - NIST AES encryption (r/-)*/
+  CSR_MXISA_ZKNH      = 15, /**< mxisa CSR (15): scalar cryptography - NIST hash functions (r/-)*/
+  CSR_MXISA_ZBKB      = 16, /**< mxisa CSR (16): scalar cryptography - bit manipulation instructions (r/-)*/
+  CSR_MXISA_ZBKC      = 17, /**< mxisa CSR (17): scalar cryptography - carry-less multiplication instructions (r/-)*/
+  CSR_MXISA_ZKN       = 18, /**< mxisa CSR (18): scalar cryptography - NIST algorithm suite (r/-)*/
+  CSR_MXISA_ZKSH      = 19, /**< mxisa CSR (19): scalar cryptography - ShangMi hash functions (r/-)*/
+  CSR_MXISA_ZKSED     = 20, /**< mxisa CSR (20): scalar cryptography - ShangMi block cyphers (r/-)*/
+  CSR_MXISA_ZKS       = 21, /**< mxisa CSR (21): scalar cryptography - ShangMi algorithm suite (r/-)*/
+  CSR_MXISA_ZBA       = 22, /**< mxisa CSR (22): shifted-add bit-manipulation operations (r/-)*/
+  CSR_MXISA_ZBB       = 23, /**< mxisa CSR (23): basic bit-manipulation operations (r/-)*/
+  CSR_MXISA_ZBS       = 24, /**< mxisa CSR (24): single-bit bit-manipulation operations (r/-)*/
+  CSR_MXISA_ZAAMO     = 25, /**< mxisa CSR (25): atomic read-modify-write operations (r/-)*/
+  CSR_MXISA_ZALRSC    = 26, /**< mxisa CSR (26): atomic reservation-set operations (r/-)*/
+  CSR_MXISA_ZCB       = 27, /**< mxisa CSR (27): additional code size reduction instruction (r/-)*/
+  CSR_MXISA_ZCA       = 28, /**< mxisa CSR (28): compressed instructions without floating-point (r/-)*/
+  CSR_MXISA_ZIBI      = 29, /**< mxisa CSR (29): branch with immediate-comparison (r/-)*/
+  CSR_MXISA_ZIMOP     = 30, /**< mxisa CSR (30): may-be-operations (r/-)*/
+  CSR_MXISA_SMCNTRPMF = 31  /**< mxisa CSR (31): base counter privilege-mode filtering (r/-)*/
+};
+
+enum NEORV32_CSR_MXISAH_enum {
+  CSR_MXISAH_ZBC   = 0, /**< mxisah CSR (0): carry-less multiplication (r/-)*/
+  CSR_MXISAH_ZCMOP = 1  /**< mxisah CSR (1): compressed may-be-operations (r/-)*/
+};
+
+/**********************************************************************//**
+ * mcyclecfgh CSR (r/w): Machine cycle counter privilege-mode filtering
+ **************************************************************************/
+enum NEORV32_CSR_MCYCLECFGH_enum {
+  CSR_MCYCLECFGH_UINH = 28, /**< mcyclecfgh CSR (28): inhibit cycle counter when in user-mode when set (r/w) */
+  CSR_MCYCLECFGH_MINH = 30  /**< mcyclecfgh CSR (30): inhibit cycle counter when in machine-mode when set (r/w) */
+};
+
+/**********************************************************************//**
+ * minstretcfgh CSR (r/w): Machine instret counter privilege-mode filtering
+ **************************************************************************/
+enum NEORV32_CSR_MINSTRETCFGH_enum {
+  CSR_MINSTRETCFGH_UINH = 28, /**< minstretcfgh CSR (28): inhibit instret counter when in user-mode when set (r/w) */
+  CSR_MINSTRETCFGH_MINH = 30  /**< minstretcfgh CSR (30): inhibit instret counter when in machine-mode when set (r/w) */
+};
+
+/**********************************************************************//**
+ * mhpmevent hardware performance monitor events
+ **************************************************************************/
+enum NEORV32_HPMCNT_EVENT_enum {
+  HPMCNT_EVENT_CY       = 0, /**< mhpmevent CSR (0): Active cycle */
+  HPMCNT_EVENT_IR       = 1, /**< mhpmevent CSR (1): Retired instruction */
+  HPMCNT_EVENT_CI       = 2, /**< mhpmevent CSR (2): Compressed instruction */
+  HPMCNT_EVENT_WAIT_DIS = 3, /**< mhpmevent CSR (3): Instruction dispatch wait cycle */
+  HPMCNT_EVENT_WAIT_ALU = 4, /**< mhpmevent CSR (4): Multi-cycle ALU co-processor wait cycle */
+  HPMCNT_EVENT_WAIT_LSU = 5, /**< mhpmevent CSR (5): Load-store unit memory wait cycle */
+  HPMCNT_EVENT_DELTA    = 6, /**< mhpmevent CSR (6): Control flow transfer */
+  HPMCNT_EVENT_LOAD     = 7, /**< mhpmevent CSR (7): Memory load operation */
+  HPMCNT_EVENT_STORE    = 8  /**< mhpmevent CSR (8): Memory store operation */
+};
+
+/**********************************************************************//**
+ * pmpcfg PMP configuration attributes
+ **************************************************************************/
+enum NEORV32_PMPCFG_ATTRIBUTES_enum {
+  PMPCFG_R     = 0, /**< pmpcfg attribute (0): Read */
+  PMPCFG_W     = 1, /**< pmpcfg attribute (1): Write */
+  PMPCFG_X     = 2, /**< pmpcfg attribute (2): Execute */
+  PMPCFG_A_LSB = 3, /**< pmpcfg attribute (3): Mode LSB #NEORV32_PMP_MODES_enum */
+  PMPCFG_A_MSB = 4, /**< pmpcfg attribute (4): Mode MSB #NEORV32_PMP_MODES_enum */
+  PMPCFG_L     = 7  /**< pmpcfg attribute (7): Locked */
+};
+
+/**********************************************************************//**
+ * PMP modes
+ **************************************************************************/
+enum NEORV32_PMP_MODES_enum {
+  PMP_OFF   = 0, /**< '00': entry disabled */
+  PMP_TOR   = 1, /**< '01': TOR mode (top of region) */
+  PMP_NA4   = 2, /**< '10': Naturally-aligned power of two region (4 bytes) */
+  PMP_NAPOT = 3  /**< '11': Naturally-aligned power of two region (greater than 4 bytes )*/
+};
+
+/**********************************************************************//**
+ * Trap codes from mcause CSR
+ **************************************************************************/
+enum NEORV32_EXCEPTION_CODES_enum {
+  TRAP_CODE_I_MISALIGNED = 0x00000000U, /**< 0.0:  Instruction address misaligned */
+  TRAP_CODE_I_ACCESS     = 0x00000001U, /**< 0.1:  Instruction (bus) access fault */
+  TRAP_CODE_I_ILLEGAL    = 0x00000002U, /**< 0.2:  Illegal instruction */
+  TRAP_CODE_BREAKPOINT   = 0x00000003U, /**< 0.3:  Breakpoint (EBREAK instruction) */
+  TRAP_CODE_L_MISALIGNED = 0x00000004U, /**< 0.4:  Load address misaligned */
+  TRAP_CODE_L_ACCESS     = 0x00000005U, /**< 0.5:  Load (bus) access fault */
+  TRAP_CODE_S_MISALIGNED = 0x00000006U, /**< 0.6:  Store address misaligned */
+  TRAP_CODE_S_ACCESS     = 0x00000007U, /**< 0.7:  Store (bus) access fault */
+  TRAP_CODE_UENV_CALL    = 0x00000008U, /**< 0.8:  Environment call from user mode (ECALL instruction) */
+  TRAP_CODE_MENV_CALL    = 0x0000000bU, /**< 0.11: Environment call from machine mode (ECALL instruction) */
+  TRAP_CODE_MSI          = 0x80000003U, /**< 1.3:  Machine software interrupt */
+  TRAP_CODE_MTI          = 0x80000007U, /**< 1.7:  Machine timer interrupt */
+  TRAP_CODE_MEI          = 0x8000000bU, /**< 1.11: Machine external interrupt */
+  TRAP_CODE_FIRQ_0       = 0x80000010U, /**< 1.16: Fast interrupt channel 0 */
+  TRAP_CODE_FIRQ_1       = 0x80000011U, /**< 1.17: Fast interrupt channel 1 */
+  TRAP_CODE_FIRQ_2       = 0x80000012U, /**< 1.18: Fast interrupt channel 2 */
+  TRAP_CODE_FIRQ_3       = 0x80000013U, /**< 1.19: Fast interrupt channel 3 */
+  TRAP_CODE_FIRQ_4       = 0x80000014U, /**< 1.20: Fast interrupt channel 4 */
+  TRAP_CODE_FIRQ_5       = 0x80000015U, /**< 1.21: Fast interrupt channel 5 */
+  TRAP_CODE_FIRQ_6       = 0x80000016U, /**< 1.22: Fast interrupt channel 6 */
+  TRAP_CODE_FIRQ_7       = 0x80000017U, /**< 1.23: Fast interrupt channel 7 */
+  TRAP_CODE_FIRQ_8       = 0x80000018U, /**< 1.24: Fast interrupt channel 8 */
+  TRAP_CODE_FIRQ_9       = 0x80000019U, /**< 1.25: Fast interrupt channel 9 */
+  TRAP_CODE_FIRQ_10      = 0x8000001aU, /**< 1.26: Fast interrupt channel 10 */
+  TRAP_CODE_FIRQ_11      = 0x8000001bU, /**< 1.27: Fast interrupt channel 11 */
+  TRAP_CODE_FIRQ_12      = 0x8000001cU, /**< 1.28: Fast interrupt channel 12 */
+  TRAP_CODE_FIRQ_13      = 0x8000001dU, /**< 1.29: Fast interrupt channel 13 */
+  TRAP_CODE_FIRQ_14      = 0x8000001eU, /**< 1.30: Fast interrupt channel 14 */
+  TRAP_CODE_FIRQ_15      = 0x8000001fU  /**< 1.31: Fast interrupt channel 15 */
+};
+
+#endif // NEORV32_CSR_H
