@@ -67,6 +67,36 @@ sendByte:
     MB_SendA
     RET
 
+;; Sending a buffer to the FIFO
+;; IN: HL = current addres in the DataBuffer
+;;     DE = count of bytes to send (e.g. 1024)
+;; OUT: HL incremented by DE bytes
+sendBuffer:
+    PUSH BC
+    PUSH DE
+    PUSH AF
+
+    LD A, MegaBuzz.REG_DATA 
+    LD BC, MegaBuzz.PORT_ZXUNO_REG 
+    OUT (C), A
+
+    LD BC, MegaBuzz.PORT_ZXUNO_DATA
+
+.loop:
+    LD A, (HL)
+    OUT (C), A
+    INC HL
+    
+    DEC DE
+    LD A, D
+    OR E
+    JR NZ, .loop
+
+    POP AF
+    POP DE
+    POP BC
+    RET
+
 ; Waiting for playback end
 finish:
     MB_SetCommandMode

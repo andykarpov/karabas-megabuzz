@@ -88,6 +88,6 @@ fp db 0
 
 argBuff ds 80
 
-buffer ds #1000
+buffer ds 1024
 bufferSize equ $ - buffer
     SAVEBIN "playmp3", #2000, $ - #2000
