@@ -28,19 +28,26 @@ always @(posedge clk or posedge reset) begin
 	counter     <= 0;
  end
  else begin
-	if(wr && ~full) begin
-	  memory[writeAddr] <= din;
-	  writePtr <= (writePtr + 1) % DEPTH;
-	  counter <= counter + 1;
-	end
-	if(rd && ~empty) begin
-	  dout <= memory[readAddr];
-	  readPtr <= (readPtr + 1) % DEPTH;
-	  counter <= counter - 1;
-	end
-	if (rd && wr && ~full && ~empty) begin
-		counter <= counter;
-	end
+
+    case ({wr && !full, rd && !empty})
+		2'b10: begin // w
+			memory[writeAddr] <= din;
+			writePtr         <= (writePtr + 1) % DEPTH;
+			counter          <= counter + 1;
+		end
+		2'b01: begin // r
+			dout             <= memory[readAddr];
+			readPtr          <= (readPtr + 1) % DEPTH;
+			counter          <= counter - 1;
+		end
+		2'b11: begin // rw
+			memory[writeAddr] <= din;
+			writePtr         <= (writePtr + 1) % DEPTH;
+			dout             <= memory[readAddr];
+			readPtr          <= (readPtr + 1) % DEPTH;
+		end
+		default: ;
+	endcase
  end
 end
   

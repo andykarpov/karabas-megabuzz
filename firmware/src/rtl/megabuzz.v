@@ -276,7 +276,7 @@ assign flash_wp_n   = 1'b1;
     assign sda          = 1'bz;
     assign scl          = 1'b1;
     // sd led
-    assign led1         = sd_cs_n;
+    assign led1         = sd_cs_n; // & ~vs_dreq;
     // config bits expanded to named signals
     wire divmmc_en      = cfg_byte[0];
     wire zc_en          = cfg_byte[1];
@@ -289,6 +289,7 @@ assign flash_wp_n   = 1'b1;
     wire opl3_en        = cfg_byte[7];
     wire vs1053_en      = 1;
     wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
+
 `endif
 
 // pll
@@ -583,23 +584,28 @@ opl3 opl3_inst(
     .out_r            (opl3_r)
 );
 
-wire vs_bus_cs_n, vs_bus_we_n, vs_bus_addr;
+// vs1053/vs1063
+
+wire vs_bus_cs_n, vs_bus_we_n, vs_bus_rd_n, vs_bus_addr;
 wire [7:0] vs_bus_di, vs_bus_do;
 vs1053 vs1053(
     .clk              (clk_bus),
-    .rst_n            (~reset),
-    .spi_sclk         (vs_sclk),
-    .spi_mosi         (vs_mosi),
-    .spi_miso         (vs_miso),
-    .dreq             (vs_dreq),
-    .xreset           (vs_reset_n),
-    .xdcs             (vs_dcs_n),
-    .xcs              (vs_cs_n),
+    .reset            (reset),
+
+    .vs_sclk          (vs_sclk),
+    .vs_mosi          (vs_mosi),
+    .vs_miso          (vs_miso),
+    .vs_dreq          (vs_dreq),
+    .vs_reset_n       (vs_reset_n),
+    .vs_dcs_n         (vs_dcs_n),
+    .vs_cs_n          (vs_cs_n),
+
     .bus_cs_n         (vs_bus_cs_n),
-    .bus_we_n         (vs_bus_we_n),
-    .bus_addr         (vs_bus_addr),
-    .bus_din          (vs_bus_di),
-    .bus_dout         (vs_bus_do)
+    .bus_wr_n         (vs_bus_we_n),
+    .bus_rd_n         (vs_bus_rd_n),
+    .bus_a            (vs_bus_addr),
+    .bus_di           (vs_bus_di),
+    .bus_do           (vs_bus_do)
 );
 
 // midi activity detector
@@ -609,15 +615,6 @@ midi_tx_sensor midi_tx_sensor(
     .reset            (reset),
     .midi_in          (midi_tx),
     .midi_active      (midi_active)
-);
-
-// vs1053 activity detector
-wire vs_active;
-midi_tx_sensor vs_sensor(
-    .clk              (clk_bus),
-    .reset            (reset),
-    .midi_in          (vs_dreq),
-    .midi_active      (vs_active)
 );
 
 // audio muter on reset
@@ -640,7 +637,7 @@ audio_mixer audio_mixer_inst(
     .turbosound_en    (turbosound_en),
     .saa_en           (saa_en),
     .gs_en            (gs_en),
-    .midi_en          ((midi_en & midi_active) | (vs1053_en & vs_active)),
+    .midi_en          ((midi_en & midi_active) | vs1053_en),
     .opl3_en          (opl3_en),
     
     .speaker          (beeper),
@@ -739,23 +736,35 @@ wire port_zc = (((bus_a[7:0] == 8'h77) & (zc_en | divmmc_en)) |
                 ((bus_a[7:0] == 8'h57) & (zc_en | divmmc_en)) | 
                 ((bus_a[7:0] == 8'hEB) & divmmc_en));
 wire port_mmc = ((bus_a[7:0] == 8'hE3) | (bus_a[7:0] == 8'hE7)) & divmmc_en;
-// vs1053 ports (3b,37)
-wire port_vs = (bus_a[7:0] == 8'h3B | bus_a[7:0] == 8'h37) & vs1053_en;
+// zxuno ports (fc3b, fd3b)
+wire port_zxuno_reg =  (bus_a[15:0] == 16'hFC3B);
+wire port_zxuno_data = (bus_a[15:0] == 16'hFD3B);
+reg [7:0] zxuno_reg;
+always @(posedge clk_bus or posedge reset) begin
+    if (reset)
+        zxuno_reg <= 8'hFF;
+	else if (port_zxuno_reg & ~bus_iorq_n & ~bus_wr_n)
+		zxuno_reg <= bus_d;
+end
+// vs1053 (zxuno regs f5, f6)
+wire reg_vs = (zxuno_reg == 8'hF5 | zxuno_reg == 8'hF6) & vs1053_en;
 assign vs_bus_di = bus_d;
-assign vs_bus_cs_n = ~(port_vs & ~bus_iorq_n & (~bus_rd_n | ~bus_wr_n));
-assign vs_bus_we_n = ~(port_vs & ~bus_iorq_n & ~bus_wr_n);
-assign vs_bus_addr = (bus_a[7:0] == 8'h3B) ? 0 : 1;
+assign vs_bus_cs_n = ~(port_zxuno_data & reg_vs & ~bus_iorq_n);
+assign vs_bus_we_n = bus_wr_n;
+assign vs_bus_rd_n = bus_rd_n;
+assign vs_bus_addr = (zxuno_reg == 8'hF5) ? 0 : 1;
 
 // iorqge
-assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc | port_vs) ? 1'b0 : 1'b1;
+assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc | port_zxuno_reg | port_zxuno_data) ? 1'b0 : 1'b1;
 
 // BUS
 assign bus_d = 
      (divmmc_en & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
      (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zc) ? zc_do_bus : // ZC + DivMMC
+     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_reg) ? zxuno_reg : // ZXUNO reg
+     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data) ? vs_bus_do : // ZXUNO data (VS1053)
      (ioreq_rd & port_fffd) ? ts_do : // TS
      (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_gs) ? gs_do_bus : // GS
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_vs) ? vs_bus_do : // VS1053
      8'bzzzzzzzz;
      
 // wait (from zc)
