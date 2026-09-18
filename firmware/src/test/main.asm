@@ -101,6 +101,7 @@ WaitBufferEmpty:
     OUT (C), A
 
     LD BC, PORT_ZXUNO_DATA
+
     IN A, (C)                           ; Читаем состояние FIFO
     AND #7F                             ; Проверяем только биты занятости 6..0
     JR NZ, WaitBufferEmpty              ; Если занято > 0 блоков, продолжаем ждать
