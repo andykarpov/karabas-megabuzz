@@ -865,7 +865,7 @@
         "uuid": "eff1afb7-47ba-46af-a815-4a07fb8d674b"
       }
     ],
-    "used_designators": "R24-25,R28,R54-55,C58-65,#PWR154,#PWR157-177,U20-23",
+    "used_designators": "R16-19,R24-25,R28-29,R54-56,C58-65,#PWR59,#PWR154,#PWR157-182,U20-23",
     "variants": []
   },
   "sheets": [
