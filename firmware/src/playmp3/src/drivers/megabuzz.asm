@@ -32,10 +32,10 @@
     module MegaBuzz
 
 ;; Control ports
-PORT_ZXUNO_REG   EQU #FC3B     ; Порт выбора регистра ZXUNO
-PORT_ZXUNO_DATA  EQU #FD3B     ; Порт данных ZXUNO
-REG_CTRL         EQU #F5       ; Статус FIFO (бит 7 - FULL, биты 6..0 - блоки)
-REG_DATA         EQU #F6       ; Регистр данных FIFO
+PORT_ZXUNO_REG   EQU #FC3B     ; ZXUNO control port
+PORT_ZXUNO_DATA  EQU #FD3B     ; ZXUNO data port
+REG_CTRL         EQU #F5       ; FIFO status (bit 7 - FULL, bit 6..0 - number of occupied 32byte blocks in FIFO)
+REG_DATA         EQU #F6       ; FIFO data register
 
 init:
     MB_SetCommandMode
@@ -44,30 +44,30 @@ init:
     MB_SetDataMode
     RET
 
-;; Процедура проверки свободных блоков в FIFO
+;; Check for enough free blocks in FIFO
 checkFifo:
     PUSH AF
 .wait_fifo:
 
     MB_Read
 
-    BIT 7, A                    ; Если FIFO переполнено - ждем
+    BIT 7, A                    ; If the FIFO is overflowed - waiting
     JR NZ, .wait_fifo
 
-    AND #7F                    ; Маскируем количество блоков
-    CP 64                       ; Меньше безопасного порога?
-    JR NC, .wait_fifo          ; Если занято >= 64, ждем
+    AND #7F                    ; Masking the bits 6..0
+    CP 64                      ; Is enough free space to fill the FIFO?
+    JR NC, .wait_fifo          ; If occupied >= 64 blocks - waiting
 
     POP AF
     RET
 
-;; Процедура отправки байта с проверкой FIFO
-; Вход: A = байт данных MP3
+;; Sending a byte to the FIFO
+; IN: A = data byte of MP3
 sendByte:
     MB_SendA
     RET
 
-; --- Ожидание завершения воспроизведения остатков буфера ---
+; Waiting for playback end
 finish:
     MB_SetCommandMode
 .wait_loop:
@@ -75,7 +75,7 @@ finish:
     AND #7F
     JR NZ, .wait_loop
 
-    ; Дополнительная пауза декодеру VS1053 на "дожевывание"
+    ; Additional delay for VS1053
     LD DE, 25000
 .final_delay:
     DEC DE
