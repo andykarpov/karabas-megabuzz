@@ -23,7 +23,7 @@
 ;; Control ports
 PORT_ZXUNO_REG   EQU #FC3B     ; ZXUNO control port
 PORT_ZXUNO_DATA  EQU #FD3B     ; ZXUNO data port
-REG_CTRL         EQU #F5       ; FIFO status (bit 7 - FULL, bit 6..0 - number of occupied 32byte blocks in FIFO)
+REG_CTRL         EQU #F5       ; FIFO status
 REG_DATA         EQU #F6       ; FIFO data register
 
 init:
@@ -33,42 +33,64 @@ init:
     MB_SetDataMode
     RET
 
-;; Check for enough free blocks in FIFO
-checkFifo:
-.wait_fifo:
-
+;; Check FIFO free space 
+;; OUT: A = count of free 32-bytes blocks (0..127)
+getFreeBlocks:
+    MB_SetCommandMode
     MB_Read
+    push af
+    MB_SetDataMode
+    pop af
 
-    BIT 7, A                    ; If the FIFO is overflowed - waiting
-    JR NZ, .wait_fifo
+    bit 7, a
+    jr nz, .fifo_full
 
-    AND #7F                    ; Masking the bits 6..0
-    CP 64                      ; Is enough free space to fill the FIFO?
-    JR NC, .wait_fifo          ; If occupied >= 64 blocks - waiting
+    and #7F
+    ld b, a
+    ld a, 127
+    sub b
+    jr nc, .limit_ok    
+    xor a
+.limit_ok:
+    ret
 
-    RET
+.fifo_full:
+    xor a
+    ret
 
-;; Sending a byte to the FIFO
-; IN: A = data byte of MP3
-sendByte:
-    MB_SendA
-    RET
+;; Send 32-bytes data block to FIFO
+;; IN: HL = start address
+;; OUT: HL increments by 32 bytes. BC = #FD3B. A is dirty.
+send32Bytes:
+    ld bc, PORT_ZXUNO_DATA
 
-; Waiting for playback end
+    macro _send4
+    ld a, (hl) : out (c), a : inc hl
+    ld a, (hl) : out (c), a : inc hl
+    ld a, (hl) : out (c), a : inc hl
+    ld a, (hl) : out (c), a : inc hl
+    endm
+
+    _send4 : _send4 : _send4 : _send4
+    _send4 : _send4 : _send4 : _send4
+    ret
+
+; Waiting for playback finish
 finish:
     MB_SetCommandMode
 .wait_loop:
     MB_Read
-    AND #7F
-    JR NZ, .wait_loop
+    and #7F
+    jr nz, .wait_loop
 
     ; Additional delay for VS1053
-    LD DE, 25000
+    ld de, 25000
 .final_delay:
-    DEC DE
-    LD A, D
-    OR E
-    JR NZ, .final_delay
-    RET
+    dec de
+    ld a, d
+    or e
+    jr nz, .final_delay
+    ret
 
     endmodule
+

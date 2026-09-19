@@ -17,20 +17,54 @@ start:
     call Dos.fopen : jp c, err
     ld (fp), a
     call MegaBuzz.init
+
 .loadLoop
-    ld a, (fp), hl, buffer, bc, buffer_size : call Dos.fread
-    ld a, b : or c : jp z, .exit
+    ld a, (fp)
     ld hl, buffer
-    ld (tmp_bc), bc ; bc is dirty by MegaBuzz   
-    call MegaBuzz.checkFifo
-    ld bc, (tmp_bc)
-.sendLoop
-    ld a, b : or c : jp z, .loadLoop
-    ld (tmp_bc), bc ; bc is dirty by MegaBuzz
-    ld a, (hl) : call MegaBuzz.sendByte
-    ld bc, (tmp_bc)
-    inc hl : dec bc
-    jr .sendLoop
+    ld bc, buffer_size 
+    call Dos.fread ; read 4kb buffer
+    ld a, b : or c : jp z, .exit
+
+    srl b : rr c
+    srl b : rr c
+    srl b : rr c
+    srl b : rr c
+    srl b : rr c
+    ; now C = count of 32 byte blocks (1..128)
+    
+    ld hl, buffer
+
+.sendBlocksLoop
+    ld a, c : or a : jr z, .loadLoop
+
+    push bc
+    push hl
+    call MegaBuzz.getFreeBlocks ; A = free blocks
+    pop hl
+    pop bc
+
+    or a : jr z, .sendBlocksLoop
+
+    cp c
+    jr c, .use_available
+    ld a, c
+.use_available:
+    ; A = count of blocks to send on this interation
+    ld b, a                 ; Move to B for djnz loop
+    
+    ; Remaining blocks count in C
+    sub c
+    neg
+    ld c, a
+
+.blockLoop
+    push bc
+    call MegaBuzz.send32Bytes
+    pop bc
+    djnz .blockLoop
+
+    jr .sendBlocksLoop
+
 .exit
     ld a, (fp) : call Dos.fclose
     call MegaBuzz.finish
@@ -46,9 +80,8 @@ err:
     include "megabuzz.asm"
 
 fp          db 0
-buffer      ds 1024
-buffer_size equ 1024
-tmp_bc  dw 0
+buffer      ds 4096
+buffer_size equ 4096
 
     savebin "mp3", PLUGIN_ORG, $-PLUGIN_ORG
-    
+
