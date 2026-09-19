@@ -42,8 +42,8 @@ err:
     include "megabuzz.asm"
 
 fp          db 0
-buffer      ds (PLUGIN_ORG + PLUGIN_SIZE) - $
-buffer_size equ $ - buffer
+buffer      ds 1024
+buffer_size equ 1024
 
     savebin "mp3", PLUGIN_ORG, PLUGIN_SIZE
     
