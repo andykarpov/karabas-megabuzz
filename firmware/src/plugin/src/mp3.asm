@@ -21,10 +21,14 @@ start:
     ld a, (fp), hl, buffer, bc, buffer_size : call Dos.fread
     ld a, b : or c : jp z, .exit
     ld hl, buffer
+    ld (tmp_bc), bc ; bc is dirty by MegaBuzz   
+    call MegaBuzz.checkFifo
+    ld bc, (tmp_bc)
 .sendLoop
     ld a, b : or c : jp z, .loadLoop
-    call MegaBuzz.checkFifo
+    ld (tmp_bc), bc ; bc is dirty by MegaBuzz
     ld a, (hl) : call MegaBuzz.sendByte
+    ld bc, (tmp_bc)
     inc hl : dec bc
     jr .sendLoop
 .exit
@@ -44,6 +48,7 @@ err:
 fp          db 0
 buffer      ds 1024
 buffer_size equ 1024
+tmp_bc  dw 0
 
-    savebin "mp3", PLUGIN_ORG, PLUGIN_SIZE
+    savebin "mp3", PLUGIN_ORG, $-PLUGIN_ORG
     

@@ -1,32 +1,21 @@
     macro MB_SetCommandMode
-    push bc
     ld a, MegaBuzz.REG_CTRL : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
-    pop bc
     endm
 
     macro MB_SetDataMode
-    push bc
     ld a, MegaBuzz.REG_DATA : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
-    pop bc
     endm
 
     macro MB_Send nn
-    push bc
     ld a, nn : ld bc, MegaBuzz.PORT_ZXUNO_DATA : out (c), a
-    pop bc
     endm
 
     macro MB_SendA
-    push bc
     ld bc, MegaBuzz.PORT_ZXUNO_DATA : out (c), a
-    pop bc
     endm
 
     macro MB_Read
-    push bc
-    ld bc, MegaBuzz.PORT_ZXUNO_DATA
-    in a, (c)
-    pop bc
+    ld bc, MegaBuzz.PORT_ZXUNO_DATA : in a, (c)
     endm
 
     module MegaBuzz
@@ -46,7 +35,6 @@ init:
 
 ;; Check for enough free blocks in FIFO
 checkFifo:
-    PUSH AF
 .wait_fifo:
 
     MB_Read
@@ -58,43 +46,12 @@ checkFifo:
     CP 64                      ; Is enough free space to fill the FIFO?
     JR NC, .wait_fifo          ; If occupied >= 64 blocks - waiting
 
-    POP AF
     RET
 
 ;; Sending a byte to the FIFO
 ; IN: A = data byte of MP3
 sendByte:
     MB_SendA
-    RET
-
-;; Sending a buffer to the FIFO
-;; IN: HL = current addres in the DataBuffer
-;;     DE = count of bytes to send (e.g. 1024)
-;; OUT: HL incremented by DE bytes
-sendBuffer:
-    PUSH BC
-    PUSH DE
-    PUSH AF
-
-    LD A, MegaBuzz.REG_DATA 
-    LD BC, MegaBuzz.PORT_ZXUNO_REG 
-    OUT (C), A
-
-    LD BC, MegaBuzz.PORT_ZXUNO_DATA
-
-.loop:
-    LD A, (HL)
-    OUT (C), A
-    INC HL
-    
-    DEC DE
-    LD A, D
-    OR E
-    JR NZ, .loop
-
-    POP AF
-    POP DE
-    POP BC
     RET
 
 ; Waiting for playback end
