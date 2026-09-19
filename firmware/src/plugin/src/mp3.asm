@@ -13,6 +13,7 @@ RESULT_ERR  = 128
 PLUGIN_NAVIGATE_NEXT  = 1
 PLUGIN_FLAGS1_COPY_SETTINGS = 1
 PLUGIN_SETTING_MAX = 14
+PLUGIN_STATUS_SCREEN_ADDR EQU $50e0 + 24	; x, 20, y  EQU  bottom line
 
     org PLUGIN_ORG
     jr _plugin_start
@@ -42,6 +43,9 @@ _plugin_start:
     call Dos.fopen : jp c, err
     ld (fp), a
     call MegaBuzz.init
+
+	ld hl, _plugin_status_playing
+	call _set_status_icon
 
 .loadLoop
     ld a, (fp)
@@ -111,10 +115,30 @@ _plugin_start:
 .exit_next:
     ld a, (fp) : call Dos.fclose
     call MegaBuzz.finish
-    ld hl, img_seek_next
+	ld hl, _plugin_status_seek_next
+	call _set_status_icon
     ld bc, PLUGIN_NAVIGATE_NEXT ; bc = 1
     ld a, RESULT_OK | PLUGIN_NAVIGATE; a = 9
     ret
+
+_set_status_icon:
+
+	ld a, h
+	or l
+	ret z
+
+					; hl points to status graphic
+	ld de, PLUGIN_STATUS_SCREEN_ADDR
+	ld b, 8
+
+_set_status_icon_loop:
+
+	ld a, (hl)
+	ld (de), a
+	inc hl
+	inc d
+	djnz _set_status_icon_loop
+	ret
 
 err:
     ld a, RESULT_ERR
@@ -127,15 +151,27 @@ fp          db 0
 buffer      ds 4096
 buffer_size equ 4096
 
-img_seek_next:
-    defb %00000000
-    defb %01000100
-    defb %01100110
-    defb %01110111
-    defb %01100110
-    defb %01000100
-    defb %00000000
-    defb %00000000
+_plugin_status_playing:
+
+	defb %00000000
+	defb %00100000
+	defb %00110000
+	defb %00111000
+	defb %00110000
+	defb %00100000
+	defb %00000000
+	defb %00000000
+
+_plugin_status_seek_next:
+
+	defb %00000000
+	defb %01000100
+	defb %01100110
+	defb %01110111
+	defb %01100110
+	defb %01000100
+	defb %00000000
+	defb %00000000
 
     savebin "mp3", PLUGIN_ORG, $-PLUGIN_ORG
 
