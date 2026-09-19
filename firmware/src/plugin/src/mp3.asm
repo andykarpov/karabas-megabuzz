@@ -2,14 +2,18 @@ PLUGIN_ORG  = #8000
 PLUGIN_SIZE = #2000
 
 RESULT_OK   = 1
+PLUGIN_NAVIGATE = 8
 RESULT_ERR  = 128
+
+PLUGIN_NAVIGATE_NEXT  = 1
+PLUGIN_FLAGS1_COPY_SETTINGS = 1
 
     device zxspectrum48
     org PLUGIN_ORG
     jr start
     db "BP", 0, 0 ;; Browse plugin
-    db 0, 0 ;; Flags
-    db ".MP3 player v0.1 - MegaBuzz", 0
+    db PLUGIN_FLAGS1_COPY_SETTINGS, 0 ;; Flags
+    db ".MP3 player v0.3 - MegaBuzz", 0
 
 ;; HL - filename
 start:
@@ -37,6 +41,16 @@ start:
 .sendBlocksLoop
     ld a, c : or a : jr z, .loadLoop
 
+.kbd_poll:
+    ; Q
+    ld a, #FB : in a, (#FE) : bit 0, a
+    jr z, .exit
+
+    ; SPACE
+    ld a, #7F : in a, (#FE) : bit 0, a
+    jr z, .exit_next
+
+.get_free_blocks:
     push bc
     push hl
     call MegaBuzz.getFreeBlocks ; A = free blocks
@@ -68,8 +82,17 @@ start:
 .exit
     ld a, (fp) : call Dos.fclose
     call MegaBuzz.finish
-
+    ld hl, 0
+    ld bc, 0 
     ld a, RESULT_OK 
+    ret
+
+.exit_next:
+    ld a, (fp) : call Dos.fclose
+    call MegaBuzz.finish
+    ld hl, img_seek_next
+    ld bc, PLUGIN_NAVIGATE_NEXT ; bc = 1
+    ld a, RESULT_OK | PLUGIN_NAVIGATE; a = 9
     ret
 
 err:
@@ -82,6 +105,16 @@ err:
 fp          db 0
 buffer      ds 4096
 buffer_size equ 4096
+
+img_seek_next:
+    defb %00000000
+    defb %01000100
+    defb %01100110
+    defb %01110111
+    defb %01100110
+    defb %01000100
+    defb %00000000
+    defb %00000000
 
     savebin "mp3", PLUGIN_ORG, $-PLUGIN_ORG
 
