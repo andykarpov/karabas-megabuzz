@@ -1,3 +1,8 @@
+	OPT --dirbol			; enable directives processing
+					; from the beginning of line
+
+DEVICE ZXSPECTRUM48
+
 PLUGIN_ORG  = #8000
 PLUGIN_SIZE = #2000
 
@@ -7,16 +12,32 @@ RESULT_ERR  = 128
 
 PLUGIN_NAVIGATE_NEXT  = 1
 PLUGIN_FLAGS1_COPY_SETTINGS = 1
+PLUGIN_SETTING_MAX = 14
 
-    device zxspectrum48
     org PLUGIN_ORG
-    jr start
-    db "BP", 0, 0 ;; Browse plugin
-    db PLUGIN_FLAGS1_COPY_SETTINGS, 0 ;; Flags
-    db ".MP3 player v0.3 - MegaBuzz", 0
+    jr _plugin_start
 
-;; HL - filename
-start:
+_plugin_info:
+
+	defb "BP"				; id
+	defb 0					; spare
+	defb 0					; spare
+	defb PLUGIN_FLAGS1_COPY_SETTINGS	; flags
+	defb 0					; flags2  
+
+_plugin_user_data:
+
+	defs(PLUGIN_SETTING_MAX)		; reserve space for settings copy
+
+_plugin_id_string:
+
+	defb ".MP3 file plugin v0.5 for MegaBuzz - andykarpov", $0
+
+;; Entry point
+; hl - the 8.3 filename of the selected item from the browser.
+; bc - address of the browser's parameter block.
+; de - address of the config buffer.
+_plugin_start:
     ld b, Dos.FMODE_READ
     call Dos.fopen : jp c, err
     ld (fp), a
@@ -27,7 +48,7 @@ start:
     ld hl, buffer
     ld bc, buffer_size 
     call Dos.fread ; read 4kb buffer
-    ld a, b : or c : jp z, .exit
+    ld a, b : or c : jp z, .exit_next
 
     srl b : rr c
     srl b : rr c
