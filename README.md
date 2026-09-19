@@ -3,9 +3,9 @@
 Simple FPGA based sound card for ZX Spectrum (NemoBus). 
 Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
-[![photo](docs/karabas-megabuzz_revA2_top.png)](docs/karabas-megabuzz_revA2_top.png?raw=true)
+[![photo](docs/karabas-megabuzz_revA3_top.png)](docs/karabas-megabuzz_revA3_top.png?raw=true)
 
-[![photo](docs/karabas-megabuzz_revA2_bottom.png)](docs/karabas-megabuzz_revA2_bottom.png?raw=true)
+[![photo](docs/karabas-megabuzz_revA3_bottom.png)](docs/karabas-megabuzz_revA3_bottom.png?raw=true)
 
 ### Tech specs
 
@@ -15,6 +15,7 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 * MIDI by Dream SAM2695
 * SAA1099
 * Soundrive, Covox + Beeper
+* MP3, OGG, WMA, AAC decoding by VS1053/VS1063
 * 16-bit DAC PCM5102
 * XC6SLX16 / XC6SLX25 FPGA
 * SD Card by Z-Controller / DivMMC (since rev.A1)
