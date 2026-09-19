@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "Karabas-MegaBuzz")
-		(date "2027-06-23")
+		(date "2026-09-19")
 		(rev "A3")
 		(company "Andy Karpov")
 	)
@@ -4656,6 +4656,129 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "vcc33:VCC3_3"
+			(power global)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#PWR"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "VCC3_3"
+				(at 0 3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Power flag, VCC"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "power-flag"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "VCC3_3_0_1"
+				(circle
+					(center 0 1.905)
+					(radius 0.635)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "VCC3_3_1_1"
+				(pin power_in line
+					(at 0 0 90)
+					(length 0)
+					(hide yes)
+					(name "VCC3_3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(rectangle
 		(start 17.78 82.55)
@@ -5033,6 +5156,12 @@
 		(uuid "7bab82ee-3d39-420e-aae3-98056e3fc07c")
 	)
 	(junction
+		(at 80.01 147.32)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "7c097504-fec6-4f6b-83d9-24c95d2f6771")
+	)
+	(junction
 		(at 151.13 107.95)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5049,6 +5178,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "865830a3-c172-4599-8040-53f31535db44")
+	)
+	(junction
+		(at 80.01 157.48)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "86b76157-d664-4df1-a6b3-ed5d5735acad")
 	)
 	(junction
 		(at 63.5 97.79)
@@ -5085,6 +5220,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "b2773a83-19ec-483f-8d6a-ed0be6263552")
+	)
+	(junction
+		(at 80.01 154.94)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bcb734a3-7c54-485a-91d7-cd6040461353")
 	)
 	(junction
 		(at 151.13 69.85)
@@ -5213,28 +5354,12 @@
 		(uuid "2f4a0035-7dbd-4fde-975c-8c3988efd111")
 	)
 	(no_connect
-		(at 76.2 147.32)
-		(uuid "2f521646-73ea-4b5a-a536-cf3dc178e03c")
-	)
-	(no_connect
-		(at 33.02 137.16)
-		(uuid "2fce9969-974b-4a6a-9d52-b7d609240512")
-	)
-	(no_connect
-		(at 76.2 157.48)
-		(uuid "301ade55-cca2-40cf-bbb9-aa3f5225b221")
-	)
-	(no_connect
 		(at 119.38 74.93)
 		(uuid "31ffd6ba-34dd-4bd7-b351-a479ba1e14af")
 	)
 	(no_connect
 		(at 33.02 134.62)
 		(uuid "32622f08-1d88-43f9-b5fd-70b73e0e304a")
-	)
-	(no_connect
-		(at 76.2 149.86)
-		(uuid "36518cf1-35c2-4f39-bcc3-ff7f3981cb1b")
 	)
 	(no_connect
 		(at 119.38 58.42)
@@ -5245,10 +5370,6 @@
 		(uuid "60ddb68d-a2a5-4c6e-b3ad-46cda4d831e2")
 	)
 	(no_connect
-		(at 76.2 139.7)
-		(uuid "617fd497-a4ee-4efc-8420-cfc6f3020be9")
-	)
-	(no_connect
 		(at 148.59 39.37)
 		(uuid "7645fe48-f8c7-4290-90fd-a03876297225")
 	)
@@ -5257,24 +5378,12 @@
 		(uuid "781f370b-320d-4deb-8fd0-a25774efaecf")
 	)
 	(no_connect
-		(at 76.2 142.24)
-		(uuid "8217380a-6756-4511-bb87-6d5dbafe0e68")
-	)
-	(no_connect
-		(at 76.2 154.94)
-		(uuid "a7cd7e35-f162-477b-a73f-700901bf241a")
-	)
-	(no_connect
 		(at 119.38 68.58)
 		(uuid "be3fdd9d-9b60-4d3b-a9a8-e0c5f5e6543b")
 	)
 	(no_connect
 		(at 119.38 50.8)
 		(uuid "d339c1ac-db48-4f61-847b-7b802c0baf15")
-	)
-	(no_connect
-		(at 76.2 152.4)
-		(uuid "d8bf3c99-d82f-4a43-9dcc-654d706b8195")
 	)
 	(no_connect
 		(at 119.38 60.96)
@@ -5291,10 +5400,6 @@
 	(no_connect
 		(at 119.38 55.88)
 		(uuid "fcc9e40a-0d24-4e3c-b2a2-350563fd0f0b")
-	)
-	(no_connect
-		(at 76.2 144.78)
-		(uuid "fd444ed9-4dc9-4754-bff9-ac5ff36ac3f9")
 	)
 	(wire
 		(pts
@@ -5538,6 +5643,16 @@
 	)
 	(wire
 		(pts
+			(xy 76.2 144.78) (xy 80.01 144.78)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1fe24dda-bc40-4b1e-a988-f48d5c070952")
+	)
+	(wire
+		(pts
 			(xy 200.66 39.37) (xy 220.98 39.37)
 		)
 		(stroke
@@ -5568,6 +5683,16 @@
 	)
 	(wire
 		(pts
+			(xy 76.2 157.48) (xy 80.01 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "238539d0-93a5-4297-a359-dd7f8ef3e9a9")
+	)
+	(wire
+		(pts
 			(xy 154.94 72.39) (xy 165.1 72.39)
 		)
 		(stroke
@@ -5575,6 +5700,16 @@
 			(type default)
 		)
 		(uuid "23c55cf8-869e-45f2-b520-ccbc56bd6438")
+	)
+	(wire
+		(pts
+			(xy 76.2 154.94) (xy 80.01 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "245eeb70-b5ea-4f36-b9a1-b35ae14e919c")
 	)
 	(wire
 		(pts
@@ -6118,6 +6253,16 @@
 	)
 	(wire
 		(pts
+			(xy 80.01 154.94) (xy 80.01 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5a5a778f-9cb9-477c-b926-0881014e849c")
+	)
+	(wire
+		(pts
 			(xy 62.23 46.99) (xy 64.77 46.99)
 		)
 		(stroke
@@ -6308,6 +6453,16 @@
 	)
 	(wire
 		(pts
+			(xy 80.01 147.32) (xy 80.01 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "76b13f09-1c93-4c5a-b6c8-010f20afb3f7")
+	)
+	(wire
+		(pts
 			(xy 53.34 173.99) (xy 55.88 173.99)
 		)
 		(stroke
@@ -6388,6 +6543,16 @@
 	)
 	(wire
 		(pts
+			(xy 76.2 139.7) (xy 82.55 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7e4e908e-230f-4fdc-bdd5-d103e04fdedb")
+	)
+	(wire
+		(pts
 			(xy 154.94 54.61) (xy 165.1 54.61)
 		)
 		(stroke
@@ -6395,6 +6560,16 @@
 			(type default)
 		)
 		(uuid "7f20dc43-63ab-4511-8693-6df3d6525237")
+	)
+	(wire
+		(pts
+			(xy 76.2 147.32) (xy 80.01 147.32)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7f8024f5-392d-46d5-bf59-8cc536c1cc5e")
 	)
 	(wire
 		(pts
@@ -6425,6 +6600,16 @@
 			(type default)
 		)
 		(uuid "812370d6-6344-4310-b822-cf0a8697f9a8")
+	)
+	(wire
+		(pts
+			(xy 76.2 142.24) (xy 82.55 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "81946a99-f515-47d4-b1c1-dfbaed2e49d8")
 	)
 	(wire
 		(pts
@@ -6655,6 +6840,16 @@
 			(type default)
 		)
 		(uuid "a23df7e8-4ac5-4600-9cb3-837d92f2a5f8")
+	)
+	(wire
+		(pts
+			(xy 76.2 152.4) (xy 82.55 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a2adfb75-da77-41ea-a32f-2989fdc8f46e")
 	)
 	(wire
 		(pts
@@ -6968,6 +7163,16 @@
 	)
 	(wire
 		(pts
+			(xy 22.86 137.16) (xy 24.13 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c248e1c5-951d-48f5-a657-7da64468fa6a")
+	)
+	(wire
+		(pts
 			(xy 212.09 97.79) (xy 212.09 100.33)
 		)
 		(stroke
@@ -6988,7 +7193,7 @@
 	)
 	(wire
 		(pts
-			(xy 86.36 134.62) (xy 88.9 134.62)
+			(xy 86.36 134.62) (xy 90.17 134.62)
 		)
 		(stroke
 			(width 0)
@@ -7068,6 +7273,16 @@
 	)
 	(wire
 		(pts
+			(xy 80.01 144.78) (xy 80.01 147.32)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c97cca37-5267-4690-9f43-f8a0ffb62f53")
+	)
+	(wire
+		(pts
 			(xy 55.88 171.45) (xy 55.88 173.99)
 		)
 		(stroke
@@ -7085,6 +7300,16 @@
 			(type default)
 		)
 		(uuid "cb12a7e9-91a1-4b05-af71-c22ceb109317")
+	)
+	(wire
+		(pts
+			(xy 31.75 137.16) (xy 33.02 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cc2bcd01-902e-4495-bd38-f73a97e2be7b")
 	)
 	(wire
 		(pts
@@ -7285,6 +7510,16 @@
 			(type default)
 		)
 		(uuid "dfb58d9e-5a73-4d86-9657-6825f48cd1ff")
+	)
+	(wire
+		(pts
+			(xy 76.2 149.86) (xy 82.55 149.86)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e06f0bf3-f619-4255-b07f-92b3327cb797")
 	)
 	(wire
 		(pts
@@ -9391,6 +9626,84 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 86.36 149.86 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "14d8843f-6caa-4a60-8b03-b892394cb7be")
+		(property "Reference" "R19"
+			(at 86.36 147.828 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "100k"
+			(at 86.36 149.86 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 86.36 151.638 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 86.36 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 86.36 149.86 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "9f3bcd23-60c7-49e0-9e43-d9b9e208c73e")
+		)
+		(pin "2"
+			(uuid "e6a37a59-d908-46ca-b53d-013bcdfcda64")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "R19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 165.1 76.2 0)
 		(unit 1)
@@ -10596,6 +10909,158 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 80.01 165.1 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "358dc001-7c1c-40a9-bd71-e9cfd82ed2f9")
+		(property "Reference" "#PWR0182"
+			(at 80.01 171.45 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 80.01 168.91 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 80.01 165.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 80.01 165.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 80.01 165.1 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "dc2eec15-7034-423d-8fde-f9d6809dbc49")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "#PWR0182")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 90.17 149.86 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "36689d20-8c23-49fb-95f4-6a39829caa62")
+		(property "Reference" "#PWR0180"
+			(at 96.52 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 94.488 149.86 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 90.17 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 90.17 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 90.17 149.86 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "bd40180a-7b8d-4432-964b-9aaa15e72607")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "#PWR0180")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "tinkerforge:AGND")
 		(at 242.57 130.81 0)
 		(unit 1)
@@ -10673,7 +11138,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 88.9 134.62 90)
+		(at 90.17 134.62 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10683,7 +11148,7 @@
 		(dnp no)
 		(uuid "41b3fe4e-7026-4142-a17e-c70bfa9451fc")
 		(property "Reference" "#PWR0176"
-			(at 95.25 134.62 0)
+			(at 96.52 134.62 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10694,7 +11159,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 92.71 134.62 0)
+			(at 94.488 134.62 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -10704,7 +11169,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 88.9 134.62 0)
+			(at 90.17 134.62 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10715,7 +11180,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 88.9 134.62 0)
+			(at 90.17 134.62 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10726,7 +11191,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 88.9 134.62 0)
+			(at 90.17 134.62 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -10742,6 +11207,84 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR0176")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 27.94 137.16 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "42f20d31-cceb-4bd7-bd5a-481409aec6c9")
+		(property "Reference" "R16"
+			(at 27.94 135.128 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 27.94 137.16 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 27.94 138.938 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 27.94 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 27.94 137.16 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "7e40bcb0-4182-4dd8-8d17-7293b70a779e")
+		)
+		(pin "2"
+			(uuid "28999d07-d6cc-48be-a468-3b360ca180da")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "R16")
 					(unit 1)
 				)
 			)
@@ -10819,6 +11362,84 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR099")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 86.36 139.7 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "464ef7ca-00d9-430d-83e5-aca80f20383a")
+		(property "Reference" "R17"
+			(at 86.36 137.668 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "100k"
+			(at 86.36 139.7 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 86.36 141.478 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 86.36 139.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 86.36 139.7 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "02eb7503-0997-4d29-926a-94384f638066")
+		)
+		(pin "2"
+			(uuid "1b1fdb33-1391-4e31-9276-2c8b59c79899")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "R17")
 					(unit 1)
 				)
 			)
@@ -11956,6 +12577,84 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 80.01 161.29 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "631a49a3-fd1c-41e0-9e8b-f5093af7be83")
+		(property "Reference" "R56"
+			(at 82.042 161.29 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "100k"
+			(at 80.01 161.29 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 78.232 161.29 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 80.01 161.29 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 80.01 161.29 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "d301d40c-e5bb-48fc-b3b7-7d86e690fef0")
+		)
+		(pin "2"
+			(uuid "ea33bf63-1faa-4b53-bb71-2afbe60eb00c")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "R56")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 154.94 80.01 0)
 		(unit 1)
@@ -12104,6 +12803,82 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "R24")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 90.17 152.4 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "70607a85-6c0e-4513-a43a-2c74166b586d")
+		(property "Reference" "#PWR0181"
+			(at 96.52 152.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 94.488 152.4 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 90.17 152.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 90.17 152.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 90.17 152.4 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "798fef4a-514c-4590-9ad8-9f82ec155c5b")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "#PWR0181")
 					(unit 1)
 				)
 			)
@@ -12410,6 +13185,82 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR081")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "vcc33:VCC3_3")
+		(at 22.86 137.16 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "7fef1567-63dc-431a-9068-e3ac75602bb4")
+		(property "Reference" "#PWR059"
+			(at 22.86 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 21.59 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 22.86 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 22.86 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 22.86 137.16 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "2ed362cf-642b-4854-b4b3-3bc121d870ee")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "#PWR059")
 					(unit 1)
 				)
 			)
@@ -13196,7 +14047,7 @@
 		(dnp no)
 		(uuid "9eb360b0-fa11-4681-b452-dcb4a9b4f84e")
 		(property "Reference" "C64"
-			(at 82.55 138.43 90)
+			(at 85.598 131.064 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -13206,7 +14057,7 @@
 			)
 		)
 		(property "Value" "1u"
-			(at 82.55 140.208 90)
+			(at 85.598 132.842 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -16007,6 +16858,84 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 86.36 152.4 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "e380bb92-93a1-4a35-a08c-aba939cc52b3")
+		(property "Reference" "R29"
+			(at 86.36 154.432 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "100k"
+			(at 86.36 152.4 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 86.36 154.178 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 86.36 152.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 86.36 152.4 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b7c3c6f7-6885-40b2-922d-d8f976704fec")
+		)
+		(pin "2"
+			(uuid "aee259d5-215b-4fc1-b175-47e8d06cf3a4")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "R29")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 228.6 148.59 0)
 		(unit 1)
@@ -16078,6 +17007,82 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR0105")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 90.17 142.24 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "e8aaab44-885f-4bb8-9553-a1392d650619")
+		(property "Reference" "#PWR0179"
+			(at 96.52 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 94.488 142.24 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 90.17 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 90.17 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 90.17 142.24 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "2f4d4422-41b9-454f-a7e5-fa36d488593a")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "#PWR0179")
 					(unit 1)
 				)
 			)
@@ -16162,6 +17167,82 @@
 	)
 	(symbol
 		(lib_id "power:GND")
+		(at 90.17 139.7 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "ed4dc50e-5dc1-4178-af0c-0610c3867877")
+		(property "Reference" "#PWR0178"
+			(at 96.52 139.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 94.488 139.7 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 90.17 139.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 90.17 139.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 90.17 139.7 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "532477bd-d412-4400-8a8a-276da451007f")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "#PWR0178")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
 		(at 205.74 31.75 270)
 		(mirror x)
 		(unit 1)
@@ -16232,6 +17313,84 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
 					(reference "#PWR093")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 86.36 142.24 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "ef3fa479-3a8e-4da4-b901-4161e3d0448b")
+		(property "Reference" "R18"
+			(at 86.36 144.272 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "100k"
+			(at 86.36 142.24 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 86.36 144.018 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 86.36 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 86.36 142.24 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a319152a-6758-4715-80fe-e9eea9c56e72")
+		)
+		(pin "2"
+			(uuid "a02dda3d-361f-45a5-b262-5141b84608fd")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/1e8895c3-e3b5-42cc-af15-9e85b0da5705"
+					(reference "R18")
 					(unit 1)
 				)
 			)

@@ -171,14 +171,14 @@ NET "sda"                 LOC="L8"   | IOSTANDARD = LVCMOS33;
 NET "scl"                 LOC="L7"   | IOSTANDARD = LVCMOS33;
 
 # vs1053a
-NET "vs_clk"              LOC="F7"   | IOSTANDARD = LVCMOS33;
-NET "vs_reset_n"          LOC="L10"  | IOSTANDARD = LVCMOS33;
-NET "vs_cs_n"             LOC="L12"  | IOSTANDARD = LVCMOS33;
-NET "vs_dcs_n"            LOC="E8"   | IOSTANDARD = LVCMOS33;
+NET "vs_clk"              LOC="F7"   | IOSTANDARD = LVCMOS33 | SLEW = FAST;
+NET "vs_reset_n"          LOC="L10"  | IOSTANDARD = LVCMOS33 | SLEW = SLOW;
+NET "vs_cs_n"             LOC="L12"  | IOSTANDARD = LVCMOS33 | SLEW = SLOW;
+NET "vs_dcs_n"            LOC="E8"   | IOSTANDARD = LVCMOS33 | SLEW = SLOW;
 NET "vs_dreq"             LOC="D8"   | IOSTANDARD = LVCMOS33 | PULLUP;
-NET "vs_mosi"             LOC="P2"   | IOSTANDARD = LVCMOS33;
+NET "vs_mosi"             LOC="P2"   | IOSTANDARD = LVCMOS33 | SLEW = FAST;
 NET "vs_miso"             LOC="N3"   | IOSTANDARD = LVCMOS33 | PULLUP;
-NET "vs_sclk"             LOC="K2"   | IOSTANDARD = LVCMOS33;
+NET "vs_sclk"             LOC="K2"   | IOSTANDARD = LVCMOS33 | SLEW = FAST;
 
 
 # Timings
@@ -196,4 +196,7 @@ NET "opl3_dclk" TNM_NET = "opl3_dclk";
 TIMESPEC "TS_OPL3_DCLK" = PERIOD "opl3_dclk" 4000 kHz;
 
 NET "bus_mreq_n" CLOCK_DEDICATED_ROUTE = FALSE;
+#NET "bus_rd_n" CLOCK_DEDICATED_ROUTE = FALSE;
+
+
 

@@ -1,0 +1,48 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
+[*] Fri Sep 18 00:06:04 2026
+[*]
+[dumpfile] "/home/andy/Documents/Projects/Retrocomp/ZX-Spectrum/karabas-megabuzz/firmware/src/rtl/sound/vs1053_sim.vcd"
+[dumpfile_mtime] "Thu Sep 17 23:46:50 2026"
+[dumpfile_size] 2367317
+[savefile] "/home/andy/Documents/Projects/Retrocomp/ZX-Spectrum/karabas-megabuzz/firmware/src/rtl/sound/vs1053_tb.gtkw"
+[timestart] 0
+[size] 1920 1007
+[pos] -1 -1
+*-28.483992 147766675 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] vs1053_tb.
+[treeopen] vs1053_tb.uut.
+[sst_width] 266
+[signals_width] 219
+[sst_expanded] 1
+[sst_vpaned_height] 303
+@29
+vs1053_tb.clk
+@28
+vs1053_tb.reset
+vs1053_tb.bus_cs_n
+vs1053_tb.bus_rd_n
+vs1053_tb.bus_wr_n
+vs1053_tb.bus_a
+@22
+vs1053_tb.bus_di[7:0]
+vs1053_tb.bus_do[7:0]
+@28
+vs1053_tb.vs_sclk
+vs1053_tb.vs_mosi
+vs1053_tb.vs_miso
+vs1053_tb.vs_dreq
+vs1053_tb.vs_cs_n
+vs1053_tb.vs_dcs_n
+vs1053_tb.vs_reset_n
+vs1053_tb.uut.spi_fast_mode
+@22
+vs1053_tb.uut.fifo_blocks_used[6:0]
+@28
+vs1053_tb.uut.fifo_rd_en
+vs1053_tb.uut.fifo_empty
+@22
+vs1053_tb.uut.fifo_data_out[7:0]
+vs1053_tb.uut.ctrl_inst.chip_version[3:0]
+[pattern_trace] 1
+[pattern_trace] 0
