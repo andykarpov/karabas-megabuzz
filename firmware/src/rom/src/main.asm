@@ -1,5 +1,6 @@
 ; =============================================================================
-; Karabas MegaBuzz Configurator ROM (2KB)
+; Karabas MegaBuzz Configurator ROM
+; main entry point
 ; =============================================================================
 
         DEVICE ZXSPECTRUM48
@@ -22,12 +23,14 @@ Start:
 
 RealStart:
         CALL Screen.Clear
+        CALL Screen.ResetAttributes
 
+        ; Selected option = 0
         XOR A
         LD (SelectedOption), A  
-        LD (CheckboxState), A   
 
         ; Read MegaBuzz config byte
+        XOR A
         CALL MegaBuzz.ReadConfig
         LD (CheckboxState), A   
 

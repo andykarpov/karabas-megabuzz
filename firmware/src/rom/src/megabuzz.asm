@@ -1,3 +1,8 @@
+; =============================================================================
+; Karabas MegaBuzz Configurator ROM
+; hardware driver (ports)
+; =============================================================================
+
     macro MB_SetCfgMode
     push bc
     ld a, MegaBuzz.REG_CTRL : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
