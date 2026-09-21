@@ -182,8 +182,10 @@ begin
 				loader_act <= '0'; -- loader finished
 
                 -- listening for cfg write command
-                if (prev_new_cfg_wr = '0' and NEW_CFG_WR = '1') then
+                if (NEW_CFG_WR = '1') then
+                --if (prev_new_cfg_wr = '0' and NEW_CFG_WR = '1') then
                     state <= cmd_erase_cfg;
+                    loader_act <= '1';
                 end if;
                  
             -- erase block to write a new cfg byte

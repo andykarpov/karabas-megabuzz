@@ -162,6 +162,7 @@ assign flash_wp_n   = 1'b1;
     assign tp[8:2]      = 7'bz;
     assign tp[1]        = ~reset; // hotfix revA - opl3 reset
     // config bits expanded to named signals
+    wire cfg_rom_en     = 0;
     wire divmmc_en      = 0;
     wire zc_en          = 0;
     wire soundrive_en   = cfg_n[0];
@@ -210,6 +211,7 @@ assign flash_wp_n   = 1'b1;
     // sd led
     assign led1         = sd_cs_n;
     // config bits expanded to named signals
+    wire cfg_rom_en     = 0;
     wire divmmc_en      = cfg_n[0];
     wire zc_en          = cfg_n[0];
     wire soundrive_en   = cfg_n[1];
@@ -248,6 +250,7 @@ assign flash_wp_n   = 1'b1;
     // sd led
     assign led1         = sd_cs_n;
     // config bits expanded to named signals
+    wire cfg_rom_en     = 1;
     wire divmmc_en      = cfg_byte[0];
     wire zc_en          = cfg_byte[1];
     wire soundrive_en   = cfg_byte[2];
@@ -278,6 +281,7 @@ assign flash_wp_n   = 1'b1;
     // sd led
     assign led1         = sd_cs_n; // & ~vs_dreq;
     // config bits expanded to named signals
+    wire cfg_rom_en     = 1;
     wire divmmc_en      = cfg_byte[0];
     wire zc_en          = cfg_byte[1];
     wire soundrive_en   = cfg_byte[2];
@@ -745,11 +749,9 @@ wire port_mmc = ((bus_a[7:0] == 8'hE3) | (bus_a[7:0] == 8'hE7)) & divmmc_en;
 // zxuno ports (fc3b, fd3b)
 wire port_zxuno_reg =  (bus_a[15:0] == 16'hFC3B);
 wire port_zxuno_data = (bus_a[15:0] == 16'hFD3B);
-reg [7:0] zxuno_reg;
-always @(posedge clk_bus or posedge reset) begin
-    if (reset)
-        zxuno_reg <= 8'hFF;
-	else if (port_zxuno_reg & ~bus_iorq_n & ~bus_wr_n)
+reg [7:0] zxuno_reg = 8'hFF;
+always @(posedge clk_bus) begin
+	if (port_zxuno_reg & ioreq_wr)
 		zxuno_reg <= bus_d;
 end
 // vs1053 (zxuno regs f5, f6)
@@ -772,18 +774,18 @@ reg [7:0] new_cfg_byte = 8'hFF;
 always @(posedge clk_bus) begin
     soft_reset <= 0;
     cfg_write <= 0;
-    if (!btn_reset_n & !btn_nmi_n) begin // both reset+nmi buttons presset => replace rom, trigger soft reset
-        cfg_rom_active = 1;
+    if (!btn_reset_n & !btn_nmi_n & cfg_rom_en) begin // both reset+nmi buttons presset => replace rom, trigger soft reset
+        cfg_rom_active <= 1;
         soft_reset <= 1;
     end
-    else if (~bus_iorq_n & ~bus_wr_n & port_zxuno_data & reg_mb_rom) begin // if rom switched by the zxuno port => replace rom, trigger soft reset
-        cfg_rom_active = zxuno_reg[0];
+    else if (ioreq_wr & port_zxuno_data & reg_mb_rom & cfg_rom_en) begin // if rom switched by the zxuno port => replace rom, trigger soft reset
+        cfg_rom_active <= bus_d[0];
         soft_reset <= 1;
     end
-    else if (~bus_iorq_n & ~bus_wr_n & port_zxuno_data & reg_mb_ctl) // soft reset port
-        soft_reset <= zxuno_reg[0];
-    else if (~bus_iorq_n & ~bus_wr_n & port_zxuno_data & reg_mb_cfg) begin // new cfg applied, trigger write to flash
-        new_cfg_byte <= zxuno_reg;
+    else if (ioreq_wr & port_zxuno_data & reg_mb_ctl) // soft reset port
+        soft_reset <= bus_d[0];
+    else if (ioreq_wr & port_zxuno_data & reg_mb_cfg) begin // new cfg applied, trigger write to flash
+        new_cfg_byte <= bus_d;
         cfg_write <= 1;
     end
 end
@@ -802,22 +804,22 @@ assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_z
 // BUS
 assign bus_d = 
      (cfg_rom_active & ~bus_mreq_n & ~bus_rd_n & bus_a[15:14] == 2'b00) ? megabuzz_rom_dout : // Megabuzz rom
-     (divmmc_en & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zc) ? zc_do_bus : // ZC + DivMMC
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_reg) ? zxuno_reg : // ZXUNO reg
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data & reg_vs) ? vs_bus_do : // ZXUNO data (VS1053)
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data & reg_mb_cfg) ? cfg_byte : // Megabuzz CFG byte
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy} : // Megabuzz CTL status (flash busy)
-     (ioreq_rd & port_fffd) ? ts_do : // TS
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_gs) ? gs_do_bus : // GS
+     (divmmc_en & !cfg_rom_active & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
+     (ioreq_rd & port_zc & !cfg_rom_active) ? zc_do_bus : // ZC + DivMMC
+     (ioreq_rd & port_zxuno_reg) ? zxuno_reg : // ZXUNO reg
+     (ioreq_rd & port_zxuno_data & reg_vs) ? vs_bus_do : // ZXUNO data (VS1053)
+     (ioreq_rd & port_zxuno_data & reg_mb_cfg) ? cfg_byte : // Megabuzz CFG byte
+     (ioreq_rd & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
+     (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | reset} : // Megabuzz CTL status (flash busy)
+     (ioreq_rd & port_fffd & !cfg_rom_active) ? ts_do : // TS
+     (ioreq_rd & port_gs & !cfg_rom_active) ? gs_do_bus : // GS
      8'bzzzzzzzz;
      
 // wait (from zc)
-assign bus_wait_n = (zc_busy & (divmmc_en | zc_en)) ? 1'b0 : 1'bz;
+assign bus_wait_n = (zc_busy & (divmmc_en | zc_en) & !cfg_rom_active) ? 1'b0 : 1'bz;
 
 // block zx rom
-assign bus_romcs_n = divmmc_en & divmmc_zxrom_block & ~bus_mreq_n ? 1'b0 : 1'b1;
+assign bus_romcs_n = ((divmmc_en & divmmc_zxrom_block) | (cfg_rom_active & (bus_a[15:14] == 2'b00))) & ~bus_mreq_n ? 1'b0 : 1'b1;
 
 // vu meter
 vu_meter vu_meter_l_inst(
