@@ -173,6 +173,8 @@ assign flash_wp_n   = 1'b1;
     wire midi_en        = cfg_n[3]; // depends on AY port
     wire opl3_en        = cfg_n[4];
     wire vs1053_en      = 0;
+    wire vu_bar         = 1;
+    wire vu_dot         = 0;
     wire vu_reverse     = tp[2];
     // fake signals
     wire o_reset_n;
@@ -222,6 +224,8 @@ assign flash_wp_n   = 1'b1;
     wire midi_en        = cfg_n[3]; // depends on AY port
     wire opl3_en        = cfg_n[4];
     wire vs1053_en      = 0;
+    wire vu_bar         = 1;
+    wire vu_dot         = 0;
     wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
     // fake signals
     wire [16:13] mmc_mem_a;
@@ -261,7 +265,9 @@ assign flash_wp_n   = 1'b1;
     wire midi_en        = cfg_byte[6]; // depends on AY port
     wire opl3_en        = cfg_byte[7];
     wire vs1053_en      = 0;
-    wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
+    wire vu_bar         = cfg_byte[8];
+    wire vu_dot         = cfg_byte[9];
+    wire vu_reverse     = cfg_byte[10]; // ~cfg_n[5]; // solder jumper (reversed VU meters)
     wire vs_clk;
     wire vs_reset_n;
     wire vs_cs_n;
@@ -292,7 +298,9 @@ assign flash_wp_n   = 1'b1;
     wire midi_en        = cfg_byte[6]; // depends on AY port
     wire opl3_en        = cfg_byte[7];
     wire vs1053_en      = 1;
-    wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
+    wire vu_bar         = cfg_byte[8];
+    wire vu_dot         = cfg_byte[9];
+    wire vu_reverse     = cfg_byte[10]; // ~cfg_n[5]; // solder jumper (reversed VU meters)
 
 `endif
 
@@ -373,7 +381,7 @@ flash flash(
 wire [20:0] loader_ram_a;
 wire [7:0] loader_ram_do;
 wire loader_act, loader_reset, loader_ram_wr;
-wire [7:0] cfg_byte; 
+wire [15:0] cfg_byte; 
 loader loader(
     .CLK              (clk_bus),
     .RESET            (areset),
@@ -631,7 +639,7 @@ midi_tx_sensor midi_tx_sensor(
 wire mute;
 audio_mute audio_mute(
     .clk              (clk_bus),
-    .on               (reset),
+    .on               (reset | ~vs_reset_n),
     .mute             (mute)
 );
 
@@ -761,16 +769,18 @@ assign vs_bus_cs_n = ~(port_zxuno_data & reg_vs & ~bus_iorq_n);
 assign vs_bus_we_n = bus_wr_n;
 assign vs_bus_rd_n = bus_rd_n;
 assign vs_bus_addr = (zxuno_reg == 8'hF5) ? 0 : 1;
-// megabuzz cfg (zxuno regs f7,f8,f9)
+// megabuzz cfg (zxuno regs f7,f8,f9,fa)
 wire reg_mb_cfg = (zxuno_reg == 8'hF7);
 wire reg_mb_rom = (zxuno_reg == 8'hF8);
 wire reg_mb_ctl = (zxuno_reg == 8'hF9);
+wire reg_mb_cfga = (zxuno_reg == 8'hFA);
 
 // megabuzz: write cfg, switch rom, soft reset
 reg cfg_rom_active = 0;
 reg soft_reset = 0;
 reg cfg_write = 0;
-reg [7:0] new_cfg_byte = 8'hFF;
+reg [7:0] cfg_addr = 8'h00;
+reg [15:0] new_cfg_byte = 16'hFFFF;
 always @(posedge clk_bus) begin
     soft_reset <= 0;
     cfg_write <= 0;
@@ -784,9 +794,15 @@ always @(posedge clk_bus) begin
     end
     else if (ioreq_wr & port_zxuno_data & reg_mb_ctl) // soft reset port
         soft_reset <= bus_d[0];
+    else if (ioreq_wr & port_zxuno_data & reg_mb_cfga) // cfg byte address
+        cfg_addr <= bus_d;
     else if (ioreq_wr & port_zxuno_data & reg_mb_cfg) begin // new cfg applied, trigger write to flash
-        new_cfg_byte <= bus_d;
-        cfg_write <= 1;
+        if (cfg_addr == 0)
+            new_cfg_byte[7:0] <= bus_d;
+        else begin
+            new_cfg_byte[15:8] <= bus_d;
+            cfg_write <= 1; // only when last cfg byte is sent
+        end
     end
 end
 
@@ -808,7 +824,7 @@ assign bus_d =
      (ioreq_rd & port_zc & !cfg_rom_active) ? zc_do_bus : // ZC + DivMMC
      (ioreq_rd & port_zxuno_reg) ? zxuno_reg : // ZXUNO reg
      (ioreq_rd & port_zxuno_data & reg_vs) ? vs_bus_do : // ZXUNO data (VS1053)
-     (ioreq_rd & port_zxuno_data & reg_mb_cfg) ? cfg_byte : // Megabuzz CFG byte
+     (ioreq_rd & port_zxuno_data & reg_mb_cfg) ? ((cfg_addr == 0) ? cfg_byte[7:0] : cfg_byte[15:8]) : // Megabuzz CFG byte
      (ioreq_rd & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
      (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | reset} : // Megabuzz CTL status (flash busy)
      (ioreq_rd & port_fffd & !cfg_rom_active) ? ts_do : // TS
@@ -825,8 +841,8 @@ assign bus_romcs_n = ((divmmc_en & divmmc_zxrom_block) | (cfg_rom_active & (bus_
 vu_meter vu_meter_l_inst(
     .clk              (clk_bus),
     .dir              (vu_reverse),
-    .enable_bar       (1'b1), // todo: перенести в конфиг?
-    .enable_dot       (1'b0), // todo: перенести в конфиг?
+    .enable_bar       (vu_bar),
+    .enable_dot       (vu_dot),
     .reset            (reset),
     .sample_tick      (dac_ws),
     .audio_sample     (audio_mix_l),
@@ -836,8 +852,8 @@ vu_meter vu_meter_l_inst(
 vu_meter vu_meter_r_inst(
     .clk              (clk_bus),
     .dir              (vu_reverse),
-    .enable_bar       (1'b1), // todo: перенести в конфиг?
-    .enable_dot       (1'b0), // todo: перенести в конфиг?
+    .enable_bar       (vu_bar),
+    .enable_dot       (vu_dot),
     .reset            (reset),
     .sample_tick      (dac_ws),
     .audio_sample     (audio_mix_r),
