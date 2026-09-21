@@ -131,6 +131,47 @@ PrintChar:
         DJNZ .LineLoop
         RET
 
+;; Print HEX byte
+;; A = byte to print, B = Row (0..23), C = Column (0..31)
+PrintHexByte:
+        LD (TMP_HEX_COORD), BC
+        LD (TMP_HEX_BYTE), A
+
+        ; print high semi-byte
+        RRCA
+        RRCA
+        RRCA
+        RRCA
+        CALL .NumToChar
+        
+        ; Restore coords for the first print
+        LD BC, (TMP_HEX_COORD)
+        CALL PrintChar             ; print first semibyte
+
+        ; print low semi-byte
+        LD BC, (TMP_HEX_COORD)
+        INC C                      ; shift column
+        LD (TMP_HEX_COORD), BC
+
+        LD A, (TMP_HEX_BYTE)
+        CALL .NumToChar
+        
+        LD BC, (TMP_HEX_COORD)
+        CALL PrintChar
+        RET
+
+.NumToChar:
+        AND 0x0F
+        CP 10
+        JR C, .IsDigit
+        ADD A, 7            ; letters offset A..F
+.IsDigit:
+        ADD A, 48           ; digits offset 0..9 (ASCII code '0')
+        RET
+
+TMP_HEX_COORD   EQU 0x5C05  ; 2 bytes to store temp coords BC
+TMP_HEX_BYTE    EQU 0x5C07  ; 1 byte to store source cfg byte
+
         ALIGN 8
 FontData:
     INCBIN "font.bin"

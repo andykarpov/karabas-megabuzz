@@ -1,12 +1,13 @@
--------------------------------------------------------------------[25.07.2019]
+-------------------------------------------------------------------[21.09.2026]
 -- Loader
 --
 -- Load data from SPI flash (W25Q16) into RAM on boot
 -- 1. Loader process initiates by RESET=1 (asynchronous)
 -- 2. Loader progress indicates via LOADER_ACTIVE=1
 -- 3. At the end, a LOADER_RESET=1 pulse will be triggered to re-boot the host
+-- 4. FSM is also waiting for the NEW_CFG_WR=1 to update the CFG byte from the host
 --
--- Copyright (c) 2019, 2020 Andy Karpov <andy.karpov@gmail.com>
+-- Copyright (c) 2019-2026 Andy Karpov <andy.karpov@gmail.com>
 --
 -- Datasheets:
 -- 	https://www.winbond.com/resource-files/w25q16dv_revi_nov1714_web.pdf
@@ -24,10 +25,7 @@ generic (
 	RAM_ADDR_START		: std_logic_vector(20 downto 0) := "000000000000000000000"; -- 21 bit address / RAM address to copy ROM image to
 	--																		101000000000000000000 (X140000)- DIVMMC address in Sram
 	SIZE_TO_READ		: integer := 32768; -- count of bytes to read (32KB rom)
-	CFG_ADDR 			: std_logic_vector(23 downto 0) := "000111110000000000000000"; -- 0x1F0000; -- 24bit address / config byte address
-	
-	SPI_CMD_READ  		: std_logic_vector(7 downto 0) := X"03"; -- W25Q16 read command
-	SPI_CMD_POWERON 	: std_logic_vector(7 downto 0) := X"AB" -- W25Q16 power on command
+	CFG_ADDR 			: std_logic_vector(23 downto 0) := "000111110000000000000000" -- 0x1F0000; -- 24bit address / config byte address	
 );
 port (
 	-- bus clock 28 MHz
@@ -46,10 +44,17 @@ port (
 
 	-- Parallel flash interface
 	FLASH_A 			: out std_logic_vector(23 downto 0);
+    FLASH_DI        : out std_logic_vector(7 downto 0) := x"FF";
 	FLASH_DO 		: in std_logic_vector(7 downto 0);
-	FLASH_RD_N 		: out std_logic;
+	FLASH_RD_N 		: out std_logic := '1';
+    FLASH_WR_N      : out std_logic := '1';
+    FLASH_ER_N      : out std_logic := '1';
 	FLASH_BUSY 		: in std_logic;
 	FLASH_READY 	: in std_logic;
+
+    -- Config writer
+    NEW_CFG         : in std_logic_vector(7 downto 0) := x"FF";
+    NEW_CFG_WR      : in std_logic := '0';
 	
 	-- loader state pulses
 	LOADER_ACTIVE 	: out std_logic;
@@ -73,11 +78,13 @@ signal read_cnt 		: std_logic_vector(20 downto 0) := (others => '0');
 signal clear_cnt 		: std_logic_vector(20 downto 0) := (others => '0');
 signal cfg_read		: std_logic := '0';
 
+signal prev_new_cfg_wr : std_logic := '0';
+
 type machine IS( 
 					 ready, 
 					 cmd_read_cfg, do_read_cfg, finish_cfg,
-					 cmd_read, do_read, do_next, finish, 					 
-					 finish2
+					 cmd_read, do_read, do_next, finish, finish2,
+                     cmd_erase_cfg, do_erase_cfg, cmd_write_cfg, do_write_cfg, finish_write_cfg
 );     --state machine datatype
 signal state : machine; --current state
 
@@ -97,8 +104,15 @@ begin
 		ram_a_bus <= RAM_ADDR_START;
 		state <= ready;
 		read_cnt <= (others => '0');
+        FLASH_RD_N <= '1';
+        FLASH_WR_N <= '1';
+        FLASH_ER_N <= '1';
+        FLASH_DI   <= x"FF";
+        prev_new_cfg_wr <= '0';
 	elsif CLK'event and CLK = '1' then
 		
+        prev_new_cfg_wr <= NEW_CFG_WR;
+
 		case state is 
 			
 			when ready => -- ready to begin / finish
@@ -165,8 +179,48 @@ begin
 				state <= finish2;
 			
 			when finish2 => -- read all the required data from SPI flash
-				state <= finish2; -- infinite loop here
 				loader_act <= '0'; -- loader finished
+
+                -- listening for cfg write command
+                if (prev_new_cfg_wr = '0' and NEW_CFG_WR = '1') then
+                    state <= cmd_erase_cfg;
+                end if;
+                 
+            -- erase block to write a new cfg byte
+            when cmd_erase_cfg => 
+				FLASH_ER_N <= '0';
+				spi_page_bus <= CFG_ADDR(23 downto 8);
+				spi_a_bus <= CFG_ADDR(7 downto 0);
+				if (flash_busy = '1') then
+					state <= do_erase_cfg;
+				end if;
+
+			when do_erase_cfg => -- wait for spi transfer
+				FLASH_ER_N <= '1';
+				if (flash_busy = '0') then 
+                    state <= cmd_write_cfg;
+				end if;
+
+            -- write a new cfg byte
+            when cmd_write_cfg => 
+				FLASH_WR_N <= '0';
+				spi_page_bus <= CFG_ADDR(23 downto 8);
+				spi_a_bus <= CFG_ADDR(7 downto 0);
+                FLASH_DI <= NEW_CFG;
+				if (flash_busy = '1') then
+					state <= do_write_cfg;
+				end if;
+
+			when do_write_cfg => -- wait for spi transfer
+				FLASH_WR_N <= '1';
+				if (flash_busy = '0') then 
+                    state <= finish_write_cfg;
+				end if;
+
+            -- going to re-read cfg byte
+			when finish_write_cfg => 
+				cfg_read <= '0';
+				state <= cmd_read_cfg;
 		end case;
 	
 	end if;

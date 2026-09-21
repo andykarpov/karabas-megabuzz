@@ -5,7 +5,7 @@
 
     macro MB_SetCfgMode
     push bc
-    ld a, MegaBuzz.REG_CTRL : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
+    ld a, MegaBuzz.REG_CFG : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
     pop bc
     endm
 
@@ -47,6 +47,15 @@ REG_CFG          EQU #F7       ; cfg byte r/w
 REG_ROMBANK      EQU #F8       ; ROM bank w (bit 0 = 0 - zx rom, 1 = cfg rom)
 REG_CTRL         EQU #F9       ; Control register w (bit 0 = 1 - reset trigger), r (bit 0 = 1 - flash busy)
 
+;; Wait for flash ready
+WaitFlash:
+    MB_SetCtrlMode
+.wait_flash:
+    NOP
+    MB_Read
+    BIT 0, A : JR NZ, .wait_flash
+    RET
+
 ;; Read current config
 ;; OUT: A = cfg byte
 ReadConfig:
@@ -59,11 +68,8 @@ ReadConfig:
 ApplyConfig:
     MB_SetCfgMode
     MB_SendA
-    MB_SetCtrlMode
-.wait_flash:
-    MB_Read
-    bit 0, a
-    jr nz, .wait_flash
+
+    CALL MegaBuzz.WaitFlash
     ; continue to cancel action
 
 ;; Cancel - switch back a normal ROM + soft reset trigger
@@ -72,10 +78,9 @@ Cancel:
     MB_Send 0 ; switch to zx rom
     MB_SetCtrlMode
     MB_Send 1 ; send a reset trigger pulse
+    NOP : NOP : NOP
     MB_Send 0
-
-.Infinite:
-    JR .Infinite
+    RET
 
     ENDMODULE
 

@@ -17,7 +17,7 @@
 --                                                 #  #  #  ######  #####  #     # ######   #####  ####### #######
 --
 -- https://github.com/andykarpov/karabas-megabuzz
--- FPGA firmware for Karabas-MegaBuzz soundcard revA,A1,A2
+-- FPGA firmware for Karabas-MegaBuzz soundcard revA,A1,A2,A3
 --
 -- @author Andy Karpov <andy.karpov@gmail.com>
 -- EU, 2026
@@ -317,7 +317,7 @@ always @(negedge clk_bus)
 // reset
 wire reset;
 wire reset_short;
-resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n || poweron_reset), .reset_out(reset), .reset_short(reset_short));
+resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
 
 assign midi_reset_n = ~reset;
 
@@ -343,18 +343,18 @@ end
 
 // ------- flash ----------------
 wire [23:0] flash_a_bus;
-wire [7:0] flash_do_bus;
+wire [7:0] flash_do_bus, flash_di_bus;
 wire flash_wr_n, flash_rd_n, flash_er_n, flash_busy, flash_rdy;
 flash flash(
     .CLK              (clk_bus),
     .RESET            (areset),
 
     .A                (flash_a_bus),
-    .DI               (8'hFF),
+    .DI               (flash_di_bus),
     .DO               (flash_do_bus),
-    .WR_N             (1'b1),
+    .WR_N             (flash_wr_n),
     .RD_N             (flash_rd_n),
-    .ER_N             (1'b1),
+    .ER_N             (flash_er_n),
     
     .DATA0            (flash_miso),
     .NCSO             (flash_cs_n),
@@ -381,10 +381,16 @@ loader loader(
     .CFG              (cfg_byte),
 
     .FLASH_A          (flash_a_bus),
+    .FLASH_DI         (flash_di_bus),
     .FLASH_DO         (flash_do_bus),
     .FLASH_RD_N       (flash_rd_n),
+    .FLASH_WR_N       (flash_wr_n),
+    .FLASH_ER_N       (flash_er_n),
     .FLASH_BUSY       (flash_busy),
     .FLASH_READY      (flash_rdy),
+
+    .NEW_CFG          (new_cfg_byte),
+    .NEW_CFG_WR       (cfg_write),
     
     .LOADER_ACTIVE    (loader_act),
     .LOADER_RESET     (loader_reset)
@@ -753,16 +759,56 @@ assign vs_bus_cs_n = ~(port_zxuno_data & reg_vs & ~bus_iorq_n);
 assign vs_bus_we_n = bus_wr_n;
 assign vs_bus_rd_n = bus_rd_n;
 assign vs_bus_addr = (zxuno_reg == 8'hF5) ? 0 : 1;
+// megabuzz cfg (zxuno regs f7,f8,f9)
+wire reg_mb_cfg = (zxuno_reg == 8'hF7);
+wire reg_mb_rom = (zxuno_reg == 8'hF8);
+wire reg_mb_ctl = (zxuno_reg == 8'hF9);
+
+// megabuzz: write cfg, switch rom, soft reset
+reg cfg_rom_active = 0;
+reg soft_reset = 0;
+reg cfg_write = 0;
+reg [7:0] new_cfg_byte = 8'hFF;
+always @(posedge clk_bus) begin
+    soft_reset <= 0;
+    cfg_write <= 0;
+    if (!btn_reset_n & !btn_nmi_n) begin // both reset+nmi buttons presset => replace rom, trigger soft reset
+        cfg_rom_active = 1;
+        soft_reset <= 1;
+    end
+    else if (~bus_iorq_n & ~bus_wr_n & port_zxuno_data & reg_mb_rom) begin // if rom switched by the zxuno port => replace rom, trigger soft reset
+        cfg_rom_active = zxuno_reg[0];
+        soft_reset <= 1;
+    end
+    else if (~bus_iorq_n & ~bus_wr_n & port_zxuno_data & reg_mb_ctl) // soft reset port
+        soft_reset <= zxuno_reg[0];
+    else if (~bus_iorq_n & ~bus_wr_n & port_zxuno_data & reg_mb_cfg) begin // new cfg applied, trigger write to flash
+        new_cfg_byte <= zxuno_reg;
+        cfg_write <= 1;
+    end
+end
+
+// megabuzz rom instance
+wire [7:0] megabuzz_rom_dout;
+sprom #(.DATAWIDTH(8), .ADDRWIDTH(11), .MEM_INIT_FILE("../rom/megabuzz.mem")) megabuzz_rom(
+    .clock(clk_bus),
+    .address(bus_a[10:0]),
+    .q(megabuzz_rom_dout)
+);
 
 // iorqge
 assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc | port_zxuno_reg | port_zxuno_data) ? 1'b0 : 1'b1;
 
 // BUS
 assign bus_d = 
+     (cfg_rom_active & ~bus_mreq_n & ~bus_rd_n & bus_a[15:14] == 2'b00) ? megabuzz_rom_dout : // Megabuzz rom
      (divmmc_en & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
      (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zc) ? zc_do_bus : // ZC + DivMMC
      (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_reg) ? zxuno_reg : // ZXUNO reg
-     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data) ? vs_bus_do : // ZXUNO data (VS1053)
+     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data & reg_vs) ? vs_bus_do : // ZXUNO data (VS1053)
+     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data & reg_mb_cfg) ? cfg_byte : // Megabuzz CFG byte
+     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
+     (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy} : // Megabuzz CTL status (flash busy)
      (ioreq_rd & port_fffd) ? ts_do : // TS
      (~bus_iorq_n & ~bus_rd_n & bus_m1_n & port_gs) ? gs_do_bus : // GS
      8'bzzzzzzzz;

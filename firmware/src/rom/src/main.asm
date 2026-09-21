@@ -3,8 +3,11 @@
 ; main entry point
 ; =============================================================================
 
+;        DEFINE DEBUG_MODE
+;        DEFINE EMU_MODE
+
         DEVICE ZXSPECTRUM48
-        OUTPUT "megabuzz.rom"
+;        OUTPUT "megabuzz.rom"
 
         ORG 0x0000
 
@@ -25,14 +28,24 @@ RealStart:
         CALL Screen.Clear
         CALL Screen.ResetAttributes
 
+        LD DE, LoadingText
+        LD BC, 0x0504 ; row 5, col 4
+        CALL Screen.PrintString
+
         ; Selected option = 0
         XOR A
         LD (SelectedOption), A  
 
         ; Read MegaBuzz config byte
+        CALL MegaBuzz.WaitFlash
+
+        CALL Screen.Clear
+        CALL Screen.ResetAttributes
+
         XOR A
         CALL MegaBuzz.ReadConfig
-        LD (CheckboxState), A   
+        LD (CheckboxState), A
+        LD (InitialConfig), A
 
         CALL DrawStaticInterface
 
@@ -97,10 +110,12 @@ MainLoop:
 
 ActionApply:
         LD A, (CheckboxState)
-        JP MegaBuzz.ApplyConfig 
+        CALL MegaBuzz.ApplyConfig 
+        JP Start
 
 ActionCancel:
-        JP MegaBuzz.Cancel      
+        CALL MegaBuzz.Cancel      
+        JP Start
 
 KeyDelay:
         LD BC, 0x3FFF       
@@ -116,6 +131,14 @@ DrawStaticInterface:
 
         LD DE, TitleText
         LD BC, 0x0200 ; row 2, col 0
+        CALL Screen.PrintString
+
+        LD DE, Str_Help1
+        LD BC, 0x1400 ; row 20, col 0
+        CALL Screen.PrintString
+
+        LD DE, Str_Help2
+        LD BC, 0x1500 ; row 21, col 0
         CALL Screen.PrintString
 
         ; Checkboxes (Rows 5-12)
@@ -145,6 +168,24 @@ DrawStaticInterface:
         LD (CurrentStep), A
         CP 8                
         JR NZ, .LoopCB
+
+        IFDEF DEBUG_MODE
+        ; debug initial value
+        LD DE, Str_DebugInit
+        LD BC, 0x0E04       ; row 14, col 4
+        CALL Screen.PrintString
+        LD A, (InitialConfig)
+        LD BC, 0x0E09       ; row 14, col 9
+        CALL Screen.PrintHexByte
+
+        ; debug current value
+        LD DE, Str_DebugCurr
+        LD BC, 0x0E12       ; row 14, col 18
+        CALL Screen.PrintString
+        LD A, (CheckboxState)
+        LD BC, 0x0E17       ; row 14, col 23
+        CALL Screen.PrintHexByte
+        ENDIF
 
         ; Grey button bg (row 16)
         LD B, 16 : LD C, 4 : LD D, 9
@@ -203,13 +244,21 @@ UpdateFocus:
         RET
 
 RedrawSingleCheckbox:
-        LD (CurrentStep), A
+        PUSH AF             
+        LD (CurrentStep), A 
         ADD A, 5
-        LD B, A
-        LD C, 4             ; checkbox coord on the screen
-        
-        CALL GetCBText      ; Returns DE = row address "[ ]" or "[X]"
+        LD B, A             
+        LD C, 4             
+        CALL GetCBText      
         CALL Screen.PrintString
+
+        IFDEF DEBUG_MODE        
+        LD A, (CheckboxState)
+        LD BC, 0x0E17       ; Row 14, Col 23 (CURR)
+        CALL Screen.PrintHexByte
+        ENDIF        
+
+        POP AF              
         RET
 
 GetCBText:
@@ -242,6 +291,7 @@ GetOptionTextAddress:
 
 ; Text data
 TitleText:       DB "--KARABAS MEGABUZZ CONFIG v1.0--", 0
+LoadingText:     DB "Loading... please wait", 0
 CB_Unselected:   DB "[ ]", 0
 CB_Selected:     DB "[x]", 0
 Btn_Apply:       DB "  APPLY  ", 0
@@ -256,6 +306,12 @@ Str_Opt6:        DB "Enable GS ", 0
 Str_Opt7:        DB "Enable TSFM / MIDI ", 0
 Str_Opt8:        DB "Enable OPL3 ", 0
 
+Str_DebugInit:   DB "INIT:#", 0
+Str_DebugCurr:   DB "CURR:#", 0
+
+Str_Help1:       DB "Please use UP/DOWN to navigate,", 0
+Str_Help2:       DB "Use Enter or Space to change", 0
+
 OptionTexts:
         DW Str_Opt1, Str_Opt2, Str_Opt3, Str_Opt4
         DW Str_Opt5, Str_Opt6, Str_Opt7, Str_Opt8
@@ -265,8 +321,12 @@ SelectedOption: EQU 0x5C00
 CheckboxState:  EQU 0x5C01  
 CurrentStep:    EQU 0x5C02
 OldSelectedOption: EQU 0x5C03
+InitialConfig:     EQU 0x5C04
 
 ; Expand ROM to 2KB
+        IFDEF EMU_MODE
+        BLOCK 16384-$, 0
+        ELSE
         BLOCK 2048-$, 0
-        ;BLOCK 16384-$, 0
+        ENDIF
 
