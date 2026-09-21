@@ -4,21 +4,27 @@
 ; =============================================================================
 
     macro MB_SetCfgMode
+    push af
     push bc
     ld a, MegaBuzz.REG_CFG : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
     pop bc
+    pop af
     endm
 
     macro MB_SetRomMode
+    push af
     push bc
     ld a, MegaBuzz.REG_ROMBANK : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
     pop bc
+    pop af
     endm
 
     macro MB_SetCtrlMode
+    push af
     push bc
     ld a, MegaBuzz.REG_CTRL : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
     pop bc
+    pop af
     endm
 
     macro MB_Send nn

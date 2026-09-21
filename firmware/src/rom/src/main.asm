@@ -109,11 +109,34 @@ MainLoop:
         JR MainLoop
 
 ActionApply:
+        CALL Screen.Clear
+        CALL Screen.ResetAttributes
+
+        LD DE, SavingText
+        LD BC, 0x0504 ; row 5, col 4
+        CALL Screen.PrintString
+        
         LD A, (CheckboxState)
         CALL MegaBuzz.ApplyConfig 
+
+        CALL Screen.Clear
+        CALL Screen.ResetAttributes
+
+        LD DE, DoneText
+        LD BC, 0x0504 ; row 5, col 4
+        CALL Screen.PrintString
+
         JP Start
 
 ActionCancel:
+
+        CALL Screen.Clear
+        CALL Screen.ResetAttributes
+
+        LD DE, DoneText
+        LD BC, 0x0504 ; row 5, col 4
+        CALL Screen.PrintString
+
         CALL MegaBuzz.Cancel      
         JP Start
 
@@ -292,6 +315,8 @@ GetOptionTextAddress:
 ; Text data
 TitleText:       DB "--KARABAS MEGABUZZ CONFIG v1.0--", 0
 LoadingText:     DB "Loading... please wait", 0
+SavingText:      DB "Saving... please wait", 0
+DoneText:        DB "Done! Safe to reboot", 0
 CB_Unselected:   DB "[ ]", 0
 CB_Selected:     DB "[x]", 0
 Btn_Apply:       DB "  APPLY  ", 0
