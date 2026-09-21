@@ -12,6 +12,9 @@ ATTR_BUTTON     EQU %00000000 | (7 << 3) | 0 ; Bright=0, Flash=0, Paper=7 (grey)
 
 ;; Clear the screen pixels
 Clear:
+        ; black border
+        XOR A : OUT (0xFE), A
+
         LD HL, 0x4000
         LD DE, 0x4001
         LD BC, 0x17FF
@@ -169,8 +172,8 @@ PrintHexByte:
         ADD A, 48           ; digits offset 0..9 (ASCII code '0')
         RET
 
-TMP_HEX_COORD   EQU 0x5C05  ; 2 bytes to store temp coords BC
-TMP_HEX_BYTE    EQU 0x5C07  ; 1 byte to store source cfg byte
+TMP_HEX_COORD   EQU 0x5C07  ; 2 bytes to store temp coords BC
+TMP_HEX_BYTE    EQU 0x5C09  ; 1 byte to store source cfg byte
 
         ALIGN 8
 FontData:

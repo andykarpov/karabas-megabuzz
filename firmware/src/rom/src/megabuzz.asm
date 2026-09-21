@@ -27,6 +27,14 @@
     pop af
     endm
 
+    macro MB_SetCfgAddressMode
+    push af
+    push bc
+    ld a, MegaBuzz.REG_CFGA : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
+    pop bc
+    pop af
+    endm
+
     macro MB_Send nn
     push bc
     ld a, nn : ld bc, MegaBuzz.PORT_ZXUNO_DATA : out (c), a
@@ -52,6 +60,7 @@ PORT_ZXUNO_DATA  EQU #FD3B     ; ZXUNO data port
 REG_CFG          EQU #F7       ; cfg byte r/w
 REG_ROMBANK      EQU #F8       ; ROM bank w (bit 0 = 0 - zx rom, 1 = cfg rom)
 REG_CTRL         EQU #F9       ; Control register w (bit 0 = 1 - reset trigger), r (bit 0 = 1 - flash busy)
+REG_CFGA         EQU #FA       ; CFG byte address
 
 ;; Wait for flash ready
 WaitFlash:
@@ -62,9 +71,27 @@ WaitFlash:
     BIT 0, A : JR NZ, .wait_flash
     RET
 
-;; Read current config
+;; Set config byte address
+;; IN: A = address
+SetConfigAddress:
+    MB_SetCfgAddressMode
+    MB_SendA
+    RET
+
+;; Read current config byte 1
 ;; OUT: A = cfg byte
 ReadConfig:
+    MB_SetCfgAddressMode
+    MB_Send 0
+    MB_SetCfgMode
+    MB_Read
+    RET
+
+;; Read current config byte 2
+;; OUT: A = cfg byte
+ReadConfig2:
+    MB_SetCfgAddressMode
+    MB_Send 1
     MB_SetCfgMode
     MB_Read
     RET
@@ -72,7 +99,21 @@ ReadConfig:
 ;; Write config and switch to main ROM
 ;; IN: A = cfg byte
 ApplyConfig:
+    push af
+    MB_SetCfgAddressMode
+    MB_Send 0
     MB_SetCfgMode
+    pop af
+    MB_SendA
+    CALL MegaBuzz.WaitFlash
+    RET
+
+ApplyConfig2:
+    push af
+    MB_SetCfgAddressMode
+    MB_Send 1
+    MB_SetCfgMode
+    pop af
     MB_SendA
     CALL MegaBuzz.WaitFlash
     RET

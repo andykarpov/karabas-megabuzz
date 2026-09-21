@@ -10,7 +10,7 @@ $(MEM): $(BINARY)
 	hexdump -v -e '1/1 "%02x\n"' $(BINARY) > $(MEM)
 
 $(BINARY): $(SRC)
-	sjasmplus -DDEBUG_MODE=1 $(ENTRY) --raw=$(BINARY)
+	sjasmplus $(ENTRY) --raw=$(BINARY)
 
 $(DEBUG): $(SRC)
 	sjasmplus -DEMU_MODE=1 -DDEBUG_MODE=1 $(ENTRY) --raw=$(DEBUG)
