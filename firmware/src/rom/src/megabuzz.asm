@@ -74,18 +74,17 @@ ReadConfig:
 ApplyConfig:
     MB_SetCfgMode
     MB_SendA
-
     CALL MegaBuzz.WaitFlash
-    ; continue to cancel action
+    RET
 
 ;; Cancel - switch back a normal ROM + soft reset trigger
 Cancel:
     MB_SetRomMode
     MB_Send 0 ; switch to zx rom
-    MB_SetCtrlMode
-    MB_Send 1 ; send a reset trigger pulse
-    NOP : NOP : NOP
-    MB_Send 0
+    ;MB_SetCtrlMode
+    ;MB_Send 1 ; send a reset trigger pulse
+    ;NOP : NOP : NOP
+    ;MB_Send 0
     RET
 
     ENDMODULE

@@ -119,15 +119,6 @@ ActionApply:
         LD A, (CheckboxState)
         CALL MegaBuzz.ApplyConfig 
 
-        CALL Screen.Clear
-        CALL Screen.ResetAttributes
-
-        LD DE, DoneText
-        LD BC, 0x0504 ; row 5, col 4
-        CALL Screen.PrintString
-
-        JP Start
-
 ActionCancel:
 
         CALL Screen.Clear
@@ -137,8 +128,10 @@ ActionCancel:
         LD BC, 0x0504 ; row 5, col 4
         CALL Screen.PrintString
 
-        CALL MegaBuzz.Cancel      
-        JP Start
+        CALL MegaBuzz.Cancel   
+
+        ld sp, #ffff
+        jp #0000
 
 KeyDelay:
         LD BC, 0x3FFF       
