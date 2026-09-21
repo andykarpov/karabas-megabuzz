@@ -780,7 +780,7 @@ always @(posedge clk_bus) begin
     end
     else if (ioreq_wr & port_zxuno_data & reg_mb_rom & cfg_rom_en) begin // if rom switched by the zxuno port => replace rom, trigger soft reset
         cfg_rom_active <= bus_d[0];
-        soft_reset <= 1;
+        //soft_reset <= 1;
     end
     else if (ioreq_wr & port_zxuno_data & reg_mb_ctl) // soft reset port
         soft_reset <= bus_d[0];
