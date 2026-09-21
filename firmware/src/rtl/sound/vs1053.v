@@ -119,7 +119,7 @@ module vs1053_spi_master (
     input  wire        is_data,      // 0 = SCI (CS), 1 = SDI (DCS)
     input  wire        rnw,          // 1 = Read, 0 = Write
     input  wire [7:0]  addr,         // SCI register address
-    input  wire [15:0] data_in,      // Data for SCI_WRITE or data byte for SDI (data_in[7:0])
+    input  wire [15:0] data_in,      // Data for SCI or SDI
     output reg         busy,
     output reg  [15:0] data_out,
 
@@ -130,46 +130,43 @@ module vs1053_spi_master (
     output reg         vs_dcs_n
 );
 
-    wire [6:0] clk_div = fast_mode ? 7'd8 : 7'd112;
-    reg  [6:0] clk_cnt;
-    reg        spi_clk_en;
+    // clock divier to generate spi_x2_tick (2 times faster than SCLK)
+    // clk_div_half = clk_div / 2
+    // fast_mode: ~3.5 MHz
+    // slow_mode: ~250 kHz
+    wire [7:0] clk_div_half = fast_mode ? 8'd4 : 8'd56;
+    reg  [7:0] clk_cnt;
+    reg        spi_x2_tick;
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            clk_cnt <= 0;
-            spi_clk_en <= 0;
+            clk_cnt     <= 0;
+            spi_x2_tick <= 0;
         end else if (busy) begin
-            if (clk_cnt >= clk_div - 1) begin
-                clk_cnt <= 0;
-                spi_clk_en <= 1;
+            if (clk_cnt >= clk_div_half - 1) begin
+                clk_cnt     <= 0;
+                spi_x2_tick <= 1;
             end else begin
-                clk_cnt <= clk_cnt + 1;
-                spi_clk_en <= 0;
+                clk_cnt     <= clk_cnt + 1;
+                spi_x2_tick <= 0;
             end
         end else begin
-            clk_cnt <= 0;
-            spi_clk_en <= 0;
+            clk_cnt     <= 0;
+            spi_x2_tick <= 0;
         end
     end
-
-    reg [5:0] bit_cnt;
-    reg [31:0] shift_reg;
-    reg [2:0]  state;
 
     localparam IDLE      = 3'd0;
     localparam SETUP     = 3'd1;
-    localparam TRANSFER  = 3'd2;
-    localparam HOLD      = 3'd3;
+    localparam LEAD      = 3'd2;
+    localparam DRIVE     = 3'd3;
+    localparam SAMPLE    = 3'd4;
+    localparam HOLD      = 3'd5;
 
-    always @(*) begin
-        if (busy) begin
-            vs_cs_n  = is_data ? 1'b1 : 1'b0;
-            vs_dcs_n = is_data ? 1'b0 : 1'b1;
-        end else begin
-            vs_cs_n  = 1'b1;
-            vs_dcs_n = 1'b1;
-        end
-    end
+    reg [2:0]  state;
+    reg [5:0]  bit_cnt;
+    reg [31:0] shift_reg;
+    reg        sclk_next;
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -177,65 +174,87 @@ module vs1053_spi_master (
             busy     <= 0;
             vs_sclk  <= 0;
             vs_mosi  <= 0;
+            vs_cs_n  <= 1;
+            vs_dcs_n <= 1;
             data_out <= 0;
+            bit_cnt  <= 0;
+            shift_reg<= 0;
         end else begin
             case (state)
                 IDLE: begin
-                    vs_sclk  <= 0;
-                    vs_mosi  <= 0;
+                    vs_sclk <= 0;
+                    vs_mosi <= 0;
                     if (start) begin
                         busy  <= 1;
                         state <= SETUP;
+                        // raise cs before first clock
+                        vs_cs_n  <= is_data;
+                        vs_dcs_n <= !is_data;
+                        
                         if (!is_data) begin
-                            // SCI: cmd + addr + msb + lsb (32 bits)
                             shift_reg <= {rnw ? 8'h03 : 8'h02, addr, data_in};
                             bit_cnt   <= 6'd32;
                         end else begin
-                            // SDI: single byte (8 bits)
                             shift_reg <= {data_in[7:0], 24'h0};
                             bit_cnt   <= 6'd8;
                         end
                     end else begin
-                        busy <= 0;
+                        busy     <= 0;
+                        vs_cs_n  <= 1'b1;
+                        vs_dcs_n <= 1'b1;
                     end
                 end
 
                 SETUP: begin
-                    // tXCS/tXDCS
-                    if (spi_clk_en) begin
-                        state <= TRANSFER;
+                    // tXCS
+                    if (spi_x2_tick) begin
+                        state <= DRIVE;
                     end
                 end
 
-                TRANSFER: begin
-                    if (spi_clk_en) begin
-                        if (vs_sclk == 0) begin
-                            vs_mosi <= shift_reg[31];
-                            vs_sclk <= 1;
+                DRIVE: begin
+                    // phase 1: MOSI data while SCLK = 0
+                    if (spi_x2_tick) begin
+                        vs_mosi <= shift_reg[31];
+                        state   <= SAMPLE;
+                    end
+                end
+
+                SAMPLE: begin
+                    // phase 2: raise SCLK to 1
+                    if (spi_x2_tick) begin
+                        vs_sclk   <= 1'b1;
+                        shift_reg <= {shift_reg[30:0], vs_miso};
+                        bit_cnt   <= bit_cnt - 1;
+                        state     <= LEAD;
+                    end
+                end
+
+                LEAD: begin
+                    // phase 3: fall SCLK to 0
+                    if (spi_x2_tick) begin
+                        vs_sclk <= 1'b0;
+                        if (bit_cnt == 0) begin
+                            state <= HOLD;
                         end else begin
-                            shift_reg <= {shift_reg[30:0], vs_miso};
-                            vs_sclk   <= 0;
-                            bit_cnt   <= bit_cnt - 1;
-                            if (bit_cnt == 1) begin
-                                state <= HOLD;
-                            end
+                            state <= DRIVE;
                         end
                     end
                 end
 
                 HOLD: begin
-                    // tXCS/tXDCS after the final SCLK falling
-                    if (spi_clk_en) begin
-                        if (!is_data && rnw) 
+                    // tXCH
+                    if (spi_x2_tick) begin
+                        if (!is_data && rnw) begin
                             data_out <= shift_reg[15:0];
-                        else if (is_data && !rnw) 
-                            data_out[7:0] <= shift_reg[23:16]; 
-                        
-                        busy  <= 0;
-                        state <= IDLE;
+                        end
+                        vs_cs_n  <= 1'b1;
+                        vs_dcs_n <= 1'b1;
+                        busy     <= 0;
+                        state    <= IDLE;
                     end
                 end
-                
+
                 default: state <= IDLE;
             endcase
         end
