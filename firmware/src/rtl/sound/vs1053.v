@@ -10,6 +10,7 @@
 // bit 6:0 - count of 32-bytes block in the fifo
 // bus_a = 0, rd - write a command to the controller
 // bit 7 = 1 - soft reset
+// bit 6 = 1 - hard reset
 //
 // Data:
 // bus_a = 1, wr - write a byte to the FIFO
@@ -42,6 +43,7 @@ module vs1053 (
     wire        fifo_empty;
     wire [11:0] fifo_count;
     wire        soft_reset_cmd;
+    wire        hard_reset_cmd;
 
     wire        spi_start;
     wire        spi_is_data;
@@ -65,13 +67,15 @@ module vs1053 (
         .fifo_data_out(fifo_data_out),
         .fifo_empty(fifo_empty),
         .fifo_count(fifo_count),
-        .soft_reset_cmd(soft_reset_cmd)
+        .soft_reset_cmd(soft_reset_cmd),
+        .hard_reset_cmd(hard_reset_cmd)
     );
 
     vs1053_controller ctrl_inst (
         .clk(clk),
         .rst(reset),
         .soft_reset_cmd(soft_reset_cmd),
+        .hard_reset_cmd(hard_reset_cmd),
         .fifo_rd_en(fifo_rd_en),
         .fifo_data_out(fifo_data_out),
         .fifo_empty(fifo_empty),
@@ -90,7 +94,7 @@ module vs1053 (
 
     vs1053_spi_master spi_master_inst (
         .clk(clk),
-        .rst(reset || soft_reset_cmd),
+        .rst(reset || soft_reset_cmd || hard_reset_cmd),
         .fast_mode(spi_fast_mode),
         .start(spi_start),
         .is_data(spi_is_data),
@@ -280,7 +284,8 @@ module vs1053_host_interface (
     output wire        fifo_full,
     output wire [11:0]  fifo_count,
 
-    output reg         soft_reset_cmd
+    output reg         soft_reset_cmd,
+    output reg         hard_reset_cmd
 );
 
     // detect z80 fronts
@@ -313,23 +318,22 @@ module vs1053_host_interface (
             fifo_clear <= 1;
             fifo_wr_en <= 0;
             soft_reset_cmd <= 0;
+            hard_reset_cmd <= 0;
         end else begin
             soft_reset_cmd <= 0;
+            hard_reset_cmd <= 0;
             fifo_wr_en <= 0;
             fifo_clear <= 0;
 
             if (wr_pulse) begin
                 if (bus_a == 0) begin
-                    if (bus_di[7]) soft_reset_cmd <= 1;
+                    if (bus_di[7]) begin soft_reset_cmd <= 1; fifo_clear <= 1; end
+                    if (bus_di[6]) begin hard_reset_cmd <= 1; fifo_clear <= 1; end
                 end else begin
                     if (!fifo_full) begin
                         fifo_wr_en <= 1;
                     end
                 end
-            end
-            
-            if (soft_reset_cmd) begin
-                fifo_clear <= 1;
             end
         end
     end
@@ -342,6 +346,7 @@ module vs1053_controller (
     input  wire        clk,
     input  wire        rst,
     input  wire        soft_reset_cmd,
+    input  wire        hard_reset_cmd,
 
     output reg         fifo_rd_en,
     input  wire [7:0]  fifo_data_out,
@@ -403,11 +408,25 @@ module vs1053_controller (
                ST_SEND_BYTE      = 4'd10,
                ST_WAIT_BYTE      = 4'd11,
                ST_CS_PULSE_DELAY = 4'd12;
+               // TODO: Soft reset states (spi command to soft reset the chip)
 
     always @(posedge clk or posedge rst) begin
-        if (rst || soft_reset_cmd) begin
+        if (rst | hard_reset_cmd) begin
             state         <= ST_HW_RESET;
             vs_reset_n    <= 0;
+            delay_cnt     <= 0;
+            spi_start     <= 0;
+            spi_is_data   <= 0;
+            spi_rnw       <= 0;
+            spi_addr      <= 0;
+            spi_data_in   <= 0;
+            spi_fast_mode <= 0;
+            fifo_rd_en    <= 0;
+            byte_cnt      <= 0;
+            cs_delay_counter <= 0;
+        end else if (soft_reset_cmd) begin
+            state         <= ST_DELAY_1;
+            vs_reset_n    <= 1; // do not do any hw resets to avoid clicks
             delay_cnt     <= 0;
             spi_start     <= 0;
             spi_is_data   <= 0;
