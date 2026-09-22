@@ -6,7 +6,7 @@
 	(paper "A4")
 	(title_block
 		(title "Karabas-MegaBuzz")
-		(date "2026-09-19")
+		(date "2026-09-22")
 		(rev "A3")
 		(company "Andy Karpov")
 	)
@@ -3097,193 +3097,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Diode:1N4148W"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "D"
-				(at 0 2.54 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "1N4148W"
-				(at 0 -2.54 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" "Diode_SMD:D_SOD-123"
-				(at 0 -4.445 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" "https://www.vishay.com/docs/85748/1n4148w.pdf"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "75V 0.15A Fast Switching Diode, SOD-123"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Sim.Device" "D"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Sim.Pins" "1=K 2=A"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "diode"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "D*SOD?123*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "1N4148W_0_1"
-				(polyline
-					(pts
-						(xy -1.27 1.27) (xy -1.27 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy -1.27 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "1N4148W_1_1"
-				(pin passive line
-					(at -3.81 0 0)
-					(length 2.54)
-					(name "K"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 3.81 0 180)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Jumper:Jumper_2_Open"
 			(pin_names
 				(offset 0)
@@ -3828,6 +3641,321 @@
 						)
 					)
 					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Transistor_FET:BSS138"
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "Q"
+				(at 5.08 1.905 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "BSS138"
+				(at 5.08 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+				(at 5.08 -1.905 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(justify left)
+				)
+			)
+			(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BSS138-D.PDF"
+				(at 5.08 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Description" "50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "N-Channel MOSFET"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "SOT?23*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "BSS138_0_1"
+				(polyline
+					(pts
+						(xy 0.254 1.905) (xy 0.254 -1.905)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 0) (xy -2.54 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 2.286) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 0.508) (xy 0.762 -0.508)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 -1.27) (xy 0.762 -2.286)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 -1.778) (xy 3.302 -1.778) (xy 3.302 1.778) (xy 0.762 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.016 0) (xy 2.032 0.381) (xy 2.032 -0.381) (xy 1.016 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(circle
+					(center 1.651 0)
+					(radius 2.794)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 2.54) (xy 2.54 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.54 1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(circle
+					(center 2.54 -1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 -2.54) (xy 2.54 0) (xy 0.762 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.921 0.381) (xy 3.683 0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.302 0.381) (xy 2.921 -0.254) (xy 3.683 -0.254) (xy 3.302 0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "BSS138_1_1"
+				(pin input line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "G"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 -5.08 90)
+					(length 2.54)
+					(name "S"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 5.08 270)
+					(length 2.54)
+					(name "D"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4940,7 +5068,7 @@
 	)
 	(text "Reset output (active 0)"
 		(exclude_from_sim no)
-		(at 249.936 106.172 0)
+		(at 251.968 122.428 0)
 		(effects
 			(font
 				(size 0.9906 0.9906)
@@ -5126,6 +5254,12 @@
 		(uuid "2da8eb74-f2ac-4be3-87c0-bca11227cee0")
 	)
 	(junction
+		(at 260.35 113.03)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3e9624cc-64f3-4d4c-a56f-a5d7f65c463a")
+	)
+	(junction
 		(at 53.34 179.07)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5144,6 +5278,12 @@
 		(uuid "959d1099-f802-40cd-9fe1-26cbcaf45d7b")
 	)
 	(junction
+		(at 252.73 104.14)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "be2347af-dd68-4384-8f1f-77b5717473b8")
+	)
+	(junction
 		(at 194.31 156.21)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5154,6 +5294,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "dce834cc-01f1-455d-8110-996a5581b460")
+	)
+	(junction
+		(at 245.11 113.03)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f1a0534a-c236-4183-85cc-782db7e8933e")
 	)
 	(no_connect
 		(at 59.69 85.09)
@@ -5243,6 +5389,16 @@
 	)
 	(wire
 		(pts
+			(xy 252.73 104.14) (xy 252.73 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0535d69e-ae10-449d-9217-a64a43d0fdd5")
+	)
+	(wire
+		(pts
 			(xy 140.97 154.94) (xy 140.97 172.72)
 		)
 		(stroke
@@ -5250,6 +5406,16 @@
 			(type default)
 		)
 		(uuid "0632a54e-6290-4c1c-be0d-9eaddf3c7b59")
+	)
+	(wire
+		(pts
+			(xy 245.11 111.76) (xy 245.11 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "07967afa-af69-4ef3-97ad-b49781ec7c99")
 	)
 	(wire
 		(pts
@@ -5333,7 +5499,7 @@
 	)
 	(wire
 		(pts
-			(xy 238.76 102.87) (xy 243.84 102.87)
+			(xy 242.57 113.03) (xy 245.11 113.03)
 		)
 		(stroke
 			(width 0)
@@ -5683,16 +5849,6 @@
 	)
 	(wire
 		(pts
-			(xy 260.35 102.87) (xy 261.62 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "41f9fcb2-c27f-4e0a-9c60-3fbcf8127bb0")
-	)
-	(wire
-		(pts
 			(xy 33.02 68.58) (xy 39.37 68.58)
 		)
 		(stroke
@@ -5873,6 +6029,16 @@
 	)
 	(wire
 		(pts
+			(xy 245.11 104.14) (xy 252.73 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5e9c288e-911e-4f18-aeb2-23216cd383c9")
+	)
+	(wire
+		(pts
 			(xy 52.07 77.47) (xy 59.69 77.47)
 		)
 		(stroke
@@ -5930,6 +6096,16 @@
 			(type default)
 		)
 		(uuid "6542d1d4-8ed3-4951-b2f2-e5db7132d41d")
+	)
+	(wire
+		(pts
+			(xy 257.81 113.03) (xy 260.35 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6648adc4-0f4c-4cb5-80dc-6bc611ac8c1c")
 	)
 	(wire
 		(pts
@@ -6020,16 +6196,6 @@
 			(type default)
 		)
 		(uuid "7292dc72-c803-4368-837e-34f72ddf36bb")
-	)
-	(wire
-		(pts
-			(xy 251.46 102.87) (xy 252.73 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "72b8bd86-ec22-48cc-9a5c-45f6b72455cf")
 	)
 	(wire
 		(pts
@@ -6153,6 +6319,16 @@
 	)
 	(wire
 		(pts
+			(xy 260.35 113.03) (xy 262.89 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7ccd351d-92c6-4481-844d-e635073f879a")
+	)
+	(wire
+		(pts
 			(xy 128.27 167.64) (xy 128.27 175.26)
 		)
 		(stroke
@@ -6243,6 +6419,16 @@
 	)
 	(wire
 		(pts
+			(xy 260.35 111.76) (xy 260.35 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "91f2196c-6da7-41f4-85b9-71ff5d6e8524")
+	)
+	(wire
+		(pts
 			(xy 138.43 39.37) (xy 140.97 39.37)
 		)
 		(stroke
@@ -6300,6 +6486,16 @@
 			(type default)
 		)
 		(uuid "9a4de560-6cbd-4c8b-a03a-78af1c2bb8c9")
+	)
+	(wire
+		(pts
+			(xy 245.11 113.03) (xy 247.65 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9de9cf26-51e2-497e-a0ca-8dd2be9fa51b")
 	)
 	(wire
 		(pts
@@ -8570,7 +8766,7 @@
 	)
 	(global_label "~{RST}"
 		(shape input)
-		(at 261.62 102.87 0)
+		(at 262.89 113.03 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -8580,7 +8776,7 @@
 		)
 		(uuid "84310f59-5f0b-41a0-a169-36388a93c1a9")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 266.7112 102.87 0)
+			(at 267.9812 113.03 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9602,7 +9798,7 @@
 	)
 	(global_label "~{oRST}"
 		(shape input)
-		(at 238.76 102.87 180)
+		(at 242.57 113.03 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9612,7 +9808,7 @@
 		)
 		(uuid "df8f02fe-5551-4118-8db8-4be151b0835d")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 232.7725 102.87 0)
+			(at 236.5825 113.03 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10406,6 +10602,83 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
 					(reference "JP2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 252.73 104.14 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "18a65f99-8698-4adc-bc83-b05f85b02619")
+		(property "Reference" "#PWR0183"
+			(at 252.73 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 252.73 100.33 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 252.73 104.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 252.73 104.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 252.73 104.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "81e2eae9-aadb-434d-bb7e-9a3bc0246bb9")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
+					(reference "#PWR0183")
 					(unit 1)
 				)
 			)
@@ -11758,6 +12031,92 @@
 		)
 	)
 	(symbol
+		(lib_id "Transistor_FET:BSS138")
+		(at 252.73 110.49 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "565fd04d-cbd8-4188-bc0b-cf7d0f7b9896")
+		(property "Reference" "Q1"
+			(at 252.73 116.84 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "BSS138"
+			(at 252.73 119.38 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 250.825 115.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(justify left)
+			)
+		)
+		(property "Datasheet" "https://www.onsemi.com/pub/Collateral/BSS138-D.PDF"
+			(at 248.92 115.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Description" "50V Vds, 0.22A Id, N-Channel MOSFET, SOT-23"
+			(at 252.73 110.49 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "4c3275d0-333b-4f93-b509-9d83de79e519")
+		)
+		(pin "1"
+			(uuid "9e5e7a76-58c2-455b-ad0b-3b0cf22d5e99")
+		)
+		(pin "3"
+			(uuid "a9e3260b-7eed-4207-b82d-3af58e040de4")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
+					(reference "Q1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:LED")
 		(at 254 149.86 0)
 		(unit 1)
@@ -11842,6 +12201,86 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
 					(reference "D17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 245.11 107.95 0)
+		(mirror y)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "66167cd3-ab2d-4c95-b64b-6afecffb7ffb")
+		(property "Reference" "R53"
+			(at 243.205 107.95 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 245.11 107.95 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 246.888 107.95 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 245.11 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 245.11 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "af1092e6-b4a0-47ee-a98f-c665cc7b6610")
+		)
+		(pin "2"
+			(uuid "6bc1d0a3-6146-4a36-8436-4afcb536264e")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
+					(reference "R53")
 					(unit 1)
 				)
 			)
@@ -12318,6 +12757,86 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
 					(reference "#PWR032")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 260.35 107.95 0)
+		(mirror y)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "79bcd7fd-cef0-4ad7-a2bb-51d4a7216219")
+		(property "Reference" "R57"
+			(at 258.445 107.95 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 260.35 107.95 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
+			(at 262.128 107.95 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 260.35 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 260.35 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "9794d200-1a0f-43e3-af04-f1f5096f66d1")
+		)
+		(pin "2"
+			(uuid "c4da01ef-f165-434f-a95e-a123b66bc90b")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
+					(reference "R57")
 					(unit 1)
 				)
 			)
@@ -14066,6 +14585,84 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
+		(at 260.35 104.14 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "b5a8cb93-1786-4236-b50b-eb1666414aff")
+		(property "Reference" "#PWR0184"
+			(at 260.35 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+			)
+		)
+		(property "Value" "+5V"
+			(at 259.08 100.33 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9906 0.9906)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 260.35 104.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 260.35 104.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 260.35 104.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "6898a286-4e60-4401-97aa-516c26916b74")
+		)
+		(instances
+			(project "karabas-megabuzz"
+				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
+					(reference "#PWR0184")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
 		(at 40.64 27.94 0)
 		(unit 1)
 		(body_style 1)
@@ -14747,85 +15344,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
-		(at 256.54 102.87 90)
-		(mirror x)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "ce638fd1-7a16-4dbc-99bc-9e31d31e23f0")
-		(property "Reference" "R53"
-			(at 256.54 99.568 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.9906 0.9906)
-				)
-			)
-		)
-		(property "Value" "27"
-			(at 256.54 102.87 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.9906 0.9906)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric_Pad0.98x0.95mm_HandSolder"
-			(at 256.54 101.092 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 256.54 102.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 256.54 102.87 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "e3c3406f-dfb3-4111-b6d0-58df7f18b030")
-		)
-		(pin "2"
-			(uuid "af451978-5085-4ea6-b029-82f4c85f9271")
-		)
-		(instances
-			(project "karabas-megabuzz"
-				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
-					(reference "R53")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "74xx:74HC245")
 		(at 153.67 46.99 0)
 		(mirror y)
@@ -15351,108 +15869,6 @@
 			(project "karabas-megabuzz"
 				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
 					(reference "#PWR028")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Diode:1N4148W")
-		(at 247.65 102.87 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "d81897ba-3e34-47ab-81b2-6376f14a2328")
-		(property "Reference" "D18"
-			(at 247.65 96.52 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.9906 0.9906)
-				)
-			)
-		)
-		(property "Value" "1N4148W"
-			(at 247.65 99.06 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 0.9906 0.9906)
-				)
-			)
-		)
-		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 247.65 107.315 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "https://www.vishay.com/docs/85748/1n4148w.pdf"
-			(at 247.65 102.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "75V 0.15A Fast Switching Diode, SOD-123"
-			(at 247.65 102.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Device" "D"
-			(at 247.65 102.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Sim.Pins" "1=K 2=A"
-			(at 247.65 102.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "99d6250b-23f5-41d9-b541-4910974ab6a8")
-		)
-		(pin "1"
-			(uuid "537f8115-87a6-4e22-a1e1-863164c53d40")
-		)
-		(instances
-			(project "karabas-megabuzz"
-				(path "/eff1afb7-47ba-46af-a815-4a07fb8d674b/a77194fc-ca19-4517-bedf-8e23f2668329"
-					(reference "D18")
 					(unit 1)
 				)
 			)
