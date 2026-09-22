@@ -5,14 +5,18 @@
 // clk - 28 MHz
 //
 // Status register:
-// bus_a = 0, wr - returns a status register
-// bit 7 - overflow flag
-// bit 6:0 - count of 32-bytes block in the fifo
-// bus_a = 0, rd - write a command to the controller
-// bit 7 = 1 - soft reset
-// bit 6 = 1 - hard reset
+//
+// bus_a = 0, rd - returns a status register
+// - bit 7 - overflow flag
+// - bit 6:0 - count of 32-bytes block in the fifo
+//
+// bus_a = 0, wr - write a command to the controller
+// - bit 7 = 1 - soft reset
+// - bit 6 = 1 - hard reset
+// - bit 5...0 - n/a
 //
 // Data:
+//
 // bus_a = 1, wr - write a byte to the FIFO
 // 
 // bus_a = 1, rd - return a status register also
@@ -389,10 +393,30 @@ module vs1053_controller (
     localparam SCI_MODE   = 8'h00;
     localparam SCI_STATUS = 8'h01;
     localparam SCI_CLOCKF = 8'h03;
+    localparam SCI_BASS   = 8'h02;
+    localparam SCI_VOL    = 8'h0B;
 
     // SCI_CLOCKF values for 12MHz XTAL
     localparam CLOCKF_1063 = 16'h8BE8;
     localparam CLOCKF_1053 = 16'h4BE8;
+
+    // audio parameters
+
+    // Equalizer (SCI_BASS): 
+    // Bass up to 12 dB (before 60 Hz) and treble to 4.5 dB (from 5 kHz)
+    // Format: [15:12] Treble dB, [11:8] Treble kHz, [7:4] Bass dB, [3:0] Bass Hz
+    localparam AUDIO_BASS_VAL = 16'h35C6;
+
+    // Volume (SCI_VOL): 
+    // Format: [15:8] Left, [7:0] Right. Value 0x0000 - max. volume, 0xFEFE - silence.
+    // -12 dB = 0x1818
+    localparam AUDIO_VOL_VAL  = 16'h1818;
+
+    // EarSpeaker:
+    // bits [7:4] in the SCI_MODE register.
+    // Value: 0x0000 (off), 0x0010 (low), 0x0020 (middle), 0x0030 (high).
+    // Result: 16'h0800 (SDINEW) + 16'h0020 (EarSpeaker) = 16'h0820
+    localparam AUDIO_MODE_VAL = 16'h0820;
 
     reg [4:0] state;
     reg [4:0] next_state;
@@ -419,7 +443,13 @@ module vs1053_controller (
                ST_DELAY_3        = 5'd15,
                ST_INIT_ZEROES    = 5'd16,
                ST_SEND_ZERO_BYTE = 5'd17,
-               ST_WAIT_ZERO_BYTE = 5'd18;
+               ST_WAIT_ZERO_BYTE = 5'd18,
+               ST_WR_BASS         = 5'd19,
+               ST_WAIT_WR_BASS    = 5'd20,
+               ST_WR_VOL          = 5'd21,
+               ST_WAIT_WR_VOL     = 5'd22,
+               ST_WR_AMODE        = 5'd23,
+               ST_WAIT_WR_AMODE   = 5'd24;
 
     always @(posedge clk or posedge rst) begin
         if (rst | hard_reset_cmd) begin
@@ -552,7 +582,67 @@ module vs1053_controller (
                 ST_SWITCH_FAST: begin
                     if (vs_dreq) begin
                         spi_fast_mode <= 1; 
-                        state         <= ST_INIT_ZEROES;
+                        state         <= ST_WR_BASS;
+                    end
+                end
+
+                // equalizer setup
+                ST_WR_BASS: begin
+                    if (!spi_busy && vs_dreq) begin
+                        spi_start   <= 1;
+                        spi_rnw     <= 0;
+                        spi_is_data <= 0;
+                        spi_addr    <= SCI_BASS;
+                        spi_data_in <= AUDIO_BASS_VAL;
+                        state       <= ST_WAIT_WR_BASS;
+                    end
+                end
+
+                ST_WAIT_WR_BASS: begin
+                    if (!spi_busy && !spi_start) begin
+                        cs_delay_counter          <= DLY_CS_FAST; 
+                        next_state                <= ST_WR_VOL;
+                        state                     <= ST_CS_PULSE_DELAY;
+                    end
+                end
+
+                // volume setup
+                ST_WR_VOL: begin
+                    if (!spi_busy && vs_dreq) begin
+                        spi_start   <= 1;
+                        spi_rnw     <= 0;
+                        spi_is_data <= 0;
+                        spi_addr    <= SCI_VOL;
+                        spi_data_in <= AUDIO_VOL_VAL;
+                        state       <= ST_WAIT_WR_VOL;
+                    end
+                end
+
+                ST_WAIT_WR_VOL: begin
+                    if (!spi_busy && !spi_start) begin
+                        cs_delay_counter          <= DLY_CS_FAST; 
+                        next_state                <= ST_WR_AMODE;
+                        state                     <= ST_CS_PULSE_DELAY;
+                    end
+                end
+
+                // ear mode setup
+                ST_WR_AMODE: begin
+                    if (!spi_busy && vs_dreq) begin
+                        spi_start   <= 1;
+                        spi_rnw     <= 0;
+                        spi_is_data <= 0;
+                        spi_addr    <= SCI_MODE;
+                        spi_data_in <= AUDIO_MODE_VAL;
+                        state       <= ST_WAIT_WR_AMODE;
+                    end
+                end
+
+               ST_WAIT_WR_AMODE: begin
+                    if (!spi_busy && !spi_start) begin
+                        cs_delay_counter          <= DLY_CS_FAST; 
+                        next_state                <= ST_INIT_ZEROES;
+                        state                     <= ST_CS_PULSE_DELAY;
                     end
                 end
 
