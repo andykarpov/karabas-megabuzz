@@ -18,6 +18,7 @@
 // bus_a = 1, rd - return a status register also
 // 
 // ----------------------------------------------------------------------------
+/* verilator lint_off DECLFILENAME */
 module vs1053 (
     input  wire        clk,
     input  wire        reset,
@@ -41,6 +42,7 @@ module vs1053 (
     wire        fifo_rd_en;
     wire [7:0]  fifo_data_out;
     wire        fifo_empty;
+    wire        fifo_full;
     wire [11:0] fifo_count;
     wire        soft_reset_cmd;
     wire        hard_reset_cmd;
@@ -53,6 +55,7 @@ module vs1053 (
     wire        spi_busy;
     wire [15:0] spi_data_out;
     wire        spi_fast_mode;
+    wire [3:0]  chip_version;
 
     vs1053_host_interface host_if_inst (
         .clk(clk),
@@ -66,6 +69,7 @@ module vs1053 (
         .fifo_rd_en(fifo_rd_en),
         .fifo_data_out(fifo_data_out),
         .fifo_empty(fifo_empty),
+        .fifo_full(fifo_full),
         .fifo_count(fifo_count),
         .soft_reset_cmd(soft_reset_cmd),
         .hard_reset_cmd(hard_reset_cmd)
@@ -89,7 +93,8 @@ module vs1053 (
         .spi_data_out(spi_data_out),
         .spi_fast_mode(spi_fast_mode),
         .vs_reset_n(vs_reset_n),
-        .vs_dreq(vs_dreq)
+        .vs_dreq(vs_dreq),
+        .chip_version(chip_version)
     );
 
     vs1053_spi_master spi_master_inst (
@@ -389,26 +394,32 @@ module vs1053_controller (
     localparam CLOCKF_1063 = 16'h8BE8;
     localparam CLOCKF_1053 = 16'h4BE8;
 
-    reg [3:0] state;
-    reg [3:0] next_state;
+    reg [4:0] state;
+    reg [4:0] next_state;
     reg [15:0] delay_cnt;
     reg [7:0]  cs_delay_counter;
     reg [5:0]  byte_cnt;
+    reg [11:0] zero_cnt; 
 
-    localparam ST_HW_RESET       = 4'd0,
-               ST_DELAY_1        = 4'd1,
-               ST_RD_STATUS      = 4'd2,
-               ST_WAIT_RD        = 4'd3,
-               ST_WR_CLOCKF      = 4'd4,
-               ST_WAIT_WR        = 4'd5,
-               ST_DELAY_2        = 4'd6,
-               ST_SWITCH_FAST    = 4'd7,
-               ST_IDLE           = 4'd8,
-               ST_PREPARE_BYTE   = 4'd9,
-               ST_SEND_BYTE      = 4'd10,
-               ST_WAIT_BYTE      = 4'd11,
-               ST_CS_PULSE_DELAY = 4'd12;
-               // TODO: Soft reset states (spi command to soft reset the chip)
+    localparam ST_HW_RESET       = 5'd0,
+               ST_DELAY_1        = 5'd1,
+               ST_RD_STATUS      = 5'd2,
+               ST_WAIT_RD        = 5'd3,
+               ST_WR_CLOCKF      = 5'd4,
+               ST_WAIT_WR        = 5'd5,
+               ST_DELAY_2        = 5'd6,
+               ST_SWITCH_FAST    = 5'd7,
+               ST_IDLE           = 5'd8,
+               ST_PREPARE_BYTE   = 5'd9,
+               ST_SEND_BYTE      = 5'd10,
+               ST_WAIT_BYTE      = 5'd11,
+               ST_CS_PULSE_DELAY = 5'd12,
+               ST_SW_RESET       = 5'd13,
+               ST_WAIT_SW_RESET  = 5'd14,
+               ST_DELAY_3        = 5'd15,
+               ST_INIT_ZEROES    = 5'd16,
+               ST_SEND_ZERO_BYTE = 5'd17,
+               ST_WAIT_ZERO_BYTE = 5'd18;
 
     always @(posedge clk or posedge rst) begin
         if (rst | hard_reset_cmd) begin
@@ -424,8 +435,9 @@ module vs1053_controller (
             fifo_rd_en    <= 0;
             byte_cnt      <= 0;
             cs_delay_counter <= 0;
+            zero_cnt      <= 0;
         end else if (soft_reset_cmd) begin
-            state         <= ST_DELAY_1;
+            state         <= ST_SW_RESET;
             vs_reset_n    <= 1; // do not do any hw resets to avoid clicks
             delay_cnt     <= 0;
             spi_start     <= 0;
@@ -437,11 +449,13 @@ module vs1053_controller (
             fifo_rd_en    <= 0;
             byte_cnt      <= 0;
             cs_delay_counter <= 0;
+            zero_cnt      <= 0;
         end else begin
             fifo_rd_en <= 0;
             spi_start  <= 0;
 
             case (state)
+                // hardware reset
                 ST_HW_RESET: begin
                     vs_reset_n <= 0;
                     delay_cnt <= delay_cnt + 1;
@@ -458,6 +472,35 @@ module vs1053_controller (
                     end
                 end
 
+                // software reset
+                ST_SW_RESET: begin
+                    if (!spi_busy && vs_dreq) begin
+                        spi_start   <= 1;
+                        spi_rnw     <= 0;
+                        spi_is_data <= 0;
+                        spi_addr    <= SCI_MODE;
+                        spi_data_in <= 16'h0804; // SM_RESET BIT + SM_SDINEW bits high
+                        state       <= ST_WAIT_SW_RESET;
+                    end
+                end
+
+                ST_WAIT_SW_RESET: begin
+                    if (!spi_busy && !spi_start) begin
+                        delay_cnt                 <= 0;
+                        cs_delay_counter          <= DLY_CS_SLOW; 
+                        next_state                <= ST_DELAY_3;
+                        state                     <= ST_CS_PULSE_DELAY;
+                    end
+                end
+
+                ST_DELAY_3: begin
+                    delay_cnt <= delay_cnt + 1;
+                    if ((delay_cnt == DLY_PLL_LOCK) && vs_dreq) begin
+                        state <= ST_RD_STATUS;
+                    end
+                end
+
+                // read status reg
                 ST_RD_STATUS: begin
                     if (!spi_busy) begin
                         spi_start   <= 1;
@@ -477,6 +520,7 @@ module vs1053_controller (
                     end
                 end
 
+                // write clockf reg
                 ST_WR_CLOCKF: begin
                     if (!spi_busy) begin
                         spi_start   <= 1;
@@ -504,13 +548,44 @@ module vs1053_controller (
                     end
                 end
 
+                // switch spi to fast mode after clockf write
                 ST_SWITCH_FAST: begin
                     if (vs_dreq) begin
                         spi_fast_mode <= 1; 
-                        state         <= ST_IDLE;
+                        state         <= ST_INIT_ZEROES;
                     end
                 end
 
+                // init zeroes - send 2048 bytes to the chip
+                ST_INIT_ZEROES: begin
+                    zero_cnt <= 12'd2048; 
+                    state    <= ST_SEND_ZERO_BYTE;
+                end
+
+                ST_SEND_ZERO_BYTE: begin
+                    if (vs_dreq && !spi_busy) begin
+                        spi_start   <= 1;
+                        spi_rnw     <= 0;
+                        spi_is_data <= 1;
+                        spi_data_in <= 16'h0000;
+                        state       <= ST_WAIT_ZERO_BYTE;
+                    end
+                end
+
+                ST_WAIT_ZERO_BYTE: begin
+                    if (!spi_busy && !spi_start) begin
+                        if (zero_cnt == 1) begin
+                            cs_delay_counter          <= DLY_CS_FAST; 
+                            next_state                <= ST_IDLE;
+                            state                     <= ST_CS_PULSE_DELAY;
+                        end else begin
+                            zero_cnt <= zero_cnt - 1;
+                            state    <= ST_SEND_ZERO_BYTE;
+                        end
+                    end
+                end
+
+                // fifo read and send to vs1053
                 ST_IDLE: begin
                     if (vs_dreq && (fifo_count >= 32) && !fifo_empty) begin
                         byte_cnt <= 6'd32;
@@ -546,6 +621,7 @@ module vs1053_controller (
                     end
                 end
 
+                // special sub-state for cs pulse delay (used by other states as well)
                 ST_CS_PULSE_DELAY: begin
                     if (cs_delay_counter > 0) begin
                         cs_delay_counter <= cs_delay_counter - 1;
