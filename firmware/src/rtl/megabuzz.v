@@ -604,7 +604,8 @@ opl3 opl3_inst(
 
 // vs1053/vs1063
 
-wire vs_bus_cs_n, vs_bus_we_n, vs_bus_rd_n, vs_bus_addr;
+wire vs_bus_cs_n, vs_bus_we_n, vs_bus_rd_n;
+wire [1:0] vs_bus_addr;
 wire [7:0] vs_bus_di, vs_bus_do;
 vs1053 vs1053(
     .clk              (clk_bus),
@@ -762,13 +763,17 @@ always @(posedge clk_bus) begin
 	if (port_zxuno_reg & ioreq_wr)
 		zxuno_reg <= bus_d;
 end
-// vs1053 (zxuno regs f5, f6)
-wire reg_vs = (zxuno_reg == 8'hF5 | zxuno_reg == 8'hF6) & vs1053_en;
+// vs1053 (zxuno regs f5, f6, fb, fc)
+wire reg_vs = (zxuno_reg == 8'hF5 | zxuno_reg == 8'hF6 | zxuno_reg == 8'hFB | zxuno_reg == 8'hFC) & vs1053_en;
 assign vs_bus_di = bus_d;
 assign vs_bus_cs_n = ~(port_zxuno_data & reg_vs & ~bus_iorq_n);
 assign vs_bus_we_n = bus_wr_n;
 assign vs_bus_rd_n = bus_rd_n;
-assign vs_bus_addr = (zxuno_reg == 8'hF5) ? 0 : 1;
+assign vs_bus_addr = (zxuno_reg == 8'hF5) ? 2'b00 : 
+                     (zxuno_reg == 8'hF6) ? 2'b01 : 
+                     (zxuno_reg == 8'hFB) ? 2'b10 : 
+                     (zxuno_reg == 8'hFC) ? 2'b11 : 
+                     2'b00;
 // megabuzz cfg (zxuno regs f7,f8,f9,fa)
 wire reg_mb_cfg = (zxuno_reg == 8'hF7);
 wire reg_mb_rom = (zxuno_reg == 8'hF8);

@@ -4,23 +4,34 @@
 //
 // clk - 28 MHz
 //
-// Status register:
+// Registers: 
 //
-// bus_a = 0, rd - returns a status register
+// 0 Status:
+//
+// bus_a = 00, rd - returns a status register
 // - bit 7 - overflow flag
 // - bit 6:0 - count of 32-bytes block in the fifo
 //
-// bus_a = 0, wr - write a command to the controller
+// bus_a = 00, wr - write a command to the controller
 // - bit 7 = 1 - soft reset
 // - bit 6 = 1 - hard reset
-// - bit 5...0 - n/a
+// - bit 5:0   - n/a
 //
-// Data:
+// 1 Data:
 //
-// bus_a = 1, wr - write a byte to the FIFO
+// bus_a = 01, wr - write a byte to the FIFO
+// bus_a = 01, rd - return a status register also
+//
+// 2 Volume:
+// bus_a = 10, rd/wr - read/write a byte of volume control (00 - max volume, FE - silence)
+//
+// 3 Effects:
 // 
-// bus_a = 1, rd - return a status register also
-// 
+// bus_a = 11, rd/wr - read/write a byte of effects control
+// - bit 7:6 - ear speaker (00 - off, 01 - low, 10 - mid, 11 - high)
+// - bit 5:3 - treble boost (000 - off, 111 - max +10.5dB) at 5kHz
+// - bit 2:0 - bass boost (000 - off, 111 - max + 14dB) at 60Hz
+//  
 // ----------------------------------------------------------------------------
 /* verilator lint_off DECLFILENAME */
 module vs1053 (
@@ -30,7 +41,7 @@ module vs1053 (
     input  wire        bus_cs_n,
     input  wire        bus_rd_n,
     input  wire        bus_wr_n,
-    input  wire        bus_a,        // 0 - status, 1 - data
+    input  wire [1:0]  bus_a,        // 00 - status, 01 - data, 10 - volume, 11 - effects
     input  wire [7:0]  bus_di,
     output wire [7:0]  bus_do,
 
@@ -42,6 +53,9 @@ module vs1053 (
     output wire        vs_dcs_n,
     output wire        vs_reset_n
 );
+
+    parameter [7:0] DEFAULT_VOLUME = 8'h08;
+    parameter [7:0] DEFAULT_EFFECT = 8'h00;
 
     wire        fifo_rd_en;
     wire [7:0]  fifo_data_out;
@@ -60,8 +74,10 @@ module vs1053 (
     wire [15:0] spi_data_out;
     wire        spi_fast_mode;
     wire [3:0]  chip_version;
+    wire [7:0]  reg_volume;
+    wire [7:0]  reg_effects;
 
-    vs1053_host_interface host_if_inst (
+    vs1053_host_interface #(.DEFAULT_VOLUME(DEFAULT_VOLUME), .DEFAULT_EFFECT(DEFAULT_EFFECT)) host_if_inst (
         .clk(clk),
         .rst(reset),
         .bus_cs_n(bus_cs_n),
@@ -76,7 +92,9 @@ module vs1053 (
         .fifo_full(fifo_full),
         .fifo_count(fifo_count),
         .soft_reset_cmd(soft_reset_cmd),
-        .hard_reset_cmd(hard_reset_cmd)
+        .hard_reset_cmd(hard_reset_cmd),
+        .reg_volume(reg_volume),
+        .reg_effects(reg_effects)
     );
 
     vs1053_controller ctrl_inst (
@@ -98,7 +116,9 @@ module vs1053 (
         .spi_fast_mode(spi_fast_mode),
         .vs_reset_n(vs_reset_n),
         .vs_dreq(vs_dreq),
-        .chip_version(chip_version)
+        .chip_version(chip_version),
+        .reg_volume(reg_volume),
+        .reg_effects(reg_effects)
     );
 
     vs1053_spi_master spi_master_inst (
@@ -283,9 +303,9 @@ module vs1053_host_interface (
     input  wire        bus_cs_n,
     input  wire        bus_rd_n,
     input  wire        bus_wr_n,
-    input  wire        bus_a,
+    input  wire [1:0]  bus_a,
     input  wire [7:0]  bus_di,
-    output wire [7:0]  bus_do,
+    output reg  [7:0]  bus_do,
 
     input  wire        fifo_rd_en,
     output wire [7:0]  fifo_data_out,
@@ -294,8 +314,14 @@ module vs1053_host_interface (
     output wire [11:0]  fifo_count,
 
     output reg         soft_reset_cmd,
-    output reg         hard_reset_cmd
+    output reg         hard_reset_cmd,
+
+    output reg  [7:0]  reg_volume,
+    output reg  [7:0]  reg_effects
 );
+
+    parameter [7:0] DEFAULT_VOLUME = 8'h08;
+    parameter [7:0] DEFAULT_EFFECT = 8'h00;
 
     // detect z80 fronts
     reg [2:0] wr_sync;
@@ -319,7 +345,15 @@ module vs1053_host_interface (
         .data_count(fifo_count)
     );
     
-    assign bus_do = {fifo_full, fifo_count[11:5]};
+    always @(*) begin
+        case (bus_a)
+            2'b00:   bus_do = {fifo_full, fifo_count[11:5]}; // FIFO status
+            2'b01:   bus_do = {fifo_full, fifo_count[11:5]}; // FIFO status
+            2'b10:   bus_do = reg_volume;                    // Read current volume
+            2'b11:   bus_do = reg_effects;                   // Read current effects
+            default: bus_do = 8'hFF;
+        endcase
+    end
 
     // FSM
     always @(posedge clk or posedge rst) begin
@@ -328,6 +362,8 @@ module vs1053_host_interface (
             fifo_wr_en <= 0;
             soft_reset_cmd <= 0;
             hard_reset_cmd <= 0;
+            reg_volume     <= DEFAULT_VOLUME;
+            reg_effects    <= DEFAULT_EFFECT;
         end else begin
             soft_reset_cmd <= 0;
             hard_reset_cmd <= 0;
@@ -335,14 +371,23 @@ module vs1053_host_interface (
             fifo_clear <= 0;
 
             if (wr_pulse) begin
-                if (bus_a == 0) begin
-                    if (bus_di[7]) begin soft_reset_cmd <= 1; fifo_clear <= 1; end
-                    if (bus_di[6]) begin hard_reset_cmd <= 1; fifo_clear <= 1; end
-                end else begin
-                    if (!fifo_full) begin
-                        fifo_wr_en <= 1;
+                case (bus_a)
+                    2'b00: begin // control (soft and hard reset)
+                        if (bus_di[7]) begin soft_reset_cmd <= 1; fifo_clear <= 1; end
+                        if (bus_di[6]) begin hard_reset_cmd <= 1; fifo_clear <= 1; end
                     end
-                end
+                    2'b01: begin // Write data into FIFO
+                        if (!fifo_full) begin
+                            fifo_wr_en <= 1;
+                        end
+                    end
+                    2'b10: begin // Write a new volume register
+                        reg_volume <= bus_di;
+                    end
+                    2'b11: begin // Write a new effects register
+                        reg_effects <= bus_di;
+                    end
+                endcase
             end
         end
     end
@@ -374,6 +419,8 @@ module vs1053_controller (
     output reg         vs_reset_n,
     input  wire        vs_dreq,
 
+    input  wire [7:0]  reg_volume,
+    input  wire [7:0]  reg_effects,
     output reg [3:0]   chip_version
 );
 
@@ -400,30 +447,21 @@ module vs1053_controller (
     localparam CLOCKF_1063 = 16'h8BE8;
     localparam CLOCKF_1053 = 16'h4BE8;
 
-    // audio parameters
-
-    // Equalizer (SCI_BASS): 
-    // Bass up to 12 dB (before 60 Hz) and treble to 4.5 dB (from 5 kHz)
-    // Format: [15:12] Treble dB, [11:8] Treble kHz, [7:4] Bass dB, [3:0] Bass Hz
-    localparam AUDIO_BASS_VAL = 16'h35C6;
-
-    // Volume (SCI_VOL): 
-    // Format: [15:8] Left, [7:0] Right. Value 0x0000 - max. volume, 0xFEFE - silence.
-    // -12 dB = 0x1818
-    localparam AUDIO_VOL_VAL  = 16'h1818;
-
-    // EarSpeaker:
-    // bits [7:4] in the SCI_MODE register.
-    // Value: 0x0000 (off), 0x0010 (low), 0x0020 (middle), 0x0030 (high).
-    // Result: 16'h0800 (SDINEW) + 16'h0020 (EarSpeaker) = 16'h0820
-    localparam AUDIO_MODE_VAL = 16'h0820;
-
     reg [4:0] state;
     reg [4:0] next_state;
     reg [15:0] delay_cnt;
     reg [7:0]  cs_delay_counter;
     reg [5:0]  byte_cnt;
     reg [11:0] zero_cnt; 
+    reg [7:0]  vol_shadow;
+    reg [7:0]  eff_shadow;
+    reg        req_update_vol;
+    reg        req_update_eff;
+    reg        init_done;
+
+    wire [15:0] pack_vol   = {reg_volume, reg_volume};
+    wire [15:0] pack_bass  = {reg_effects[5:3], 5'd5, reg_effects[2:0], 4'h6}; // EQ: 5kHz (5), 60Гц (6)
+    wire [15:0] pack_mode  = {4'h0, 1'b1, 3'h0, reg_effects[7:6], 6'h00};       // SM_SDINEW + EarSpeaker
 
     localparam ST_HW_RESET       = 5'd0,
                ST_DELAY_1        = 5'd1,
@@ -452,6 +490,20 @@ module vs1053_controller (
                ST_WAIT_WR_AMODE   = 5'd24;
 
     always @(posedge clk or posedge rst) begin
+        if (rst | hard_reset_cmd | soft_reset_cmd) begin
+            vol_shadow     <= 8'hFF; // to apply reg values on reset
+            eff_shadow     <= 8'hFF;
+            req_update_vol <= 0;
+            req_update_eff <= 0;
+        end else begin
+            if (reg_volume != vol_shadow && state == ST_IDLE) begin req_update_vol <= 1; end
+            if (reg_effects != eff_shadow && state == ST_IDLE) begin req_update_eff <= 1; end
+            if (state == ST_WR_VOL)  begin req_update_vol <= 0; vol_shadow <= reg_volume; end
+            if (state == ST_WR_BASS) begin req_update_eff <= 0; eff_shadow <= reg_effects; end
+        end
+    end
+
+    always @(posedge clk or posedge rst) begin
         if (rst | hard_reset_cmd) begin
             state         <= ST_HW_RESET;
             vs_reset_n    <= 0;
@@ -466,6 +518,7 @@ module vs1053_controller (
             byte_cnt      <= 0;
             cs_delay_counter <= 0;
             zero_cnt      <= 0;
+            init_done     <= 0;
         end else if (soft_reset_cmd) begin
             state         <= ST_SW_RESET;
             vs_reset_n    <= 1; // do not do any hw resets to avoid clicks
@@ -480,6 +533,7 @@ module vs1053_controller (
             byte_cnt      <= 0;
             cs_delay_counter <= 0;
             zero_cnt      <= 0;
+            init_done     <= 0;
         end else begin
             fifo_rd_en <= 0;
             spi_start  <= 0;
@@ -593,7 +647,7 @@ module vs1053_controller (
                         spi_rnw     <= 0;
                         spi_is_data <= 0;
                         spi_addr    <= SCI_BASS;
-                        spi_data_in <= AUDIO_BASS_VAL;
+                        spi_data_in <= pack_bass;
                         state       <= ST_WAIT_WR_BASS;
                     end
                 end
@@ -613,7 +667,7 @@ module vs1053_controller (
                         spi_rnw     <= 0;
                         spi_is_data <= 0;
                         spi_addr    <= SCI_VOL;
-                        spi_data_in <= AUDIO_VOL_VAL;
+                        spi_data_in <= pack_vol;
                         state       <= ST_WAIT_WR_VOL;
                     end
                 end
@@ -633,7 +687,7 @@ module vs1053_controller (
                         spi_rnw     <= 0;
                         spi_is_data <= 0;
                         spi_addr    <= SCI_MODE;
-                        spi_data_in <= AUDIO_MODE_VAL;
+                        spi_data_in <= pack_mode;
                         state       <= ST_WAIT_WR_AMODE;
                     end
                 end
@@ -641,7 +695,7 @@ module vs1053_controller (
                ST_WAIT_WR_AMODE: begin
                     if (!spi_busy && !spi_start) begin
                         cs_delay_counter          <= DLY_CS_FAST; 
-                        next_state                <= ST_INIT_ZEROES;
+                        next_state                <= init_done ? ST_IDLE : ST_INIT_ZEROES;
                         state                     <= ST_CS_PULSE_DELAY;
                     end
                 end
@@ -665,9 +719,10 @@ module vs1053_controller (
                 ST_WAIT_ZERO_BYTE: begin
                     if (!spi_busy && !spi_start) begin
                         if (zero_cnt == 1) begin
-                            cs_delay_counter          <= DLY_CS_FAST; 
-                            next_state                <= ST_IDLE;
-                            state                     <= ST_CS_PULSE_DELAY;
+                            cs_delay_counter <= DLY_CS_FAST; 
+                            next_state       <= ST_IDLE;
+                            state            <= ST_CS_PULSE_DELAY;
+                            init_done        <= 1;
                         end else begin
                             zero_cnt <= zero_cnt - 1;
                             state    <= ST_SEND_ZERO_BYTE;
@@ -677,7 +732,16 @@ module vs1053_controller (
 
                 // fifo read and send to vs1053
                 ST_IDLE: begin
-                    if (vs_dreq && (fifo_count >= 32) && !fifo_empty) begin
+                    // prio 1: Effects was changed (Apply bass then mode)
+                    if (req_update_eff) begin
+                        state <= ST_WR_BASS;
+                    
+                    // prio 2: Volume was changed
+                    end else if (req_update_vol) begin
+                        state <= ST_WR_VOL;
+
+                    // prio 3: send audio data from FIFO
+                    end else if (vs_dreq && (fifo_count >= 32) && !fifo_empty) begin
                         byte_cnt <= 6'd32;
                         state    <= ST_PREPARE_BYTE;
                     end
