@@ -11,6 +11,13 @@
 
         ORG 0x0000
 
+; UI constants
+NUM_CHECKBOXES  EQU 11                              ; count of checkboxes
+INDEX_APPLY     EQU NUM_CHECKBOXES                  ; Apply button index
+INDEX_CANCEL    EQU NUM_CHECKBOXES + 1              ; Cancel button index
+BUTTONS_ROW     EQU 5 + NUM_CHECKBOXES + 2          ; buttons row
+DEBUG_ROW       EQU BUTTONS_ROW + 2                 ; debug info row
+
 Start:
         DI
         LD SP, 0xBD00       ; Init safe stack
@@ -57,7 +64,7 @@ MainLoop:
         CP Keyboard.KEY_DOWN                 
         JR NZ, .NotDown
         LD A, (SelectedOption)
-        CP 12                    ; 0..10 - checkboxes, 11 - Apply, 12 - Cancel
+        CP INDEX_CANCEL
         JR Z, .WaitKey 
         
         LD (OldSelectedOption), A         
@@ -71,9 +78,9 @@ MainLoop:
         JR NZ, .WaitKey
 
         LD A, (SelectedOption)
-        CP 11
+        CP INDEX_APPLY
         JR Z, ActionApply       
-        CP 12
+        CP INDEX_CANCEL
         JR Z, ActionCancel      
 
         LD A, (SelectedOption)
@@ -159,13 +166,13 @@ DrawStaticInterface:
         LD DE, Str_Help2 : LD BC, 0x1700 : CALL Screen.PrintString
         ENDIF
 
-        ; Checkboxes (rows 5-15, total 11)
+        ; Checkboxes (rows 5 и далее)
         XOR A : LD (CurrentStep), A
 .LoopCB:
         LD A, (CurrentStep)
         LD C, 4             
         ADD A, 5            
-        LD B, A             ; row 5-15
+        LD B, A             ; row 5+
         
         PUSH BC
         CALL GetCBText
@@ -183,41 +190,38 @@ DrawStaticInterface:
         LD A, (CurrentStep)
         INC A
         LD (CurrentStep), A
-        CP 11               ; Draw up to 11
+        CP NUM_CHECKBOXES
         JR NZ, .LoopCB
 
         IFDEF DEBUG_MODE
         LD DE, Str_DebugCurr
-        LD BC, 0x1004       ; row 16, col 4
+        LD B, DEBUG_ROW : LD C, 4
         CALL Screen.PrintString
         LD A, (CheckboxState2)
-        LD BC, 0x1009       ; row 16, col 9
+        LD B, DEBUG_ROW : LD C, 9
         CALL Screen.PrintHexByte
         LD A, (CheckboxState)
-        LD BC, 0x100B       ; row 16, col 11
+        LD B, DEBUG_ROW : LD C, 11
         CALL Screen.PrintHexByte
         ENDIF
 
-        ; buttons on row 18 (0x12)
-        LD B, 18 : LD C, 4 : LD D, 9
+        LD B, BUTTONS_ROW : LD C, 4 : LD D, 9
         CALL Screen.ColorizeButtonDefault
-        LD B, 18 : LD C, 18 : LD D, 10
+        LD B, BUTTONS_ROW : LD C, 18 : LD D, 10
         CALL Screen.ColorizeButtonDefault
 
-        ; Button texts
-        LD DE, Btn_Apply : LD BC, 0x1204 : CALL Screen.PrintString
-        LD DE, Btn_Cancel : LD BC, 0x1212 : CALL Screen.PrintString
+        LD DE, Btn_Apply : LD B, BUTTONS_ROW : LD C, 4 : CALL Screen.PrintString
+        LD DE, Btn_Cancel : LD B, BUTTONS_ROW : LD C, 18 : CALL Screen.PrintString
 
-        ; Highlight first item
         LD B, 5 : LD C, 4 : LD D, 24
         CALL Screen.ColorizeHighlight
         RET
 
 UpdateFocus:
         LD A, (OldSelectedOption)
-        CP 11
+        CP INDEX_APPLY
         JR Z, .ClearApply
-        CP 12
+        CP INDEX_CANCEL
         JR Z, .ClearCancel
         
         ADD A, 5
@@ -226,19 +230,19 @@ UpdateFocus:
         JR .DrawNewFocus
 
 .ClearApply:
-        LD B, 18 : LD C, 4 : LD D, 9
+        LD B, BUTTONS_ROW : LD C, 4 : LD D, 9
         CALL Screen.ColorizeButtonDefault
         JR .DrawNewFocus
 
 .ClearCancel:
-        LD B, 18 : LD C, 18 : LD D, 10
+        LD B, BUTTONS_ROW : LD C, 18 : LD D, 10
         CALL Screen.ColorizeButtonDefault
 
 .DrawNewFocus:
         LD A, (SelectedOption)
-        CP 11
+        CP INDEX_APPLY
         JR Z, .SetApply
-        CP 12
+        CP INDEX_CANCEL
         JR Z, .SetCancel
 
         ADD A, 5
@@ -246,11 +250,11 @@ UpdateFocus:
         CALL Screen.ColorizeHighlight
         RET
 .SetApply:
-        LD B, 18 : LD C, 4 : LD D, 9
+        LD B, BUTTONS_ROW : LD C, 4 : LD D, 9
         CALL Screen.ColorizeHighlight
         RET
 .SetCancel:
-        LD B, 18 : LD C, 18 : LD D, 10
+        LD B, BUTTONS_ROW : LD C, 18 : LD D, 10
         CALL Screen.ColorizeHighlight
         RET
 
@@ -265,10 +269,10 @@ RedrawSingleCheckbox:
 
         IFDEF DEBUG_MODE        
         LD A, (CheckboxState2)
-        LD BC, 0x1009
+        LD B, DEBUG_ROW : LD C, 9
         CALL Screen.PrintHexByte
         LD A, (CheckboxState)
-        LD BC, 0x100B
+        LD B, DEBUG_ROW : LD C, 11
         CALL Screen.PrintHexByte
         ENDIF        
 
@@ -319,7 +323,7 @@ GetOptionTextAddress:
         RET
 
 ; Text data
-TitleText:       DB "  KARABAS MEGABUZZ CONFIG v1.2  ", 0
+TitleText:       DB "  KARABAS MEGABUZZ CONFIG v1.3  ", 0
 LoadingText:     DB "Loading...", 0
 SavingText:      DB "Saving...", 0
 DoneText:        DB "Done! Safe to reboot", 0
