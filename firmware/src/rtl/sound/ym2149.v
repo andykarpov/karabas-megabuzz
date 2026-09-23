@@ -129,6 +129,7 @@ always @* begin
 			13: dout = ymreg[13][3:0];
 			14: dout = ymreg[7][6] ? ymreg[14] : IOA_in; 
 			15: dout = ymreg[7][7] ? ymreg[15] : IOB_in;
+			default: ; // should never happen
 		endcase
 	end
 end

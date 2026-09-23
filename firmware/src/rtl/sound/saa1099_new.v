@@ -93,6 +93,7 @@ always @(posedge clk_sys) begin
 				'h19: envelope1 <= din;
 
 				'h1c: ctrl <= din;
+				default: ; // do nothing
 			endcase
 	end
 end
@@ -400,6 +401,7 @@ module saa1099_amp (
 			1: outmix <= {tone, 1'b0};
 			2: outmix <= {noise, 1'b0};
 			3: outmix <= {tone & ~noise, tone & noise};
+			default: ; // should never happen
 		endcase
 	end
 

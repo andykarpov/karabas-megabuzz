@@ -35,6 +35,7 @@ always @(posedge clk or posedge reset) begin
 			8'h4F: out_c <= d;
 			8'h5F: out_d <= d;
 			8'hFB: out_fb <= d;
+			default: ; // do nothing
 		endcase
 	end
 end

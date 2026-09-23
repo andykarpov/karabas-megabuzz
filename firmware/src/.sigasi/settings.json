@@ -1,0 +1,7 @@
+{
+    "verilog.rules.35.severity": "IGNORE",
+    "verilog.rules.17.severity": "IGNORE",
+    "verilog.rules.169.severity": "IGNORE",
+    "verilog.rules.18.severity": "IGNORE",
+    "verilog.rules.130.severity": "IGNORE"
+}

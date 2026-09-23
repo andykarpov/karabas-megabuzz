@@ -4,5 +4,7 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"makefile.makefilePath": "syn/"
+	}
 }

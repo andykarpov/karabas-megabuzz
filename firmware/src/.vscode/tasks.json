@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Make: Clean",
+            "type": "shell",
+            "command": "make",
+            "args": ["clean"],
+            "options": {
+                "cwd": "${workspaceFolder}/syn"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Make: All",
+            "type": "shell",
+            "command": "make",
+            "args": ["all"],
+            "options": {
+                "cwd": "${workspaceFolder}/syn"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Make: SLX16 revA3",
+            "type": "shell",
+            "command": "make",
+            "args": ["all16_a3"],
+            "options": {
+                "cwd": "${workspaceFolder}/syn"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

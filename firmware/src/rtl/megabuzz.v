@@ -317,7 +317,8 @@ assign areset = ~locked;
 
 // poweron reset
 wire poweron_reset;
-resetter poweron_resetter(.clk(clk_bus), .areset(divmmc_en & loader_reset), .reset_in(divmmc_en & loader_reset), .reset_out(poweron_reset));
+wire loader_reset;
+resetter poweron_resetter(.clk(clk_bus), .areset(divmmc_en & loader_reset), .reset_in(divmmc_en & loader_reset), .reset_out(poweron_reset), .reset_short());
 
 assign o_reset_n = (poweron_reset) ? 1'b0 : 1'bz;
 
@@ -328,6 +329,7 @@ always @(negedge clk_bus)
 
 // reset
 wire reset;
+reg soft_reset = 0;
 wire reset_short;
 resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
 
@@ -380,8 +382,10 @@ flash flash(
 // -------- loader --------------
 wire [20:0] loader_ram_a;
 wire [7:0] loader_ram_do;
-wire loader_act, loader_reset, loader_ram_wr;
+wire loader_act, loader_ram_wr;
 wire [15:0] cfg_byte; 
+reg [15:0] new_cfg_byte = 16'hFFFF;
+reg cfg_write = 0;
 loader loader(
     .CLK              (clk_bus),
     .RESET            (areset),
@@ -570,7 +574,7 @@ gs_top gs_inst(
     .loader_ram_wr    (loader_ram_wr),
 
     .out_l            (gs_out_l),
-    .out_r            (gs_out_r)    
+    .out_r            (gs_out_r)
 );
 
 // opl3
@@ -588,11 +592,12 @@ opl3 opl3_inst(
     .bus_wr_n         (bus_wr_n),
     .bus_mreq_n       (bus_mreq_n),
     .bus_iorq_n       (bus_iorq_n),
-    .bus_m1_n         (bus_m1_n),    
+    .bus_m1_n         (bus_m1_n),
     
     .opl3_clk         (opl3_clk),
     .opl3_a           (opl3_a),
     .opl3_cs_n        (opl3_cs_n),
+    .opl3_iorqge_n    (),
 
     .opl3_smp         (opl3_smp),
     .opl3_data        (opl3_data),
@@ -782,10 +787,8 @@ wire reg_mb_cfga = (zxuno_reg == 8'hFA);
 
 // megabuzz: write cfg, switch rom, soft reset
 reg cfg_rom_active = 0;
-reg soft_reset = 0;
-reg cfg_write = 0;
 reg [7:0] cfg_addr = 8'h00;
-reg [15:0] new_cfg_byte = 16'hFFFF;
+
 always @(posedge clk_bus) begin
     soft_reset <= 0;
     cfg_write <= 0;
