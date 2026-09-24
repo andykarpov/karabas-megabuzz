@@ -175,10 +175,10 @@ always @(*) begin
 	lfo_sh2 = lfo_sh2_lut[{pms,index}];
 	pm_base = ({1'b0,fnum[10:4]}>>lfo_sh1) + ({1'b0,fnum[10:4]}>>lfo_sh2);
 	case( pms )
-		default: pm_shifted = { 2'b0, pm_base };
 		3'd6: pm_shifted = { 1'b0, pm_base, 1'b0 };
 		3'd7: pm_shifted = {       pm_base, 2'b0 };
-	endcase // pms
+		default: pm_shifted = { 2'b0, pm_base };
+    endcase // pms
 	pm_offset = lfo_mod[4] ? (-{1'b0,pm_shifted[9:2]}) : {1'b0,pm_shifted[9:2]};
 end // always @(*)
 

@@ -15,8 +15,16 @@ module clk_div_8mhz (
         end else begin
 				cen <= 0;
 				case ({cyc34, counter})
-					3'b011: begin cen <= 1; counter <= 0; cyc34 <= ~cyc34; end // 4
-					3'b110: begin cen <= 1; counter <= 0; cyc34 <= ~cyc34; end // 3
+					3'b011: begin 
+                        cen <= 1; 
+                        counter <= 0; 
+                        cyc34 <= ~cyc34; 
+                    end // 4
+					3'b110: begin 
+                        cen <= 1; 
+                        counter <= 0; 
+                        cyc34 <= ~cyc34; 
+                    end // 3
 					default: counter <= counter + 1;
 				endcase
         end

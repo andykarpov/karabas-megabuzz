@@ -373,8 +373,14 @@ module vs1053_host_interface (
             if (wr_pulse) begin
                 case (bus_a)
                     2'b00: begin // control (soft and hard reset)
-                        if (bus_di[7]) begin soft_reset_cmd <= 1; fifo_clear <= 1; end
-                        if (bus_di[6]) begin hard_reset_cmd <= 1; fifo_clear <= 1; end
+                        if (bus_di[7]) begin 
+                            soft_reset_cmd <= 1; 
+                            fifo_clear <= 1; 
+                        end
+                        if (bus_di[6]) begin 
+                            hard_reset_cmd <= 1; 
+                            fifo_clear <= 1; 
+                        end
                     end
                     2'b01: begin // Write data into FIFO
                         if (!fifo_full) begin
@@ -387,6 +393,7 @@ module vs1053_host_interface (
                     2'b11: begin // Write a new effects register
                         reg_effects <= bus_di;
                     end
+                    default: ; // no operation
                 endcase
             end
         end
@@ -498,8 +505,14 @@ module vs1053_controller (
         end else begin
             if (reg_volume != vol_shadow && state == ST_IDLE) begin req_update_vol <= 1; end
             if (reg_effects != eff_shadow && state == ST_IDLE) begin req_update_eff <= 1; end
-            if (state == ST_WR_VOL)  begin req_update_vol <= 0; vol_shadow <= reg_volume; end
-            if (state == ST_WR_BASS) begin req_update_eff <= 0; eff_shadow <= reg_effects; end
+            if (state == ST_WR_VOL)  begin 
+                req_update_vol <= 0; 
+                vol_shadow <= reg_volume; 
+            end
+            if (state == ST_WR_BASS) begin 
+                req_update_eff <= 0; 
+                eff_shadow <= reg_effects; 
+            end
         end
     end
 

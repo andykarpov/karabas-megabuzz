@@ -84,6 +84,7 @@ always @(*)
 		3'd5: limit = 7'd44;
 		3'd6: limit = 7'd8;
 		3'd7: limit = 7'd5;
+		default: ; // no operation
 	endcase
 
 always @(posedge clk) 

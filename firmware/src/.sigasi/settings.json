@@ -3,5 +3,18 @@
     "verilog.rules.17.severity": "IGNORE",
     "verilog.rules.169.severity": "IGNORE",
     "verilog.rules.18.severity": "IGNORE",
-    "verilog.rules.130.severity": "IGNORE"
+    "verilog.rules.130.severity": "IGNORE",
+    "vhdl.rules.68.severity": "IGNORE",
+    "vhdl.rules.68.rtl.severity": "IGNORE",
+    "vhdl.rules.89.severity": "IGNORE",
+    "vhdl.rules.89.rtl.severity": "IGNORE",
+    "vhdl.rules.13.severity": "IGNORE",
+    "vhdl.rules.13.rtl.severity": "IGNORE",
+    "vhdl.rules.8.severity": "IGNORE",
+    "vhdl.rules.8.rtl.severity": "IGNORE",
+    "vhdl.rules.55.severity": "IGNORE",
+    "vhdl.rules.55.rtl.severity": "IGNORE",
+    "vhdl.rules.94.severity": "IGNORE",
+    "vhdl.rules.94.rtl.severity": "IGNORE",
+    "vhdl.rules.236.severity": "IGNORE"
 }

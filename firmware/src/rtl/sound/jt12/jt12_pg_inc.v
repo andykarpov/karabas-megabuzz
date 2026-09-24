@@ -44,6 +44,7 @@ always @(*) begin
         3'd5: phinc_pure = { 2'd0, fnum_mod, 3'd0 };
         3'd6: phinc_pure = { 1'd0, fnum_mod, 4'd0 };
         3'd7: phinc_pure = {       fnum_mod, 5'd0 };
+        default: ; // no operation
     endcase
 end
 

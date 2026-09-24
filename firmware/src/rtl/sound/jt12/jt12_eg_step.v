@@ -43,6 +43,7 @@ always @(*) begin : pre_rate_calc
             2'd2:   pre_rate = { base_rate, 1'b0 } + { 2'b0, keycode[4:1] };
             2'd1:   pre_rate = { base_rate, 1'b0 } + { 3'b0, keycode[4:2] };
             2'd0:   pre_rate = { base_rate, 1'b0 } + { 4'b0, keycode[4:3] };
+            default: ; // no operation
         endcase
 end
 
@@ -86,6 +87,7 @@ always @(*) begin : rate_step
             2'd1: step_idx = 8'b10001000; // 2
             2'd2: step_idx = 8'b10101010; // 4
             2'd3: step_idx = 8'b11101110; // 6
+            default: ; // no operation
         endcase
     end
     else begin
@@ -97,6 +99,7 @@ always @(*) begin : rate_step
             2'd1: step_idx = 8'b11101010; // 5
             2'd2: step_idx = 8'b11101110; // 6
             2'd3: step_idx = 8'b11111110; // 7
+            default: ; // no operation
         endcase
     end
     // a rate of zero keeps the level still

@@ -94,6 +94,7 @@ always @(posedge CLK) begin
 			'h5: bit0_flag <= 0;
 			'hA: bit7_flag <= ~port_xx00_reg[0];
 			'hB: bit0_flag <= port_xx09_reg[5];
+			default: ; // no operation
 		endcase
 	end
 	if (~gs_cs_n) begin
@@ -143,6 +144,7 @@ begin
 				7: port_xx07_reg <= cpu_do_bus[5:0];
 				8: port_xx08_reg <= cpu_do_bus[5:0];
 				9: port_xx09_reg <= cpu_do_bus[5:0];
+				default: ; // no operation
 			endcase
 		end
 		
@@ -152,6 +154,7 @@ begin
 				1: ch_b_reg <= {~MDI[7], MDI[6:0]};
 				2: ch_c_reg <= {~MDI[7], MDI[6:0]};
 				3: ch_d_reg <= {~MDI[7], MDI[6:0]};
+				default: ; // no operation
 			endcase
 		end
 

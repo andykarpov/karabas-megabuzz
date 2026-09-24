@@ -71,6 +71,17 @@ BEGIN
       mosi <= 'Z';                --set master out to high impedance
       rx_data <= (OTHERS => '0'); --clear receive data port
       state <= ready;             --go to ready state when reset is exited
+      -- async reset other signals
+      assert_data <= '0';
+      clk_ratio <= 0;
+      clk_toggles <= 0;
+      continue <= '0';
+      count <= 0;
+      last_bit_rx <= 0;
+      rx_buffer <= (OTHERS => '0');
+      sclk <= '0';
+      slave <= 0;
+      tx_buffer <= (OTHERS => '0');
 
     ELSIF(clock'EVENT AND clock = '1') THEN
       CASE state IS               --state machine

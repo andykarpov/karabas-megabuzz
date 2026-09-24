@@ -70,6 +70,7 @@ always @(*) begin
             opn_pres = 4'd3-4'd1;
             ssg_pres = 3'd1;
         end
+        default: ; // no operation
     endcase // div_setting
 end
 

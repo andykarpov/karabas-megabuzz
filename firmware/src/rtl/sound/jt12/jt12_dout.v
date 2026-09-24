@@ -41,6 +41,7 @@ always @(posedge clk) begin
         2'b1?: dout <= (use_adpcm==1) ?
             { adpcmb_flag, 1'b0, adpcma_flags } :
             { busy, 5'd0, flag_B, flag_A };
+        default: ; // no operation
     endcase
 end
 

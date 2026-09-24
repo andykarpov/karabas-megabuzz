@@ -905,7 +905,7 @@ begin
 -- Multiply
 --
 ---------------------------------------------------------------------------
-	process (CLK_n, ACC, RegBusB, MULU_tmp, MULU_Fakt1, MULU_Prod32)
+	process (CLK_n, MULU_Fakt1, MULU_Prod32)
 	begin
 
 		MULU_tmp(31 downto 12) <= std_logic_vector((unsigned(MULU_Fakt1)*unsigned(MULU_Prod32(3 downto 0)))+unsigned("0000"&MULU_Prod32(31 downto 16)));
@@ -1053,7 +1053,7 @@ begin
 	TmpAddr2 <= std_logic_vector(unsigned(signed(SP) + signed(Save_Mux)));
 
 	process (Save_Mux, RegBusB, RegBusA_r, ID16, I_MULU, MULU_Prod32, MULU_tmp, T_Res,
-			ExchangeDH, ExchangeWH, IncDec_16, MCycle, TState, Really_Wait, LDHLSP, TmpAddr2, WZ)
+			ExchangeDH, ExchangeWH, IncDec_16, MCycle, TState, LDHLSP, TmpAddr2, WZ)
 	begin
 		RegDIH <= Save_Mux;
 		RegDIL <= Save_Mux;
@@ -1237,6 +1237,9 @@ begin
 			M1_n <= '1';
 			--BusReq_s <= '0';
 			NMI_s <= '0';
+			BusAck <= '0';
+			BusReq_s <= '0';
+			OldNMI_n := '0';
 		elsif rising_edge(CLK_n) then
 			if DIRSet = '1' then
 				IntE_FF2 <= DIR(211);

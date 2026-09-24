@@ -133,11 +133,22 @@ jt03 ym2203_0
 	.wr_n(~ym_wr),
 	.dout(DO_0),
 	.ay_mode(AY_MODE),
+	.irq_n(),
 
+	.psg_snd(),
+	.snd(),
+	.snd_sample(),
 	.psg_A(psg_ch_a_0),
 	.psg_B(psg_ch_b_0),
 	.psg_C(psg_ch_c_0),
+	.IOA_in(8'hFF),
+	.IOB_in(8'hFF),
+	.IOA_oe(),
+	.IOB_oe(),
 	.IOA_out(port_a),
+	.IOB_out(),
+
+	.debug_view(),
 
 	.fm_snd(opn_0)
 );
@@ -159,10 +170,23 @@ jt03 ym2203_1
 	.wr_n(~ym_wr),
 	.dout(DO_1),
 	.ay_mode(AY_MODE),
+	.irq_n(),
+
+	.psg_snd(),
+	.snd(),
+	.snd_sample(),
 
 	.psg_A(psg_ch_a_1),
 	.psg_B(psg_ch_b_1),
 	.psg_C(psg_ch_c_1),
+	.IOA_in(8'hFF),
+	.IOB_in(8'hFF),
+	.IOA_oe(),
+	.IOB_oe(),
+	.IOA_out(),
+	.IOB_out(),
+
+	.debug_view(),
 
 	.fm_snd(opn_1)
 );

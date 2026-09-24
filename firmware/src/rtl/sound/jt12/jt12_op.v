@@ -164,6 +164,7 @@ always @(*) begin
             3'd5: phasemod_II = pm_preshift_II[14:5];
             3'd6: phasemod_II = pm_preshift_II[13:4];
             3'd7: phasemod_II = pm_preshift_II[12:3];
+            default: ; // no operation
         endcase
 end
 
@@ -252,12 +253,14 @@ always @(*) begin
         2'b01: shifter_2 = shifter;
         2'b10: shifter_2 = { shifter[11:0], 1'b0 };
         2'b11: shifter_2 = { shifter[10:0], 2'b0 };
+        default: ; // no operation
     endcase
     case( ~exponent_XI[3:2] )
         2'b00: shifter_3 = {12'b0, shifter_2[12]   };
         2'b01: shifter_3 = { 8'b0, shifter_2[12:8] };
         2'b10: shifter_3 = { 4'b0, shifter_2[12:4] };
         2'b11: shifter_3 = shifter_2;
+        default: ; // no operation
     endcase
 end
 

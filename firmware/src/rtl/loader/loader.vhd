@@ -95,7 +95,7 @@ begin
 -------------------------------------------------------------------------------
 
 -- loading state machine
-process (RESET, CLK, loader_act)
+process (RESET, CLK )
 VARIABLE spi_busy_cnt : INTEGER := 0;
 begin
 	if RESET = '1' then
@@ -111,6 +111,9 @@ begin
         FLASH_WR_N <= '1';
         FLASH_ER_N <= '1';
         FLASH_DI   <= x"FF";
+		RAM_DO <= (others => '0');
+		RAM_WR <= '0';
+		CFG <= x"FFFF";
         prev_new_cfg_wr <= '0';
 	elsif CLK'event and CLK = '1' then
 		
@@ -256,7 +259,7 @@ begin
 end process;
 
 -- reset signal at the end
-process (RESET, CLK, reset_cnt, loader_act)
+process (RESET, CLK )
 begin
 	if RESET = '1' then
 		reset_cnt <= "0000";

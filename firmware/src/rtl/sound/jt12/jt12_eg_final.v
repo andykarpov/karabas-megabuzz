@@ -41,10 +41,10 @@ end
 
 always @(*) begin
 	casez( {amsen, ams } )
-		default: am_final = 9'd0;
 		3'b1_01: am_final = { 5'd0, am_inverted[5:2]	};
 		3'b1_10: am_final = { 3'd0, am_inverted 		};
 		3'b1_11: am_final = { 2'd0, am_inverted, 1'b0	};
+		default: am_final = 9'd0;
 	endcase
 	eg_pream = ssg_inv ? (10'h200-eg_pure_in) : eg_pure_in;
 	sum_eg_tl = {  1'b0, tl,   3'd0 } + {1'b0, eg_pream}; // leading zeros needed to compute correctly

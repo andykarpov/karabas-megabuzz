@@ -53,9 +53,9 @@ reg [ 9:0] ar_sum;
 
 always @(*) begin : ar_calculation
 	casez( rate[5:2] )
-		default: ar_sum0 = {2'd0, eg_in[9:4]};
 		4'b1101: ar_sum0 = {1'd0, eg_in[9:3]};
 		4'b111?: ar_sum0 = eg_in[9:2];
+		default: ar_sum0 = {2'd0, eg_in[9:4]};
 	endcase
 	ar_sum1 = ar_sum0+9'd1;
 	if( rate[5:4] == 2'b11 )

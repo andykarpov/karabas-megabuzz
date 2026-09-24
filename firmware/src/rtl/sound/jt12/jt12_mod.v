@@ -52,6 +52,7 @@ always @(*) begin
         3'd5: alg_hot = 8'h20; // D5
         3'd6: alg_hot = 8'h40; // D6
         3'd7: alg_hot = 8'h80; // D7
+        default: ; // no operation
     endcase
 end
 

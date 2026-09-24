@@ -132,9 +132,11 @@ module ay_3_8912 (
                   4'd13: envelope_shape        <= din[3:0];
                   4'd14: reg_port_a            <= din;
                   4'd15: reg_port_b            <= din;
+                  default: ; // no operation
                 endcase
               end
-            end
+            end 
+          default: ; // no operation
         endcase
       end
     end
@@ -326,6 +328,7 @@ module ay_3_8912 (
           case ({attack,altern})
             2'b00, 2'b11: envelope = 4'b0000;
             2'b01, 2'b10: envelope = 4'b1111;
+            default: ; // no operation
           endcase
         end
         else begin                              // CONTINUE = 1, HOLD = 0. Las 4 formas de onda que se repiten en el tiempo
@@ -342,6 +345,7 @@ module ay_3_8912 (
                 envelope = envelope_sample_seq[3:0];
               else
                 envelope = ~envelope_sample_seq[3:0];
+            default: ; // no operation
           endcase
         end
       end

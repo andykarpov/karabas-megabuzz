@@ -46,7 +46,7 @@ always @(posedge clk or posedge reset) begin
 			dout             <= memory[readAddr];
 			readPtr          <= (readPtr + 1) % DEPTH;
 		end
-		default: ;
+		default: ; // no operation
 	endcase
  end
 end

@@ -277,7 +277,7 @@ always @(posedge clk) begin : memory_mapped_registers
                     REG_CLK_N6: div_setting[1] <= 1'b1; // 2D
                     REG_CLK_N3: div_setting[0] <= 1'b1; // 2E
                     REG_CLK_N2: div_setting    <= 2'b0; // 2F
-                    default:;
+                    default:; // no operation
                 endcase
             end else begin
                 // Global registers
@@ -309,7 +309,7 @@ always @(posedge clk) begin : memory_mapped_registers
                         `ifndef NOLFO                   
                         REG_LFO:    { lfo_en, lfo_freq } <= din[3:0];
                         `endif
-                        default:;
+                        default:; // no operation
                     endcase
                 end
 
@@ -331,7 +331,7 @@ always @(posedge clk) begin : memory_mapped_registers
                         REG_PCM:
                             pcm <= { ~din[7], din[6:0], 1'b1 };
                         REG_PCM_EN:  pcm_en  <= din[7];
-                        default:;
+                        default:; // no operation
                     endcase
                     pcm_wr <= selected_register==REG_PCM;
                 end
@@ -363,7 +363,7 @@ always @(posedge clk) begin : memory_mapped_registers
                                     end
                                 endcase
                             end
-                            default:;
+                            default:; // no operation
                         endcase
                     end
                     if( !part && selected_register[7:4]==4'h1 ) begin
@@ -382,7 +382,7 @@ always @(posedge clk) begin : memory_mapped_registers
                                flag_mask   <= ~{din[7],din[5:0]};
                                flag_ctl    <= {din[7],din[5:0]}; // this lasts a single clock cycle
                            end
-                            default:;
+                            default:; // no operation
                         endcase
                     end
                 end

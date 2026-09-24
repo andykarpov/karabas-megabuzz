@@ -58,12 +58,14 @@ always @(*) begin
         3'd5: pow2 = 5'd24;
         3'd6: pow2 = 5'd26;
         3'd7: pow2 = 5'd29;
+        default: ; // no operation
     endcase
     case( detune[1:0] )
         2'd0: detune_limit = 5'd0;
         2'd1: detune_limit = 5'd8;
         2'd2: detune_limit = 5'd16;
         2'd3: detune_limit = 5'd22;
+        default: ; // no operation
     endcase
     case( detune_kf[5:3] )
         3'd0:   detune_unlimited = { 5'd0, pow2[4]   }; // <2

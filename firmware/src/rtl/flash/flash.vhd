@@ -77,14 +77,14 @@ type machine IS( --state machine datatype
 	init, 
 	idle, 
 	cmd_read, 	 
-	cmd_wp_off, 
+--	cmd_wp_off, 
 	cmd_write_en,
 	cmd_erase_block,
 	cmd_write, 
 	cmd_check_status, 
-	cmd_write_dis, 
-	cmd_wp_on
-					 
+	cmd_write_dis  
+--	cmd_wp_on
+ 
 );
 
 signal state 			: machine := init; -- current state
@@ -138,6 +138,12 @@ begin
 		state <= init;
 		is_busy <= '1';
 		is_ready <= '0';
+		DO <= (others => '0');
+		next_state <= init;
+		prev_rd_n <= '1';
+		prev_wr_n <= '1';
+		prev_er_n <= '1';
+		spi_busy_prev <= '0';
 
 	elsif CLK'event and CLK = '1' then
 		

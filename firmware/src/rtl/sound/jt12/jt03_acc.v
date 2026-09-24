@@ -49,10 +49,10 @@ reg sum_en;
 
 always @(*) begin
     case ( alg )
-        default: sum_en = s4_enters;
         3'd4: sum_en = s2_enters | s4_enters;
-        3'd5,3'd6: sum_en = ~s1_enters;        
+        3'd5,3'd6: sum_en = ~s1_enters;
         3'd7: sum_en = 1'b1;
+        default: sum_en = s4_enters;
     endcase
 end
 

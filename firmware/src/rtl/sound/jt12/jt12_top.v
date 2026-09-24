@@ -176,113 +176,17 @@ wire clk_en_2, clk_en_666, clk_en_111, clk_en_55;
 
 assign debug_view = { 4'd0, flag_B, flag_A, div_setting };
 
-generate
-if( use_adpcm==1 ) begin: gen_adpcm
-    wire rst_n;
-
-    jt12_rst u_rst(
-        .rst    ( rst   ),
-        .clk    ( clk   ),
-        .rst_n  ( rst_n )
-    );
-
-    jt10_adpcm_drvA u_adpcm_a(
-        .rst_n      ( rst_n         ),
-        .clk        ( clk           ),
-        .cen        ( cen           ),
-        .cen6       ( clk_en_666    ),  // clk & cen must be 666  kHz
-        .cen1       ( clk_en_111    ),  // clk & cen must be 111 kHz
-
-        .addr       ( adpcma_addr   ),  // real hardware has 10 pins multiplexed through RMPX pin
-        .bank       ( adpcma_bank   ),
-        .roe_n      ( adpcma_roe_n  ),  // ADPCM-A ROM output enable
-        .datain     ( adpcma_data   ),
-
-        // Control Registers
-        .atl        ( atl_a         ),        // ADPCM Total Level
-        .addr_in    ( addr_a        ),
-        .lracl_in   ( lracl         ),
-        .up_start   ( up_start      ),
-        .up_end     ( up_end        ),
-        .up_addr    ( up_addr       ),
-        .up_lracl   ( up_lracl      ),
-
-        .aon_cmd    ( aon_a         ),    // ADPCM ON equivalent to key on for FM
-        .up_aon     ( up_aon        ),
-        // Flags
-        .flags      ( adpcma_flags  ),
-        .clr_flags  ( flag_ctl[5:0] ),
-
-        .pcm55_l    ( adpcmA_l      ),
-        .pcm55_r    ( adpcmA_r      ),
-        .ch_enable  ( ch_enable     )
-    );
-    /* verilator tracing_on */
-    jt10_adpcm_drvB u_adpcm_b(
-        .rst_n      ( rst_n         ),
-        .clk        ( clk           ),
-        .cen        ( cen           ),
-        .cen55      ( clk_en_55     ),
-
-        // Control
-        .acmd_on_b  ( acmd_on_b     ),  // Control - Process start, Key On
-        .acmd_rep_b ( acmd_rep_b    ),  // Control - Repeat
-        .acmd_rst_b ( acmd_rst_b    ),  // Control - Reset
-        .acmd_up_b  ( acmd_up_b     ),  // Control - New command received
-        .alr_b      ( alr_b         ),  // Left / Right
-        .astart_b   ( astart_b      ),  // Start address
-        .aend_b     ( aend_b        ),  // End   address
-        .adeltan_b  ( adeltan_b     ),  // Delta-N
-        .aeg_b      ( aeg_b         ),  // Envelope Generator Control
-        // Flag
-        .flag       ( adpcmb_flag   ),
-        .clr_flag   ( flag_ctl[6]   ),
-        // memory
-        .addr       ( adpcmb_addr   ),
-        .data       ( adpcmb_data   ),
-        .roe_n      ( adpcmb_roe_n  ),
-
-        .pcm55_l    ( adpcmB_l      ),
-        .pcm55_r    ( adpcmB_r      )
-    );
-
-    /* verilator tracing_on */
-    assign snd_sample   = zero;
-    jt10_acc u_acc(
-        .clk        ( clk           ),
-        .clk_en     ( clk_en        ),
-        .op_result  ( op_result_hd  ),
-        .rl         ( rl            ),
-        .zero       ( zero          ),
-        .s1_enters  ( s2_enters     ),
-        .s2_enters  ( s1_enters     ),
-        .s3_enters  ( s4_enters     ),
-        .s4_enters  ( s3_enters     ),
-        .cur_ch     ( cur_ch        ),
-        .cur_op     ( cur_op        ),
-        .alg        ( alg_I         ),
-        .adpcmA_l   ( adpcmA_l      ),
-        .adpcmA_r   ( adpcmA_r      ),
-        .adpcmB_l   ( adpcmB_l      ),
-        .adpcmB_r   ( adpcmB_r      ),
-        // combined output
-        .left       ( fm_snd_left   ),
-        .right      ( fm_snd_right  )
-    );
-end else begin : gen_adpcm_no
-    assign adpcmA_l     = 'd0;
-    assign adpcmA_r     = 'd0;
-    assign adpcmB_l     = 'd0;
-    assign adpcmB_r     = 'd0;
-    assign adpcma_addr  = 'd0;
-    assign adpcma_bank  = 'd0;
-    assign adpcma_roe_n = 'b1;
-    assign adpcmb_addr  = 'd0;
-    assign adpcmb_roe_n = 'd1;
-    assign adpcma_flags = 0;
-    assign adpcmb_flag  = 0;
-end
-endgenerate
+assign adpcmA_l     = 'd0;
+assign adpcmA_r     = 'd0;
+assign adpcmB_l     = 'd0;
+assign adpcmB_r     = 'd0;
+assign adpcma_addr  = 'd0;
+assign adpcma_bank  = 'd0;
+assign adpcma_roe_n = 'b1;
+assign adpcmb_addr  = 'd0;
+assign adpcmb_roe_n = 'd1;
+assign adpcma_flags = 0;
+assign adpcmb_flag  = 0;
 
 /* verilator tracing_on */
 jt12_dout #(.use_ssg(use_ssg),.use_adpcm(use_adpcm)) u_dout(
@@ -638,74 +542,6 @@ assign op_result_hd = 'd0;
 /* verilator tracing_on */
 
 generate
-    if( use_pcm==1 ) begin: gen_pcm_acc // YM2612 accumulator
-        assign fm_snd_right[3:0] = 4'd0;
-        assign fm_snd_left [3:0] = 4'd0;
-        assign snd_sample        = zero;
-        reg signed [8:0] pcm2;
-
-        // interpolate PCM samples with automatic sample rate detection
-        // this feature is not present in original YM2612
-        // this improves PCM sample sound greatly
-        /*
-        jt12_pcm u_pcm(
-            .rst        ( rst       ),
-            .clk        ( clk       ),
-            .clk_en     ( clk_en    ),
-            .zero       ( zero      ),
-            .pcm        ( pcm       ),
-            .pcm_wr     ( pcm_wr    ),
-            .pcm_resampled ( pcm2   )
-        );
-        */
-        wire rst_pcm_n;
-
-        jt12_rst u_rst_pcm(
-            .rst    ( rst       ),
-            .clk    ( clk       ),
-            .rst_n  ( rst_pcm_n )
-        );
-
-        `ifndef NOPCMLINEAR
-        wire signed [10:0] pcm_full;
-        always @(*)
-            pcm2 = en_hifi_pcm ? pcm_full[9:1] : pcm;
-
-        jt12_pcm_interpol #(.DW(11), .stepw(5)) u_pcm (
-            .rst_n ( rst_pcm_n      ),
-            .clk   ( clk            ),
-            .cen   ( clk_en         ),
-            .cen55 ( clk_en_55      ),
-            .pcm_wr( pcm_wr         ),
-            .pcmin ( {pcm[8],pcm, 1'b0}    ),
-            .pcmout( pcm_full       )
-        );
-        `else
-        assign pcm2 = pcm;
-        `endif
-
-        jt12_acc u_acc(
-            .rst        ( rst       ),
-            .clk        ( clk       ),
-            .clk_en     ( clk_en    ),
-            .op_result  ( op_result ),
-            .rl         ( rl        ),
-            // note that the order changes to deal
-            // with the operator pipeline delay
-            .zero       ( zero      ),
-            .s1_enters  ( s2_enters ),
-            .s2_enters  ( s1_enters ),
-            .s3_enters  ( s4_enters ),
-            .s4_enters  ( s3_enters ),
-            .ch6op      ( ch6op     ),
-            .pcm_en     ( pcm_en    ),  // only enabled for channel 6
-            .pcm        ( pcm2      ),
-            .alg        ( alg_I     ),
-            // combined output
-            .left       ( fm_snd_left [15:4]  ),
-            .right      ( fm_snd_right[15:4]  )
-        );
-    end
     if( use_pcm==0 && use_adpcm==0 ) begin : gen_2203_acc // YM2203 accumulator
         wire signed [15:0] mono_snd;
         assign fm_snd_left  = mono_snd;
