@@ -41,7 +41,7 @@ module vs1053 (
     input  wire        bus_cs_n,
     input  wire        bus_rd_n,
     input  wire        bus_wr_n,
-    input  wire [1:0]  bus_a,        // 00 - status, 01 - data, 10 - volume, 11 - effects
+    input  wire [1:0]  bus_a, // 00 - status, 01 - data, 10 - volume, 11 - effects
     input  wire [7:0]  bus_di,
     output wire [7:0]  bus_do,
 
@@ -146,13 +146,13 @@ endmodule
 module vs1053_spi_master (
     input  wire        clk,
     input  wire        rst,
-    input  wire        fast_mode,    // 0 = ~250 kHz, 1 = ~3.5 MHz
+    input  wire        fast_mode, // 0 = ~250 kHz, 1 = ~3.5 MHz
 
     input  wire        start,
-    input  wire        is_data,      // 0 = SCI (CS), 1 = SDI (DCS)
-    input  wire        rnw,          // 1 = Read, 0 = Write
-    input  wire [7:0]  addr,         // SCI register address
-    input  wire [15:0] data_in,      // Data for SCI or SDI
+    input  wire        is_data, // 0 = SCI (CS), 1 = SDI (DCS)
+    input  wire        rnw, // 1 = Read, 0 = Write
+    input  wire [7:0]  addr, // SCI register address
+    input  wire [15:0] data_in, // Data for SCI or SDI
     output reg         busy,
     output reg  [15:0] data_out,
 
@@ -223,7 +223,7 @@ module vs1053_spi_master (
                         // raise cs before first clock
                         vs_cs_n  <= is_data;
                         vs_dcs_n <= !is_data;
-                        
+
                         if (!is_data) begin
                             shift_reg <= {rnw ? 8'h03 : 8'h02, addr, data_in};
                             bit_cnt   <= 6'd32;
@@ -344,13 +344,13 @@ module vs1053_host_interface (
         .empty(fifo_empty),
         .data_count(fifo_count)
     );
-    
+
     always @(*) begin
         case (bus_a)
             2'b00:   bus_do = {fifo_full, fifo_count[11:5]}; // FIFO status
             2'b01:   bus_do = {fifo_full, fifo_count[11:5]}; // FIFO status
-            2'b10:   bus_do = reg_volume;                    // Read current volume
-            2'b11:   bus_do = reg_effects;                   // Read current effects
+            2'b10:   bus_do = reg_volume; // Read current volume
+            2'b11:   bus_do = reg_effects; // Read current effects
             default: bus_do = 8'hFF;
         endcase
     end
@@ -373,13 +373,13 @@ module vs1053_host_interface (
             if (wr_pulse) begin
                 case (bus_a)
                     2'b00: begin // control (soft and hard reset)
-                        if (bus_di[7]) begin 
-                            soft_reset_cmd <= 1; 
-                            fifo_clear <= 1; 
+                        if (bus_di[7]) begin
+                            soft_reset_cmd <= 1;
+                            fifo_clear <= 1;
                         end
-                        if (bus_di[6]) begin 
-                            hard_reset_cmd <= 1; 
-                            fifo_clear <= 1; 
+                        if (bus_di[6]) begin
+                            hard_reset_cmd <= 1;
+                            fifo_clear <= 1;
                         end
                     end
                     2'b01: begin // Write data into FIFO
@@ -437,10 +437,10 @@ module vs1053_controller (
     localparam DLY_CS_SLOW    = 8'd60;    // CS delay on slow speed
     localparam DLY_CS_FAST    = 8'd15;    // CS delay on high speed
 `else
-    localparam DLY_HW_RESET   = 16'd5000;  // ~178 us RESET hold time
+    localparam DLY_HW_RESET   = 16'd5000; // ~178 us RESET hold time
     localparam DLY_PLL_LOCK   = 16'd14000; // ~500 us PLL lock (12MHz XTAL)
-    localparam DLY_CS_SLOW    = 8'd60;     // ~2.14 us CS delay on slow speed
-    localparam DLY_CS_FAST    = 8'd15;     // ~0.53 us CS delay on high speed
+    localparam DLY_CS_SLOW    = 8'd60; // ~2.14 us CS delay on slow speed
+    localparam DLY_CS_FAST    = 8'd15; // ~0.53 us CS delay on high speed
 `endif
 
     // VS1053b/1063a registers
@@ -459,7 +459,7 @@ module vs1053_controller (
     reg [15:0] delay_cnt;
     reg [7:0]  cs_delay_counter;
     reg [5:0]  byte_cnt;
-    reg [11:0] zero_cnt; 
+    reg [11:0] zero_cnt;
     reg [7:0]  vol_shadow;
     reg [7:0]  eff_shadow;
     reg        req_update_vol;
@@ -468,33 +468,33 @@ module vs1053_controller (
 
     wire [15:0] pack_vol   = {reg_volume, reg_volume};
     wire [15:0] pack_bass  = {reg_effects[5:3], 5'd5, reg_effects[2:0], 4'h6}; // EQ: 5kHz (5), 60Гц (6)
-    wire [15:0] pack_mode  = {4'h0, 1'b1, 3'h0, reg_effects[7:6], 6'h00};       // SM_SDINEW + EarSpeaker
+    wire [15:0] pack_mode  = {4'h0, 1'b1, 3'h0, reg_effects[7:6], 6'h00}; // SM_SDINEW + EarSpeaker
 
     localparam ST_HW_RESET       = 5'd0,
-               ST_DELAY_1        = 5'd1,
-               ST_RD_STATUS      = 5'd2,
-               ST_WAIT_RD        = 5'd3,
-               ST_WR_CLOCKF      = 5'd4,
-               ST_WAIT_WR        = 5'd5,
-               ST_DELAY_2        = 5'd6,
-               ST_SWITCH_FAST    = 5'd7,
-               ST_IDLE           = 5'd8,
-               ST_PREPARE_BYTE   = 5'd9,
-               ST_SEND_BYTE      = 5'd10,
-               ST_WAIT_BYTE      = 5'd11,
-               ST_CS_PULSE_DELAY = 5'd12,
-               ST_SW_RESET       = 5'd13,
-               ST_WAIT_SW_RESET  = 5'd14,
-               ST_DELAY_3        = 5'd15,
-               ST_INIT_ZEROES    = 5'd16,
-               ST_SEND_ZERO_BYTE = 5'd17,
-               ST_WAIT_ZERO_BYTE = 5'd18,
-               ST_WR_BASS         = 5'd19,
-               ST_WAIT_WR_BASS    = 5'd20,
-               ST_WR_VOL          = 5'd21,
-               ST_WAIT_WR_VOL     = 5'd22,
-               ST_WR_AMODE        = 5'd23,
-               ST_WAIT_WR_AMODE   = 5'd24;
+    ST_DELAY_1        = 5'd1,
+    ST_RD_STATUS      = 5'd2,
+    ST_WAIT_RD        = 5'd3,
+    ST_WR_CLOCKF      = 5'd4,
+    ST_WAIT_WR        = 5'd5,
+    ST_DELAY_2        = 5'd6,
+    ST_SWITCH_FAST    = 5'd7,
+    ST_IDLE           = 5'd8,
+    ST_PREPARE_BYTE   = 5'd9,
+    ST_SEND_BYTE      = 5'd10,
+    ST_WAIT_BYTE      = 5'd11,
+    ST_CS_PULSE_DELAY = 5'd12,
+    ST_SW_RESET       = 5'd13,
+    ST_WAIT_SW_RESET  = 5'd14,
+    ST_DELAY_3        = 5'd15,
+    ST_INIT_ZEROES    = 5'd16,
+    ST_SEND_ZERO_BYTE = 5'd17,
+    ST_WAIT_ZERO_BYTE = 5'd18,
+    ST_WR_BASS         = 5'd19,
+    ST_WAIT_WR_BASS    = 5'd20,
+    ST_WR_VOL          = 5'd21,
+    ST_WAIT_WR_VOL     = 5'd22,
+    ST_WR_AMODE        = 5'd23,
+    ST_WAIT_WR_AMODE   = 5'd24;
 
     always @(posedge clk or posedge rst) begin
         if (rst | hard_reset_cmd | soft_reset_cmd) begin
@@ -505,13 +505,13 @@ module vs1053_controller (
         end else begin
             if (reg_volume != vol_shadow && state == ST_IDLE) begin req_update_vol <= 1; end
             if (reg_effects != eff_shadow && state == ST_IDLE) begin req_update_eff <= 1; end
-            if (state == ST_WR_VOL)  begin 
-                req_update_vol <= 0; 
-                vol_shadow <= reg_volume; 
+            if (state == ST_WR_VOL)  begin
+                req_update_vol <= 0;
+                vol_shadow <= reg_volume;
             end
-            if (state == ST_WR_BASS) begin 
-                req_update_eff <= 0; 
-                eff_shadow <= reg_effects; 
+            if (state == ST_WR_BASS) begin
+                req_update_eff <= 0;
+                eff_shadow <= reg_effects;
             end
         end
     end
@@ -556,7 +556,7 @@ module vs1053_controller (
                 ST_HW_RESET: begin
                     vs_reset_n <= 0;
                     delay_cnt <= delay_cnt + 1;
-                    if (delay_cnt == DLY_HW_RESET) begin 
+                    if (delay_cnt == DLY_HW_RESET) begin
                         vs_reset_n <= 1;
                         delay_cnt <= 0;
                         state <= ST_DELAY_1;
@@ -564,7 +564,7 @@ module vs1053_controller (
                 end
 
                 ST_DELAY_1: begin
-                    if (vs_dreq) begin 
+                    if (vs_dreq) begin
                         state <= ST_RD_STATUS;
                     end
                 end
@@ -584,7 +584,7 @@ module vs1053_controller (
                 ST_WAIT_SW_RESET: begin
                     if (!spi_busy && !spi_start) begin
                         delay_cnt                 <= 0;
-                        cs_delay_counter          <= DLY_CS_SLOW; 
+                        cs_delay_counter          <= DLY_CS_SLOW;
                         next_state                <= ST_DELAY_3;
                         state                     <= ST_CS_PULSE_DELAY;
                     end
@@ -611,7 +611,7 @@ module vs1053_controller (
                 ST_WAIT_RD: begin
                     if (!spi_busy && !spi_start) begin
                         chip_version <= spi_data_out[7:4];
-                        cs_delay_counter          <= DLY_CS_SLOW; 
+                        cs_delay_counter          <= DLY_CS_SLOW;
                         next_state                <= ST_WR_CLOCKF;
                         state                     <= ST_CS_PULSE_DELAY;
                     end
@@ -632,7 +632,7 @@ module vs1053_controller (
                 ST_WAIT_WR: begin
                     if (!spi_busy && !spi_start) begin
                         delay_cnt                 <= 0;
-                        cs_delay_counter          <= DLY_CS_SLOW; 
+                        cs_delay_counter          <= DLY_CS_SLOW;
                         next_state                <= ST_DELAY_2;
                         state                     <= ST_CS_PULSE_DELAY;
                     end
@@ -648,7 +648,7 @@ module vs1053_controller (
                 // switch spi to fast mode after clockf write
                 ST_SWITCH_FAST: begin
                     if (vs_dreq) begin
-                        spi_fast_mode <= 1; 
+                        spi_fast_mode <= 1;
                         state         <= ST_WR_BASS;
                     end
                 end
@@ -667,7 +667,7 @@ module vs1053_controller (
 
                 ST_WAIT_WR_BASS: begin
                     if (!spi_busy && !spi_start) begin
-                        cs_delay_counter          <= DLY_CS_FAST; 
+                        cs_delay_counter          <= DLY_CS_FAST;
                         next_state                <= ST_WR_VOL;
                         state                     <= ST_CS_PULSE_DELAY;
                     end
@@ -687,7 +687,7 @@ module vs1053_controller (
 
                 ST_WAIT_WR_VOL: begin
                     if (!spi_busy && !spi_start) begin
-                        cs_delay_counter          <= DLY_CS_FAST; 
+                        cs_delay_counter          <= DLY_CS_FAST;
                         next_state                <= ST_WR_AMODE;
                         state                     <= ST_CS_PULSE_DELAY;
                     end
@@ -705,9 +705,9 @@ module vs1053_controller (
                     end
                 end
 
-               ST_WAIT_WR_AMODE: begin
+                ST_WAIT_WR_AMODE: begin
                     if (!spi_busy && !spi_start) begin
-                        cs_delay_counter          <= DLY_CS_FAST; 
+                        cs_delay_counter          <= DLY_CS_FAST;
                         next_state                <= init_done ? ST_IDLE : ST_INIT_ZEROES;
                         state                     <= ST_CS_PULSE_DELAY;
                     end
@@ -715,7 +715,7 @@ module vs1053_controller (
 
                 // init zeroes - send 2048 bytes to the chip
                 ST_INIT_ZEROES: begin
-                    zero_cnt <= 12'd2048; 
+                    zero_cnt <= 12'd2048;
                     state    <= ST_SEND_ZERO_BYTE;
                 end
 
@@ -732,7 +732,7 @@ module vs1053_controller (
                 ST_WAIT_ZERO_BYTE: begin
                     if (!spi_busy && !spi_start) begin
                         if (zero_cnt == 1) begin
-                            cs_delay_counter <= DLY_CS_FAST; 
+                            cs_delay_counter <= DLY_CS_FAST;
                             next_state       <= ST_IDLE;
                             state            <= ST_CS_PULSE_DELAY;
                             init_done        <= 1;
@@ -748,12 +748,12 @@ module vs1053_controller (
                     // prio 1: Effects was changed (Apply bass then mode)
                     if (req_update_eff) begin
                         state <= ST_WR_BASS;
-                    
-                    // prio 2: Volume was changed
+
+                        // prio 2: Volume was changed
                     end else if (req_update_vol) begin
                         state <= ST_WR_VOL;
 
-                    // prio 3: send audio data from FIFO
+                        // prio 3: send audio data from FIFO
                     end else if (vs_dreq && (fifo_count >= 32) && !fifo_empty) begin
                         byte_cnt <= 6'd32;
                         state    <= ST_PREPARE_BYTE;
@@ -761,7 +761,7 @@ module vs1053_controller (
                 end
 
                 ST_PREPARE_BYTE: begin
-                    fifo_rd_en <= 1; 
+                    fifo_rd_en <= 1;
                     state      <= ST_SEND_BYTE;
                 end
 
@@ -769,7 +769,7 @@ module vs1053_controller (
                     if (!spi_busy) begin
                         spi_start   <= 1;
                         spi_rnw     <= 0;
-                        spi_is_data <= 1; 
+                        spi_is_data <= 1;
                         spi_data_in <= {8'h0, fifo_data_out};
                         state       <= ST_WAIT_BYTE;
                     end
@@ -779,7 +779,7 @@ module vs1053_controller (
                     if (!spi_busy && !spi_start) begin
                         byte_cnt <= byte_cnt - 1;
                         if (byte_cnt == 1) begin
-                            cs_delay_counter          <= DLY_CS_FAST; 
+                            cs_delay_counter          <= DLY_CS_FAST;
                             next_state                <= ST_IDLE;
                             state                     <= ST_CS_PULSE_DELAY;
                         end else begin

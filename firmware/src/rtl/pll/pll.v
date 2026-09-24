@@ -68,7 +68,7 @@
 
 (* CORE_GENERATION_INFO = "pll,clk_wiz_v3_6,{component_name=pll,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=false,use_inclk_switchover=false,use_dyn_reconfig=false,feedback_source=FDBK_AUTO,primtype_sel=PLL_BASE,num_out_clk=3,clkin1_period=20.000,clkin2_period=20.000,use_power_down=false,use_reset=false,use_locked=true,use_inclk_stopped=false,use_status=false,use_freeze=false,use_clk_valid=false,feedback_type=SINGLE,clock_mgr_type=AUTO,manual_override=false}" *)
 module pll
- (// Clock in ports
+ ( // Clock in ports
   input wire        CLK_IN1,
   // Clock out ports
   output wire       CLK_OUT1,
@@ -76,13 +76,13 @@ module pll
   output wire       CLK_OUT3,
   // Status and control signals
   output wire       LOCKED
- );
+);
 
   // Input buffering
   //------------------------------------
   wire clkin1;
   IBUFG clkin1_buf
-   (.O (clkin1),
+  (.O (clkin1),
     .I (CLK_IN1));
 
 
@@ -119,8 +119,8 @@ module pll
     .CLKIN_PERIOD           (20.000),
     .REF_JITTER             (0.010))
   pll_base_inst
-    // Output clocks
-   (.CLKFBOUT              (clkfbout),
+  // Output clocks
+  (.CLKFBOUT              (clkfbout),
     .CLKOUT0               (clkout0),
     .CLKOUT1               (clkout1),
     .CLKOUT2               (clkout2),
@@ -130,7 +130,7 @@ module pll
     // Status and control signals
     .LOCKED                (LOCKED),
     .RST                   (1'b0),
-     // Input clock control
+    // Input clock control
     .CLKFBIN               (clkfbout_buf),
     .CLKIN                 (clkin1));
 
@@ -138,20 +138,20 @@ module pll
   // Output buffering
   //-----------------------------------
   BUFG clkf_buf
-   (.O (clkfbout_buf),
+  (.O (clkfbout_buf),
     .I (clkfbout));
 
   BUFG clkout1_buf
-   (.O   (CLK_OUT1),
+  (.O   (CLK_OUT1),
     .I   (clkout0));
 
 
   BUFG clkout2_buf
-   (.O   (CLK_OUT2),
+  (.O   (CLK_OUT2),
     .I   (clkout1));
 
   BUFG clkout3_buf
-   (.O   (CLK_OUT3),
+  (.O   (CLK_OUT3),
     .I   (clkout2));
 
 

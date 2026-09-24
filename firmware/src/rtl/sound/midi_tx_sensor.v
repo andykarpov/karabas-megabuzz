@@ -1,7 +1,7 @@
 module midi_tx_sensor (
     input  wire clk,
     input  wire reset,
-    input  wire midi_in, 
+    input  wire midi_in,
     output reg  midi_active
 );
 

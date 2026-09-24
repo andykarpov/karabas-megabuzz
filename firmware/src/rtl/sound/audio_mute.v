@@ -1,7 +1,7 @@
 module audio_mute(
-	input wire clk,
-	input wire on,
-	output reg mute
+    input wire clk,
+    input wire on,
+    output reg mute
 );
 
     reg [24:0] timeout_cnt;

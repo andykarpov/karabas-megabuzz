@@ -153,9 +153,9 @@ module karabas_megabuzz(
     output wire [7:0]   led_meter_r
 );
 
-// unused signals
-assign flash_hold_n = 1'b1;
-assign flash_wp_n   = 1'b1;
+    // unused signals
+    assign flash_hold_n = 1'b1;
+    assign flash_wp_n   = 1'b1;
 
 `ifdef HW_A
     // unused signals
@@ -304,422 +304,422 @@ assign flash_wp_n   = 1'b1;
 
 `endif
 
-// pll
-wire clk_bus, clk_mem, clk12, locked, areset;
-pll pll_inst(
-    .CLK_IN1         (clk),
-    .CLK_OUT1        (clk_mem), // 140
-    .CLK_OUT2        (clk_bus), // 28
-    .CLK_OUT3        (clk12),   // 12
-    .LOCKED          (locked)
-);
-assign areset = ~locked;
+    // pll
+    wire clk_bus, clk_mem, clk12, locked, areset;
+    pll pll_inst(
+        .CLK_IN1         (clk),
+        .CLK_OUT1        (clk_mem), // 140
+        .CLK_OUT2        (clk_bus), // 28
+        .CLK_OUT3        (clk12), // 12
+        .LOCKED          (locked)
+    );
+    assign areset = ~locked;
 
-// poweron reset
-wire poweron_reset;
-wire loader_reset;
-resetter poweron_resetter(.clk(clk_bus), .areset(divmmc_en & loader_reset), .reset_in(divmmc_en & loader_reset), .reset_out(poweron_reset), .reset_short());
+    // poweron reset
+    wire poweron_reset;
+    wire loader_reset;
+    resetter poweron_resetter(.clk(clk_bus), .areset(divmmc_en & loader_reset), .reset_in(divmmc_en & loader_reset), .reset_out(poweron_reset), .reset_short());
 
-assign o_reset_n = (poweron_reset) ? 1'b0 : 1'bz;
+    assign o_reset_n = (poweron_reset) ? 1'b0 : 1'bz;
 
-// clock for gs and opl3
-reg ce_14m;
-always @(negedge clk_bus)
+    // clock for gs and opl3
+    reg ce_14m;
+    always @(negedge clk_bus)
     ce_14m <= !ce_14m;
 
-// reset
-wire reset;
-reg soft_reset = 0;
-wire reset_short;
-resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
+    // reset
+    wire reset;
+    reg soft_reset = 0;
+    wire reset_short;
+    resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
 
-assign midi_reset_n = ~reset;
+    assign midi_reset_n = ~reset;
 
-// bus_iorq_n is useless on zxevo :(
-// so we're detecting bus_iorq_n cycle by bus_rd_n/bus_wr_n signal asserted without bus_m1_n/bus_mreq_n
-reg ioreq, ioreq_prev;
-always @(negedge clk_mem) begin
-    ioreq_prev  <= ioreq;
-    ioreq       <= bus_m1_n && bus_mreq_n && (~bus_rd_n || ~bus_wr_n);
-end
-wire ioreq_rd = ioreq && ~bus_rd_n;
-wire ioreq_wr = ioreq && ~bus_wr_n;
+    // bus_iorq_n is useless on zxevo :(
+    // so we're detecting bus_iorq_n cycle by bus_rd_n/bus_wr_n signal asserted without bus_m1_n/bus_mreq_n
+    reg ioreq, ioreq_prev;
+    always @(negedge clk_mem) begin
+        ioreq_prev  <= ioreq;
+        ioreq       <= bus_m1_n && bus_mreq_n && (~bus_rd_n || ~bus_wr_n);
+    end
+    wire ioreq_rd = ioreq && ~bus_rd_n;
+    wire ioreq_wr = ioreq && ~bus_wr_n;
 
-// bus_dos_n is useless on zxevo :(
-// so we're just lock some ports access when instruction has been fetched from rom
-reg rom_m1_access;
-always @(negedge clk_mem or posedge reset) begin
-    if (reset)
-        rom_m1_access <= 0;
-    else if (~bus_m1_n)
-        rom_m1_access <= bus_a[15:14] == 2'b00;
-end
+    // bus_dos_n is useless on zxevo :(
+    // so we're just lock some ports access when instruction has been fetched from rom
+    reg rom_m1_access;
+    always @(negedge clk_mem or posedge reset) begin
+        if (reset)
+            rom_m1_access <= 0;
+        else if (~bus_m1_n)
+            rom_m1_access <= bus_a[15:14] == 2'b00;
+    end
 
-// ------- flash ----------------
-wire [23:0] flash_a_bus;
-wire [7:0] flash_do_bus, flash_di_bus;
-wire flash_wr_n, flash_rd_n, flash_er_n, flash_busy, flash_rdy;
-flash flash(
-    .CLK              (clk_bus),
-    .RESET            (areset),
+    // ------- flash ----------------
+    wire [23:0] flash_a_bus;
+    wire [7:0] flash_do_bus, flash_di_bus;
+    wire flash_wr_n, flash_rd_n, flash_er_n, flash_busy, flash_rdy;
+    flash flash(
+        .CLK              (clk_bus),
+        .RESET            (areset),
 
-    .A                (flash_a_bus),
-    .DI               (flash_di_bus),
-    .DO               (flash_do_bus),
-    .WR_N             (flash_wr_n),
-    .RD_N             (flash_rd_n),
-    .ER_N             (flash_er_n),
-    
-    .DATA0            (flash_miso),
-    .NCSO             (flash_cs_n),
-    .DCLK             (flash_sck),
-    .ASDO             (flash_mosi),
+        .A                (flash_a_bus),
+        .DI               (flash_di_bus),
+        .DO               (flash_do_bus),
+        .WR_N             (flash_wr_n),
+        .RD_N             (flash_rd_n),
+        .ER_N             (flash_er_n),
 
-    .BUSY             (flash_busy),
-    .DATA_READY       (flash_rdy)
-);
+        .DATA0            (flash_miso),
+        .NCSO             (flash_cs_n),
+        .DCLK             (flash_sck),
+        .ASDO             (flash_mosi),
 
-// -------- loader --------------
-wire [20:0] loader_ram_a;
-wire [7:0] loader_ram_do;
-wire loader_act, loader_ram_wr;
-wire [15:0] cfg_byte; 
-reg [15:0] new_cfg_byte = 16'hFFFF;
-reg cfg_write = 0;
-loader loader(
-    .CLK              (clk_bus),
-    .RESET            (areset),
-    
-    .RAM_A            (loader_ram_a),
-    .RAM_DO           (loader_ram_do),
-    .RAM_WR           (loader_ram_wr),
+        .BUSY             (flash_busy),
+        .DATA_READY       (flash_rdy)
+    );
 
-    .CFG              (cfg_byte),
+    // -------- loader --------------
+    wire [20:0] loader_ram_a;
+    wire [7:0] loader_ram_do;
+    wire loader_act, loader_ram_wr;
+    wire [15:0] cfg_byte;
+    reg [15:0] new_cfg_byte = 16'hFFFF;
+    reg cfg_write = 0;
+    loader loader(
+        .CLK              (clk_bus),
+        .RESET            (areset),
 
-    .FLASH_A          (flash_a_bus),
-    .FLASH_DI         (flash_di_bus),
-    .FLASH_DO         (flash_do_bus),
-    .FLASH_RD_N       (flash_rd_n),
-    .FLASH_WR_N       (flash_wr_n),
-    .FLASH_ER_N       (flash_er_n),
-    .FLASH_BUSY       (flash_busy),
-    .FLASH_READY      (flash_rdy),
+        .RAM_A            (loader_ram_a),
+        .RAM_DO           (loader_ram_do),
+        .RAM_WR           (loader_ram_wr),
 
-    .NEW_CFG          (new_cfg_byte),
-    .NEW_CFG_WR       (cfg_write),
-    
-    .LOADER_ACTIVE    (loader_act),
-    .LOADER_RESET     (loader_reset)
-);
+        .CFG              (cfg_byte),
 
-// ------- i2s DAC --------------
-wire signed [15:0] audio_mix_l, audio_mix_r;
+        .FLASH_A          (flash_a_bus),
+        .FLASH_DI         (flash_di_bus),
+        .FLASH_DO         (flash_do_bus),
+        .FLASH_RD_N       (flash_rd_n),
+        .FLASH_WR_N       (flash_wr_n),
+        .FLASH_ER_N       (flash_er_n),
+        .FLASH_BUSY       (flash_busy),
+        .FLASH_READY      (flash_rdy),
 
-PCM5102 #(.DAC_CLK_DIV_BITS(2)) dac_inst(
-    .clk              (clk_bus),
-    .reset            (reset),
-    .left             (audio_mix_l),
-    .right            (audio_mix_r),
-    .din              (dac_dat),
-    .bck              (dac_bck),
-    .lrck             (dac_ws)
-);
+        .NEW_CFG          (new_cfg_byte),
+        .NEW_CFG_WR       (cfg_write),
 
-// ------- PCM1808 ADC ---------
-wire signed [23:0] adc_l, adc_r;
+        .LOADER_ACTIVE    (loader_act),
+        .LOADER_RESET     (loader_reset)
+    );
 
-i2s_transceiver adc_inst(
-    .reset_n          (~reset),
-    .mclk             (clk_bus),
-    .sclk             (adc_bck),
-    .ws               (adc_lrck),
-    .sd_tx            (),
-    .sd_rx            (adc_dat),
-    .l_data_tx        (24'b0),
-    .r_data_tx        (24'b0),
-    .l_data_rx        (adc_l),
-    .r_data_rx        (adc_r)
-);
+    // ------- i2s DAC --------------
+    wire signed [15:0] audio_mix_l, audio_mix_r;
 
-ODDR2 oddr_adc2(.Q(adc_clk), .C0(clk_bus), .C1(~clk_bus), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
-ODDR2 oddr_midi(.Q(midi_clk), .C0(clk12), .C1(~clk12), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
+    PCM5102 #(.DAC_CLK_DIV_BITS(2)) dac_inst(
+        .clk              (clk_bus),
+        .reset            (reset),
+        .left             (audio_mix_l),
+        .right            (audio_mix_r),
+        .din              (dac_dat),
+        .bck              (dac_bck),
+        .lrck             (dac_ws)
+    );
+
+    // ------- PCM1808 ADC ---------
+    wire signed [23:0] adc_l, adc_r;
+
+    i2s_transceiver adc_inst(
+        .reset_n          (~reset),
+        .mclk             (clk_bus),
+        .sclk             (adc_bck),
+        .ws               (adc_lrck),
+        .sd_tx            (),
+        .sd_rx            (adc_dat),
+        .l_data_tx        (24'b0),
+        .r_data_tx        (24'b0),
+        .l_data_rx        (adc_l),
+        .r_data_rx        (adc_r)
+    );
+
+    ODDR2 oddr_adc2(.Q(adc_clk), .C0(clk_bus), .C1(~clk_bus), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
+    ODDR2 oddr_midi(.Q(midi_clk), .C0(clk12), .C1(~clk12), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
 `ifdef HW_A3
-ODDR2 oddr_vs(.Q(vs_clk), .C0(clk12), .C1(~clk12), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
+    ODDR2 oddr_vs(.Q(vs_clk), .C0(clk12), .C1(~clk12), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
 `endif
 
-// ------- SOUNDRIVE ----------
-wire [7:0] covox_a, covox_b, covox_c, covox_d, covox_fb;
+    // ------- SOUNDRIVE ----------
+    wire [7:0] covox_a, covox_b, covox_c, covox_d, covox_fb;
 
-soundrive soundrive_inst(
-    .clk              (clk_bus),
-    .reset            (reset),
-    .cs               (soundrive_en),
-    .a                (bus_a),
-    .d                (bus_d),
-    .ioreq_wr         (ioreq_wr),
-    .rom_m1_access    (rom_m1_access),
-    .out_a            (covox_a),
-    .out_b            (covox_b),
-    .out_c            (covox_c),
-    .out_d            (covox_d),
-    .out_fb           (covox_fb)
-);
+    soundrive soundrive_inst(
+        .clk              (clk_bus),
+        .reset            (reset),
+        .cs               (soundrive_en),
+        .a                (bus_a),
+        .d                (bus_d),
+        .ioreq_wr         (ioreq_wr),
+        .rom_m1_access    (rom_m1_access),
+        .out_a            (covox_a),
+        .out_b            (covox_b),
+        .out_c            (covox_c),
+        .out_d            (covox_d),
+        .out_fb           (covox_fb)
+    );
 
-// ------- BEEPER --------------
-wire beeper;
-beeper beeper_inst(
-    .clk              (clk_bus),
-    .reset            (reset),
-    .cs               (beeper_en),
-    .a                (bus_a),
-    .d                (bus_d),
-    .ioreq_wr         (ioreq_wr),
-    .out_beeper       (beeper)
-);
+    // ------- BEEPER --------------
+    wire beeper;
+    beeper beeper_inst(
+        .clk              (clk_bus),
+        .reset            (reset),
+        .cs               (beeper_en),
+        .a                (bus_a),
+        .d                (bus_d),
+        .ioreq_wr         (ioreq_wr),
+        .out_beeper       (beeper)
+    );
 
-// SAA1099
+    // SAA1099
 
-wire [7:0] saa_out_l, saa_out_r;
-wire saa_wr_n = ~(ioreq_wr && bus_a[7:0] == 8'hFF && ~rom_m1_access);
+    wire [7:0] saa_out_l, saa_out_r;
+    wire saa_wr_n = ~(ioreq_wr && bus_a[7:0] == 8'hFF && ~rom_m1_access);
 
-wire ce_8;
-clk_div_8mhz saa1099_cen_inst(
-    .clk              (clk_bus),
-    .rst_n            (~areset),
-    .cen              (ce_8)
-);
+    wire ce_8;
+    clk_div_8mhz saa1099_cen_inst(
+        .clk              (clk_bus),
+        .rst_n            (~areset),
+        .cen              (ce_8)
+    );
 
-saa1099 saa1099_inst(
-    .clk_sys          (clk_bus),
-     .ce              (ce_8),
-    .rst_n            (~reset),
-    .cs_n             (~saa_en),
-    .a0               (bus_a[8]),
-    .wr_n             (saa_wr_n),
-    .din              (bus_d),
-    .out_l            (saa_out_l),
-    .out_r            (saa_out_r)
-);
+    saa1099 saa1099_inst(
+        .clk_sys          (clk_bus),
+        .ce              (ce_8),
+        .rst_n            (~reset),
+        .cs_n             (~saa_en),
+        .a0               (bus_a[8]),
+        .wr_n             (saa_wr_n),
+        .din              (bus_d),
+        .out_l            (saa_out_l),
+        .out_r            (saa_out_r)
+    );
 
-// turbosound fm
-wire ts_enable = turbosound_en & ioreq & bus_a[15] & (bus_a[3:0] == 4'b1101);
-wire ts_we     = ts_enable & ioreq_wr;
-wire [7:0] ts_do;
-wire [7:0] ts_ssg0_a, ts_ssg0_b, ts_ssg0_c, ts_ssg1_a, ts_ssg1_b, ts_ssg1_c;
-wire [15:0] ts_ssg0_fm, ts_ssg1_fm;
-wire ts_fm_ena;
+    // turbosound fm
+    wire ts_enable = turbosound_en & ioreq & bus_a[15] & (bus_a[3:0] == 4'b1101);
+    wire ts_we     = ts_enable & ioreq_wr;
+    wire [7:0] ts_do;
+    wire [7:0] ts_ssg0_a, ts_ssg0_b, ts_ssg0_c, ts_ssg1_a, ts_ssg1_b, ts_ssg1_c;
+    wire [15:0] ts_ssg0_fm, ts_ssg1_fm;
+    wire ts_fm_ena;
 
-reg ce_ym;
-reg [2:0] div;
-always @(posedge clk_bus) begin
-    div <= div + 1'd1;
-    ce_ym <= !div[2] & !div[1] & !div[0]; // 3.5
-end
+    reg ce_ym;
+    reg [2:0] div;
+    always @(posedge clk_bus) begin
+        div <= div + 1'd1;
+        ce_ym <= !div[2] & !div[1] & !div[0]; // 3.5
+    end
 
-turbosound turbosound_inst(
-    .CLK              (clk_bus),
-    .RESET            (reset),
-    .CE               (ce_ym),
-    .BDIR             (ts_we),
-    .BC               (bus_a[14]),
-    .DI               (bus_d),
-    .DO               (ts_do),
-    .AY_MODE          (1'b0), // ay / ym
-        
-    .SSG0_AUDIO_A     (ts_ssg0_a),
-    .SSG0_AUDIO_B     (ts_ssg0_b),
-    .SSG0_AUDIO_C     (ts_ssg0_c),
+    turbosound turbosound_inst(
+        .CLK              (clk_bus),
+        .RESET            (reset),
+        .CE               (ce_ym),
+        .BDIR             (ts_we),
+        .BC               (bus_a[14]),
+        .DI               (bus_d),
+        .DO               (ts_do),
+        .AY_MODE          (1'b0), // ay / ym
 
-    .SSG1_AUDIO_A     (ts_ssg1_a),
-    .SSG1_AUDIO_B     (ts_ssg1_b),
-    .SSG1_AUDIO_C     (ts_ssg1_c),
-    
-    .SSG0_AUDIO_FM    (ts_ssg0_fm),
-    .SSG1_AUDIO_FM    (ts_ssg1_fm),
-    
-    .SSG_FM_ENA       (ts_fm_ena),
-    .MIDI_TX          (midi_tx)
-);
+        .SSG0_AUDIO_A     (ts_ssg0_a),
+        .SSG0_AUDIO_B     (ts_ssg0_b),
+        .SSG0_AUDIO_C     (ts_ssg0_c),
 
-// ------- GS
+        .SSG1_AUDIO_A     (ts_ssg1_a),
+        .SSG1_AUDIO_B     (ts_ssg1_b),
+        .SSG1_AUDIO_C     (ts_ssg1_c),
 
-wire gs_oe;
-wire [7:0] gs_do_bus;
-wire [14:0] gs_out_l, gs_out_r;
+        .SSG0_AUDIO_FM    (ts_ssg0_fm),
+        .SSG1_AUDIO_FM    (ts_ssg1_fm),
 
-gs_top gs_inst(
-    .clk_bus          (clk_bus),
-     .ce              (ce_14m),
-    .reset            (reset),
+        .SSG_FM_ENA       (ts_fm_ena),
+        .MIDI_TX          (midi_tx)
+    );
 
-    .a                (bus_a),
-    .di               (bus_d),
-    .mreq_n           (bus_mreq_n),
-    .iorq_n           (bus_iorq_n),
-    .m1_n             (bus_m1_n),
-    .rd_n             (bus_rd_n),
-    .wr_n             (bus_wr_n),
+    // ------- GS
 
-    .oe               (gs_oe),
-    .do_bus           (gs_do_bus),
+    wire gs_oe;
+    wire [7:0] gs_do_bus;
+    wire [14:0] gs_out_l, gs_out_r;
 
-    .sram_d           (mem_d),
-    .sram_a           (mem_a),
-    .sram_wr_n        (mem_wr_n),
-    .sram_rd_n        (mem_rd_n),
+    gs_top gs_inst(
+        .clk_bus          (clk_bus),
+        .ce              (ce_14m),
+        .reset            (reset),
 
-    .loader_act       (loader_act),
-    .loader_ram_a     (loader_ram_a),
-    .loader_ram_do    (loader_ram_do),
-    .loader_ram_wr    (loader_ram_wr),
+        .a                (bus_a),
+        .di               (bus_d),
+        .mreq_n           (bus_mreq_n),
+        .iorq_n           (bus_iorq_n),
+        .m1_n             (bus_m1_n),
+        .rd_n             (bus_rd_n),
+        .wr_n             (bus_wr_n),
 
-    .out_l            (gs_out_l),
-    .out_r            (gs_out_r)
-);
+        .oe               (gs_oe),
+        .do_bus           (gs_do_bus),
 
-// opl3
+        .sram_d           (mem_d),
+        .sram_a           (mem_a),
+        .sram_wr_n        (mem_wr_n),
+        .sram_rd_n        (mem_rd_n),
 
-wire signed [15:0] opl3_l, opl3_r;
-opl3 opl3_inst(
-    .clk              (clk_bus),
-    .ce               (ce_14m),
-    .en               (opl3_en),
-    .reset            (reset),
-    
-    .bus_a            (bus_a),
-    .bus_d            (bus_d),
-    .bus_rd_n         (bus_rd_n),
-    .bus_wr_n         (bus_wr_n),
-    .bus_mreq_n       (bus_mreq_n),
-    .bus_iorq_n       (bus_iorq_n),
-    .bus_m1_n         (bus_m1_n),
-    
-    .opl3_clk         (opl3_clk),
-    .opl3_a           (opl3_a),
-    .opl3_cs_n        (opl3_cs_n),
-    .opl3_iorqge_n    (),
+        .loader_act       (loader_act),
+        .loader_ram_a     (loader_ram_a),
+        .loader_ram_do    (loader_ram_do),
+        .loader_ram_wr    (loader_ram_wr),
 
-    .opl3_smp         (opl3_smp),
-    .opl3_data        (opl3_data),
-    .opl3_dclk        (opl3_dclk),
-    
-    .out_l            (opl3_l),
-    .out_r            (opl3_r)
-);
+        .out_l            (gs_out_l),
+        .out_r            (gs_out_r)
+    );
 
-// vs1053/vs1063
+    // opl3
 
-wire vs_bus_cs_n, vs_bus_we_n, vs_bus_rd_n;
-wire [1:0] vs_bus_addr;
-wire [7:0] vs_bus_di, vs_bus_do;
-vs1053 vs1053(
-    .clk              (clk_bus),
-    .reset            (reset),
+    wire signed [15:0] opl3_l, opl3_r;
+    opl3 opl3_inst(
+        .clk              (clk_bus),
+        .ce               (ce_14m),
+        .en               (opl3_en),
+        .reset            (reset),
 
-    .vs_sclk          (vs_sclk),
-    .vs_mosi          (vs_mosi),
-    .vs_miso          (vs_miso),
-    .vs_dreq          (vs_dreq),
-    .vs_reset_n       (vs_reset_n),
-    .vs_dcs_n         (vs_dcs_n),
-    .vs_cs_n          (vs_cs_n),
+        .bus_a            (bus_a),
+        .bus_d            (bus_d),
+        .bus_rd_n         (bus_rd_n),
+        .bus_wr_n         (bus_wr_n),
+        .bus_mreq_n       (bus_mreq_n),
+        .bus_iorq_n       (bus_iorq_n),
+        .bus_m1_n         (bus_m1_n),
 
-    .bus_cs_n         (vs_bus_cs_n),
-    .bus_wr_n         (vs_bus_we_n),
-    .bus_rd_n         (vs_bus_rd_n),
-    .bus_a            (vs_bus_addr),
-    .bus_di           (vs_bus_di),
-    .bus_do           (vs_bus_do)
-);
+        .opl3_clk         (opl3_clk),
+        .opl3_a           (opl3_a),
+        .opl3_cs_n        (opl3_cs_n),
+        .opl3_iorqge_n    (),
 
-// midi activity detector
-wire midi_active;
-midi_tx_sensor midi_tx_sensor(
-    .clk              (clk_bus),
-    .reset            (reset),
-    .midi_in          (midi_tx),
-    .midi_active      (midi_active)
-);
+        .opl3_smp         (opl3_smp),
+        .opl3_data        (opl3_data),
+        .opl3_dclk        (opl3_dclk),
 
-// audio muter on reset
-wire mute;
-audio_mute audio_mute(
-    .clk              (clk_bus),
-    .on               (reset | ~vs_reset_n),
-    .mute             (mute)
-);
+        .out_l            (opl3_l),
+        .out_r            (opl3_r)
+    );
 
-// audio mixer
-audio_mixer audio_mixer_inst(
-    .clk              (clk_bus),
+    // vs1053/vs1063
 
-    .mute             (mute), 
-    .mode             (2'b00), // todo: abc/acb/mono ? 
-    
-    .soundrive_en     (soundrive_en),
-    .beeper_en        (beeper_en),
-    .turbosound_en    (turbosound_en),
-    .saa_en           (saa_en),
-    .gs_en            (gs_en),
-    .midi_en          ((midi_en & midi_active) | vs1053_en),
-    .opl3_en          (opl3_en),
-    
-    .speaker          (beeper),
-    .tape_in          (1'b0),
-    
-    .ssg0_a           (ts_ssg0_a),
-    .ssg0_b           (ts_ssg0_b),
-    .ssg0_c           (ts_ssg0_c),
-    .ssg1_a           (ts_ssg1_a),
-    .ssg1_b           (ts_ssg1_b),
-    .ssg1_c           (ts_ssg1_c),
-    
-    .covox_a          (covox_a),
-    .covox_b          (covox_b),
-    .covox_c          (covox_c),
-    .covox_d          (covox_d),
-    .covox_fb         (covox_fb),
-    
-    .saa_l            (saa_out_l),
-    .saa_r            (saa_out_r),
-    
-    .gs_l             (gs_out_l),
-    .gs_r             (gs_out_r),
-    
-    .fm_l             (ts_ssg0_fm),
-    .fm_r             (ts_ssg1_fm),
-    .fm_ena           (ts_fm_ena),
+    wire vs_bus_cs_n, vs_bus_we_n, vs_bus_rd_n;
+    wire [1:0] vs_bus_addr;
+    wire [7:0] vs_bus_di, vs_bus_do;
+    vs1053 vs1053(
+        .clk              (clk_bus),
+        .reset            (reset),
 
-    .adc_l            (adc_l[23:8]),
-    .adc_r            (adc_r[23:8]),
-    
-    .opl3_l           (opl3_l),
-    .opl3_r           (opl3_r),
-    
-    .audio_l          (audio_mix_l),
-    .audio_r          (audio_mix_r)    
-);
+        .vs_sclk          (vs_sclk),
+        .vs_mosi          (vs_mosi),
+        .vs_miso          (vs_miso),
+        .vs_dreq          (vs_dreq),
+        .vs_reset_n       (vs_reset_n),
+        .vs_dcs_n         (vs_dcs_n),
+        .vs_cs_n          (vs_cs_n),
 
-// divmmc + zc
-wire [7:0] zc_do_bus, divmmc_dout;
-wire zc_busy, divmmc_mem, divmmc_zxrom_block;
-zc_divmmc zc_divmmc(
-    .clk              (clk_bus),
-    .clk_mem          (clk_mem),
-    .reset            (reset_short),
-    .areset           (areset | poweron_reset),
-    .divmmc_en        (divmmc_en),
-    .zc_en            (zc_en),
+        .bus_cs_n         (vs_bus_cs_n),
+        .bus_wr_n         (vs_bus_we_n),
+        .bus_rd_n         (vs_bus_rd_n),
+        .bus_a            (vs_bus_addr),
+        .bus_di           (vs_bus_di),
+        .bus_do           (vs_bus_do)
+    );
 
-    .bus_a            (bus_a),
-    .bus_d            (bus_d),
-    .bus_iorq_n       (bus_iorq_n),
-    .bus_mreq_n       (bus_mreq_n),
-    .bus_m1_n         (bus_m1_n),
-    .bus_wr_n         (bus_wr_n),
-    .bus_rd_n         (bus_rd_n),
-    .bus_nmi_n        (bus_nmi_n),
-    .btn_nmi_n        (btn_nmi_n),
+    // midi activity detector
+    wire midi_active;
+    midi_tx_sensor midi_tx_sensor(
+        .clk              (clk_bus),
+        .reset            (reset),
+        .midi_in          (midi_tx),
+        .midi_active      (midi_active)
+    );
+
+    // audio muter on reset
+    wire mute;
+    audio_mute audio_mute(
+        .clk              (clk_bus),
+        .on               (reset | ~vs_reset_n),
+        .mute             (mute)
+    );
+
+    // audio mixer
+    audio_mixer audio_mixer_inst(
+        .clk              (clk_bus),
+
+        .mute             (mute),
+        .mode             (2'b00), // todo: abc/acb/mono ? 
+
+        .soundrive_en     (soundrive_en),
+        .beeper_en        (beeper_en),
+        .turbosound_en    (turbosound_en),
+        .saa_en           (saa_en),
+        .gs_en            (gs_en),
+        .midi_en          ((midi_en & midi_active) | vs1053_en),
+        .opl3_en          (opl3_en),
+
+        .speaker          (beeper),
+        .tape_in          (1'b0),
+
+        .ssg0_a           (ts_ssg0_a),
+        .ssg0_b           (ts_ssg0_b),
+        .ssg0_c           (ts_ssg0_c),
+        .ssg1_a           (ts_ssg1_a),
+        .ssg1_b           (ts_ssg1_b),
+        .ssg1_c           (ts_ssg1_c),
+
+        .covox_a          (covox_a),
+        .covox_b          (covox_b),
+        .covox_c          (covox_c),
+        .covox_d          (covox_d),
+        .covox_fb         (covox_fb),
+
+        .saa_l            (saa_out_l),
+        .saa_r            (saa_out_r),
+
+        .gs_l             (gs_out_l),
+        .gs_r             (gs_out_r),
+
+        .fm_l             (ts_ssg0_fm),
+        .fm_r             (ts_ssg1_fm),
+        .fm_ena           (ts_fm_ena),
+
+        .adc_l            (adc_l[23:8]),
+        .adc_r            (adc_r[23:8]),
+
+        .opl3_l           (opl3_l),
+        .opl3_r           (opl3_r),
+
+        .audio_l          (audio_mix_l),
+        .audio_r          (audio_mix_r)
+    );
+
+    // divmmc + zc
+    wire [7:0] zc_do_bus, divmmc_dout;
+    wire zc_busy, divmmc_mem, divmmc_zxrom_block;
+    zc_divmmc zc_divmmc(
+        .clk              (clk_bus),
+        .clk_mem          (clk_mem),
+        .reset            (reset_short),
+        .areset           (areset | poweron_reset),
+        .divmmc_en        (divmmc_en),
+        .zc_en            (zc_en),
+
+        .bus_a            (bus_a),
+        .bus_d            (bus_d),
+        .bus_iorq_n       (bus_iorq_n),
+        .bus_mreq_n       (bus_mreq_n),
+        .bus_m1_n         (bus_m1_n),
+        .bus_wr_n         (bus_wr_n),
+        .bus_rd_n         (bus_rd_n),
+        .bus_nmi_n        (bus_nmi_n),
+        .btn_nmi_n        (btn_nmi_n),
 
 `ifdef HW_A2
     .ram_a            (mmc_mem_a),
@@ -727,146 +727,146 @@ zc_divmmc zc_divmmc(
     .ram_rd_n         (mmc_mem_rd_n),
     .ram_wr_n         (mmc_mem_wr_n),
 `elsif HW_A3
-    .ram_a            (mmc_mem_a),
-    .ram_cs_n         (mmc_mem_cs_n),
-    .ram_rd_n         (mmc_mem_rd_n),
-    .ram_wr_n         (mmc_mem_wr_n),
+        .ram_a            (mmc_mem_a),
+        .ram_cs_n         (mmc_mem_cs_n),
+        .ram_rd_n         (mmc_mem_rd_n),
+        .ram_wr_n         (mmc_mem_wr_n),
 `endif
 
-    .sd_clk           (sd_clk),
-    .sd_do            (sd_do),
-    .sd_di            (sd_di),
-    .sd_cs_n          (sd_cs_n),
-    
-    .dout             (zc_do_bus),
-    .divmmc_mem       (divmmc_mem),
-    .divmmc_dout      (divmmc_dout),
-    .divmmc_zxrom_block(divmmc_zxrom_block),
-    .busy             (zc_busy)
-);
+        .sd_clk           (sd_clk),
+        .sd_do            (sd_do),
+        .sd_di            (sd_di),
+        .sd_cs_n          (sd_cs_n),
 
-// IORQGE
+        .dout             (zc_do_bus),
+        .divmmc_mem       (divmmc_mem),
+        .divmmc_dout      (divmmc_dout),
+        .divmmc_zxrom_block(divmmc_zxrom_block),
+        .busy             (zc_busy)
+    );
 
-// turbosound ports
-wire port_bffd      = (bus_a[15:14] == 2'b10) & (bus_a[3:0] == 4'b1101) & turbosound_en;
-wire port_fffd      = (bus_a[15:14] == 2'b11) & (bus_a[3:0] == 4'b1101) & turbosound_en;
-wire port_fffd_full = (bus_a[15:13] == 3'b111) & (bus_a[3:0] == 4'b1101) & turbosound_en; // required for compatibility with #dffd port
-// gs (b3,bb)
-wire port_gs = ((bus_a[7:0] == 8'hB3) | (bus_a[7:0] == 8'hBB)) & gs_en & ~loader_act;
-// opl3 (c4,c5,c6,c7)
-wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en;
-// zc + divmmc (57,77,E3,EB)
-wire port_zc = (((bus_a[7:0] == 8'h77) & (zc_en | divmmc_en)) | 
-                ((bus_a[7:0] == 8'h57) & (zc_en | divmmc_en)) | 
-                ((bus_a[7:0] == 8'hEB) & divmmc_en));
-wire port_mmc = ((bus_a[7:0] == 8'hE3) | (bus_a[7:0] == 8'hE7)) & divmmc_en;
-// zxuno ports (fc3b, fd3b)
-wire port_zxuno_reg =  (bus_a[15:0] == 16'hFC3B);
-wire port_zxuno_data = (bus_a[15:0] == 16'hFD3B);
-reg [7:0] zxuno_reg = 8'hFF;
-always @(posedge clk_bus) begin
-	if (port_zxuno_reg & ioreq_wr)
-		zxuno_reg <= bus_d;
-end
-// vs1053 (zxuno regs f5, f6, fb, fc)
-wire reg_vs = (zxuno_reg == 8'hF5 | zxuno_reg == 8'hF6 | zxuno_reg == 8'hFB | zxuno_reg == 8'hFC) & vs1053_en;
-assign vs_bus_di = bus_d;
-assign vs_bus_cs_n = ~(port_zxuno_data & reg_vs & ~bus_iorq_n);
-assign vs_bus_we_n = bus_wr_n;
-assign vs_bus_rd_n = bus_rd_n;
-assign vs_bus_addr = (zxuno_reg == 8'hF5) ? 2'b00 : 
-                     (zxuno_reg == 8'hF6) ? 2'b01 : 
-                     (zxuno_reg == 8'hFB) ? 2'b10 : 
-                     (zxuno_reg == 8'hFC) ? 2'b11 : 
-                     2'b00;
-// megabuzz cfg (zxuno regs f7,f8,f9,fa)
-wire reg_mb_cfg = (zxuno_reg == 8'hF7);
-wire reg_mb_rom = (zxuno_reg == 8'hF8);
-wire reg_mb_ctl = (zxuno_reg == 8'hF9);
-wire reg_mb_cfga = (zxuno_reg == 8'hFA);
+    // IORQGE
 
-// megabuzz: write cfg, switch rom, soft reset
-reg cfg_rom_active = 0;
-reg [7:0] cfg_addr = 8'h00;
-
-always @(posedge clk_bus) begin
-    soft_reset <= 0;
-    cfg_write <= 0;
-    if (!btn_reset_n & !btn_nmi_n & cfg_rom_en) begin // both reset+nmi buttons presset => replace rom, trigger soft reset
-        cfg_rom_active <= 1;
-        soft_reset <= 1;
+    // turbosound ports
+    wire port_bffd      = (bus_a[15:14] == 2'b10) & (bus_a[3:0] == 4'b1101) & turbosound_en;
+    wire port_fffd      = (bus_a[15:14] == 2'b11) & (bus_a[3:0] == 4'b1101) & turbosound_en;
+    wire port_fffd_full = (bus_a[15:13] == 3'b111) & (bus_a[3:0] == 4'b1101) & turbosound_en; // required for compatibility with #dffd port
+    // gs (b3,bb)
+    wire port_gs = ((bus_a[7:0] == 8'hB3) | (bus_a[7:0] == 8'hBB)) & gs_en & ~loader_act;
+    // opl3 (c4,c5,c6,c7)
+    wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en;
+    // zc + divmmc (57,77,E3,EB)
+    wire port_zc = (((bus_a[7:0] == 8'h77) & (zc_en | divmmc_en)) |
+    ((bus_a[7:0] == 8'h57) & (zc_en | divmmc_en)) |
+    ((bus_a[7:0] == 8'hEB) & divmmc_en));
+    wire port_mmc = ((bus_a[7:0] == 8'hE3) | (bus_a[7:0] == 8'hE7)) & divmmc_en;
+    // zxuno ports (fc3b, fd3b)
+    wire port_zxuno_reg =  (bus_a[15:0] == 16'hFC3B);
+    wire port_zxuno_data = (bus_a[15:0] == 16'hFD3B);
+    reg [7:0] zxuno_reg = 8'hFF;
+    always @(posedge clk_bus) begin
+        if (port_zxuno_reg & ioreq_wr)
+            zxuno_reg <= bus_d;
     end
-    else if (ioreq_wr & port_zxuno_data & reg_mb_rom & cfg_rom_en) begin // if rom switched by the zxuno port => replace rom, trigger soft reset
-        cfg_rom_active <= bus_d[0];
-        //soft_reset <= 1;
-    end
-    else if (ioreq_wr & port_zxuno_data & reg_mb_ctl) // soft reset port
-        soft_reset <= bus_d[0];
-    else if (ioreq_wr & port_zxuno_data & reg_mb_cfga) // cfg byte address
-        cfg_addr <= bus_d;
-    else if (ioreq_wr & port_zxuno_data & reg_mb_cfg) begin // new cfg applied, trigger write to flash
-        if (cfg_addr == 0)
-            new_cfg_byte[7:0] <= bus_d;
-        else begin
-            new_cfg_byte[15:8] <= bus_d;
-            cfg_write <= 1; // only when last cfg byte is sent
+    // vs1053 (zxuno regs f5, f6, fb, fc)
+    wire reg_vs = (zxuno_reg == 8'hF5 | zxuno_reg == 8'hF6 | zxuno_reg == 8'hFB | zxuno_reg == 8'hFC) & vs1053_en;
+    assign vs_bus_di = bus_d;
+    assign vs_bus_cs_n = ~(port_zxuno_data & reg_vs & ~bus_iorq_n);
+    assign vs_bus_we_n = bus_wr_n;
+    assign vs_bus_rd_n = bus_rd_n;
+    assign vs_bus_addr = (zxuno_reg == 8'hF5) ? 2'b00 :
+    (zxuno_reg == 8'hF6) ? 2'b01 :
+    (zxuno_reg == 8'hFB) ? 2'b10 :
+    (zxuno_reg == 8'hFC) ? 2'b11 :
+    2'b00;
+    // megabuzz cfg (zxuno regs f7,f8,f9,fa)
+    wire reg_mb_cfg = (zxuno_reg == 8'hF7);
+    wire reg_mb_rom = (zxuno_reg == 8'hF8);
+    wire reg_mb_ctl = (zxuno_reg == 8'hF9);
+    wire reg_mb_cfga = (zxuno_reg == 8'hFA);
+
+    // megabuzz: write cfg, switch rom, soft reset
+    reg cfg_rom_active = 0;
+    reg [7:0] cfg_addr = 8'h00;
+
+    always @(posedge clk_bus) begin
+        soft_reset <= 0;
+        cfg_write <= 0;
+        if (!btn_reset_n & !btn_nmi_n & cfg_rom_en) begin // both reset+nmi buttons presset => replace rom, trigger soft reset
+            cfg_rom_active <= 1;
+            soft_reset <= 1;
+        end
+        else if (ioreq_wr & port_zxuno_data & reg_mb_rom & cfg_rom_en) begin // if rom switched by the zxuno port => replace rom, trigger soft reset
+            cfg_rom_active <= bus_d[0];
+            //soft_reset <= 1;
+        end
+        else if (ioreq_wr & port_zxuno_data & reg_mb_ctl) // soft reset port
+            soft_reset <= bus_d[0];
+        else if (ioreq_wr & port_zxuno_data & reg_mb_cfga) // cfg byte address
+            cfg_addr <= bus_d;
+        else if (ioreq_wr & port_zxuno_data & reg_mb_cfg) begin // new cfg applied, trigger write to flash
+            if (cfg_addr == 0)
+                new_cfg_byte[7:0] <= bus_d;
+            else begin
+                new_cfg_byte[15:8] <= bus_d;
+                cfg_write <= 1; // only when last cfg byte is sent
+            end
         end
     end
-end
 
-// megabuzz rom instance
-wire [7:0] megabuzz_rom_dout;
-sprom #(.DATAWIDTH(8), .ADDRWIDTH(11), .MEM_INIT_FILE("../rom/megabuzz.mem")) megabuzz_rom(
-    .clock(clk_bus),
-    .address(bus_a[10:0]),
-    .q(megabuzz_rom_dout)
-);
+    // megabuzz rom instance
+    wire [7:0] megabuzz_rom_dout;
+    sprom #(.DATAWIDTH(8), .ADDRWIDTH(11), .MEM_INIT_FILE("../rom/megabuzz.mem")) megabuzz_rom(
+        .clock(clk_bus),
+        .address(bus_a[10:0]),
+        .q(megabuzz_rom_dout)
+    );
 
-// iorqge
-assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc | port_zxuno_reg | port_zxuno_data) ? 1'b0 : 1'b1;
+    // iorqge
+    assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc | port_zxuno_reg | port_zxuno_data) ? 1'b0 : 1'b1;
 
-// BUS
-assign bus_d = 
-     (cfg_rom_active & ~bus_mreq_n & ~bus_rd_n & bus_a[15:14] == 2'b00) ? megabuzz_rom_dout : // Megabuzz rom
-     (divmmc_en & !cfg_rom_active & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
-     (ioreq_rd & port_zc & !cfg_rom_active) ? zc_do_bus : // ZC + DivMMC
-     (ioreq_rd & port_zxuno_reg) ? zxuno_reg : // ZXUNO reg
-     (ioreq_rd & port_zxuno_data & reg_vs) ? vs_bus_do : // ZXUNO data (VS1053)
-     (ioreq_rd & port_zxuno_data & reg_mb_cfg) ? ((cfg_addr == 0) ? cfg_byte[7:0] : cfg_byte[15:8]) : // Megabuzz CFG byte
-     (ioreq_rd & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
-     (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | reset} : // Megabuzz CTL status (flash busy)
-     (ioreq_rd & port_fffd & !cfg_rom_active) ? ts_do : // TS
-     (ioreq_rd & port_gs & !cfg_rom_active) ? gs_do_bus : // GS
-     8'bzzzzzzzz;
-     
-// wait (from zc)
-assign bus_wait_n = (zc_busy & (divmmc_en | zc_en) & !cfg_rom_active) ? 1'b0 : 1'bz;
+    // BUS
+    assign bus_d =
+    (cfg_rom_active & ~bus_mreq_n & ~bus_rd_n & bus_a[15:14] == 2'b00) ? megabuzz_rom_dout : // Megabuzz rom
+    (divmmc_en & !cfg_rom_active & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
+    (ioreq_rd & port_zc & !cfg_rom_active) ? zc_do_bus : // ZC + DivMMC
+    (ioreq_rd & port_zxuno_reg) ? zxuno_reg : // ZXUNO reg
+    (ioreq_rd & port_zxuno_data & reg_vs) ? vs_bus_do : // ZXUNO data (VS1053)
+    (ioreq_rd & port_zxuno_data & reg_mb_cfg) ? ((cfg_addr == 0) ? cfg_byte[7:0] : cfg_byte[15:8]) : // Megabuzz CFG byte
+    (ioreq_rd & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
+    (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | reset} : // Megabuzz CTL status (flash busy)
+    (ioreq_rd & port_fffd & !cfg_rom_active) ? ts_do : // TS
+    (ioreq_rd & port_gs & !cfg_rom_active) ? gs_do_bus : // GS
+    8'bzzzzzzzz;
 
-// block zx rom
-assign bus_romcs_n = ((divmmc_en & divmmc_zxrom_block) | (cfg_rom_active & (bus_a[15:14] == 2'b00))) & ~bus_mreq_n ? 1'b0 : 1'b1;
+    // wait (from zc)
+    assign bus_wait_n = (zc_busy & (divmmc_en | zc_en) & !cfg_rom_active) ? 1'b0 : 1'bz;
 
-// vu meter
-vu_meter vu_meter_l_inst(
-    .clk              (clk_bus),
-    .dir              (vu_reverse),
-    .enable_bar       (vu_bar),
-    .enable_dot       (vu_dot),
-    .reset            (reset),
-    .sample_tick      (dac_ws),
-    .audio_sample     (audio_mix_l),
-    .leds             (led_meter_l)
-);
+    // block zx rom
+    assign bus_romcs_n = ((divmmc_en & divmmc_zxrom_block) | (cfg_rom_active & (bus_a[15:14] == 2'b00))) & ~bus_mreq_n ? 1'b0 : 1'b1;
 
-vu_meter vu_meter_r_inst(
-    .clk              (clk_bus),
-    .dir              (vu_reverse),
-    .enable_bar       (vu_bar),
-    .enable_dot       (vu_dot),
-    .reset            (reset),
-    .sample_tick      (dac_ws),
-    .audio_sample     (audio_mix_r),
-    .leds             (led_meter_r)
-);
+    // vu meter
+    vu_meter vu_meter_l_inst(
+        .clk              (clk_bus),
+        .dir              (vu_reverse),
+        .enable_bar       (vu_bar),
+        .enable_dot       (vu_dot),
+        .reset            (reset),
+        .sample_tick      (dac_ws),
+        .audio_sample     (audio_mix_l),
+        .leds             (led_meter_l)
+    );
+
+    vu_meter vu_meter_r_inst(
+        .clk              (clk_bus),
+        .dir              (vu_reverse),
+        .enable_bar       (vu_bar),
+        .enable_dot       (vu_dot),
+        .reset            (reset),
+        .sample_tick      (dac_ws),
+        .audio_sample     (audio_mix_r),
+        .leds             (led_meter_r)
+    );
 
 endmodule
 
