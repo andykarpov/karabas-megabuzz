@@ -7,7 +7,10 @@
             "command": "make",
             "args": ["clean"],
             "options": {
-                "cwd": "${workspaceFolder}/syn"
+                "cwd": "${workspaceFolder}/syn",
+                "statusbar": {
+                    "color" : "#CC4444"
+                }
             },
             "group": {
                 "kind": "build",
@@ -21,7 +24,10 @@
             "command": "make",
             "args": ["all"],
             "options": {
-                "cwd": "${workspaceFolder}/syn"
+                "cwd": "${workspaceFolder}/syn",
+                "statusbar": {
+                    "color" : "#44CC44"
+                }
             },
             "group": {
                 "kind": "build",
@@ -35,11 +41,31 @@
             "command": "make",
             "args": ["all16_a3"],
             "options": {
-                "cwd": "${workspaceFolder}/syn"
+                "cwd": "${workspaceFolder}/syn",
+                "statusbar": {
+                    "color" : "#22C1D6"
+                }
             },
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "problemMatcher": [],
+        },
+        {
+            "label": "Flash: SLX16 revA3",
+            "type": "shell",
+            "command": "make",
+            "args": ["flash16_a3"],
+            "options": {
+                "cwd": "${workspaceFolder}/syn",
+                "statusbar": {
+                    "color" : "#C188D6"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
             },
             "problemMatcher": []
         }

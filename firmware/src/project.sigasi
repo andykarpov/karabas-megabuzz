@@ -93,9 +93,6 @@
                 "define": {
                     "HW_A3": ""
                 }
-            },
-            "languageMapping": {
-                "vhdlVersion": "vhdl-1993"
             }
         }
     }
