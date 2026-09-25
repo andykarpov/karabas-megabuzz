@@ -124,7 +124,7 @@ VS1053_InternalDelay:
 
 ; --- Секция данных ---
 FileStart:
-    INCBIN "sweep32.mp3"                 ; Подключаем ваш MP3 файл
+    INCBIN "demo32.mp3"                 ; Подключаем ваш MP3 файл
 FileEnd:
 
 ;    SAVETAP "testmp3.tap", BASIC, "Loader", Start, 10
