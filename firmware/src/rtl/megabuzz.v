@@ -722,10 +722,10 @@ module karabas_megabuzz(
         .btn_nmi_n        (btn_nmi_n),
 
 `ifdef HW_A2
-    .ram_a            (mmc_mem_a),
-    .ram_cs_n         (mmc_mem_cs_n),
-    .ram_rd_n         (mmc_mem_rd_n),
-    .ram_wr_n         (mmc_mem_wr_n),
+        .ram_a            (mmc_mem_a),
+        .ram_cs_n         (mmc_mem_cs_n),
+        .ram_rd_n         (mmc_mem_rd_n),
+        .ram_wr_n         (mmc_mem_wr_n),
 `elsif HW_A3
         .ram_a            (mmc_mem_a),
         .ram_cs_n         (mmc_mem_cs_n),
@@ -745,21 +745,58 @@ module karabas_megabuzz(
         .busy             (zc_busy)
     );
 
-    // IORQGE
+    // vu meter
+    vu_meter vu_meter_l_inst(
+        .clk              (clk_bus),
+        .dir              (vu_reverse),
+        .enable_bar       (vu_bar),
+        .enable_dot       (vu_dot),
+        .reset            (reset),
+        .sample_tick      (dac_ws),
+        .audio_sample     (audio_mix_l),
+        .leds             (led_meter_l)
+    );
+
+    vu_meter vu_meter_r_inst(
+        .clk              (clk_bus),
+        .dir              (vu_reverse),
+        .enable_bar       (vu_bar),
+        .enable_dot       (vu_dot),
+        .reset            (reset),
+        .sample_tick      (dac_ws),
+        .audio_sample     (audio_mix_r),
+        .leds             (led_meter_r)
+    );
+
+    // megabuzz rom instance
+    wire [7:0] megabuzz_rom_dout;
+    sprom #(.DATAWIDTH(8), .ADDRWIDTH(11), .MEM_INIT_FILE("../rom/megabuzz.mem")) megabuzz_rom(
+        .clock(clk_bus),
+        .address(bus_a[10:0]),
+        .q(megabuzz_rom_dout)
+    );
+
+    // --------------------------------------------------------------------------------------
+    // IORQGE, ROMCS, WAIT, PORTS, DATA BUS MUX LOGIC
+    // --------------------------------------------------------------------------------------
 
     // turbosound ports
     wire port_bffd      = (bus_a[15:14] == 2'b10) & (bus_a[3:0] == 4'b1101) & turbosound_en;
     wire port_fffd      = (bus_a[15:14] == 2'b11) & (bus_a[3:0] == 4'b1101) & turbosound_en;
     wire port_fffd_full = (bus_a[15:13] == 3'b111) & (bus_a[3:0] == 4'b1101) & turbosound_en; // required for compatibility with #dffd port
+
     // gs (b3,bb)
     wire port_gs = ((bus_a[7:0] == 8'hB3) | (bus_a[7:0] == 8'hBB)) & gs_en & ~loader_act;
+
     // opl3 (c4,c5,c6,c7)
     wire port_opl3 = (bus_a[7:2] == 6'b110001) & opl3_en;
+
     // zc + divmmc (57,77,E3,EB)
     wire port_zc = (((bus_a[7:0] == 8'h77) & (zc_en | divmmc_en)) |
     ((bus_a[7:0] == 8'h57) & (zc_en | divmmc_en)) |
     ((bus_a[7:0] == 8'hEB) & divmmc_en));
     wire port_mmc = ((bus_a[7:0] == 8'hE3) | (bus_a[7:0] == 8'hE7)) & divmmc_en;
+
     // zxuno ports (fc3b, fd3b)
     wire port_zxuno_reg =  (bus_a[15:0] == 16'hFC3B);
     wire port_zxuno_data = (bus_a[15:0] == 16'hFD3B);
@@ -768,6 +805,7 @@ module karabas_megabuzz(
         if (port_zxuno_reg & ioreq_wr)
             zxuno_reg <= bus_d;
     end
+
     // vs1053 (zxuno regs f5, f6, fb, fc)
     wire reg_vs = (zxuno_reg == 8'hF5 | zxuno_reg == 8'hF6 | zxuno_reg == 8'hFB | zxuno_reg == 8'hFC) & vs1053_en;
     assign vs_bus_di = bus_d;
@@ -779,7 +817,9 @@ module karabas_megabuzz(
     (zxuno_reg == 8'hFB) ? 2'b10 :
     (zxuno_reg == 8'hFC) ? 2'b11 :
     2'b00;
+
     // megabuzz cfg (zxuno regs f7,f8,f9,fa)
+    wire reg_mb = (zxuno_reg == 8'hF7 | zxuno_reg == 8'hF8 | zxuno_reg == 8'hF9 | zxuno_reg == 8'hFA);
     wire reg_mb_cfg = (zxuno_reg == 8'hF7);
     wire reg_mb_rom = (zxuno_reg == 8'hF8);
     wire reg_mb_ctl = (zxuno_reg == 8'hF9);
@@ -788,7 +828,6 @@ module karabas_megabuzz(
     // megabuzz: write cfg, switch rom, soft reset
     reg cfg_rom_active = 0;
     reg [7:0] cfg_addr = 8'h00;
-
     always @(posedge clk_bus) begin
         soft_reset <= 0;
         cfg_write <= 0;
@@ -814,24 +853,15 @@ module karabas_megabuzz(
         end
     end
 
-    // megabuzz rom instance
-    wire [7:0] megabuzz_rom_dout;
-    sprom #(.DATAWIDTH(8), .ADDRWIDTH(11), .MEM_INIT_FILE("../rom/megabuzz.mem")) megabuzz_rom(
-        .clock(clk_bus),
-        .address(bus_a[10:0]),
-        .q(megabuzz_rom_dout)
-    );
-
     // iorqge
-    assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc | port_zxuno_reg | port_zxuno_data) ? 1'b0 : 1'b1;
+    assign bus_iorqge_n = (port_fffd_full | port_bffd | port_gs | port_opl3 | port_zc | port_mmc | (port_zxuno_data & (reg_vs | reg_mb))) ? 1'b0 : 1'b1;
 
     // BUS
     assign bus_d =
     (cfg_rom_active & ~bus_mreq_n & ~bus_rd_n & bus_a[15:14] == 2'b00) ? megabuzz_rom_dout : // Megabuzz rom
     (divmmc_en & !cfg_rom_active & divmmc_mem & ~bus_mreq_n & ~bus_rd_n) ? divmmc_dout : // DivMMC memory dout
     (ioreq_rd & port_zc & !cfg_rom_active) ? zc_do_bus : // ZC + DivMMC
-    (ioreq_rd & port_zxuno_reg) ? zxuno_reg : // ZXUNO reg
-    (ioreq_rd & port_zxuno_data & reg_vs) ? vs_bus_do : // ZXUNO data (VS1053)
+    (ioreq_rd & port_zxuno_data & reg_vs) ? vs_bus_do : // VS1053 status
     (ioreq_rd & port_zxuno_data & reg_mb_cfg) ? ((cfg_addr == 0) ? cfg_byte[7:0] : cfg_byte[15:8]) : // Megabuzz CFG byte
     (ioreq_rd & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
     (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | reset} : // Megabuzz CTL status (flash busy)
@@ -844,29 +874,6 @@ module karabas_megabuzz(
 
     // block zx rom
     assign bus_romcs_n = ((divmmc_en & divmmc_zxrom_block) | (cfg_rom_active & (bus_a[15:14] == 2'b00))) & ~bus_mreq_n ? 1'b0 : 1'b1;
-
-    // vu meter
-    vu_meter vu_meter_l_inst(
-        .clk              (clk_bus),
-        .dir              (vu_reverse),
-        .enable_bar       (vu_bar),
-        .enable_dot       (vu_dot),
-        .reset            (reset),
-        .sample_tick      (dac_ws),
-        .audio_sample     (audio_mix_l),
-        .leds             (led_meter_l)
-    );
-
-    vu_meter vu_meter_r_inst(
-        .clk              (clk_bus),
-        .dir              (vu_reverse),
-        .enable_bar       (vu_bar),
-        .enable_dot       (vu_dot),
-        .reset            (reset),
-        .sample_tick      (dac_ws),
-        .audio_sample     (audio_mix_r),
-        .leds             (led_meter_r)
-    );
 
 endmodule
 
