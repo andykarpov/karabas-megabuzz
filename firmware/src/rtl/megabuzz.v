@@ -24,8 +24,9 @@
 ------------------------------------------------------------------------------------------------------------------*/
 `default_nettype none
 
+// top-level entity 
 module karabas_megabuzz(
-    input wire          clk,
+    input wire          clk, // 50 MHz
     input wire          btn_reset_n,
 
 `ifdef HW_A
@@ -77,7 +78,7 @@ module karabas_megabuzz(
 
 `ifdef HW_A3
     input wire  [5:5]   cfg_n,
-    output wire         o_reset_n,
+    output wire         o_reset_n, // output signal to reset host
     input wire          btn_nmi_n,
     output wire [16:13] mmc_mem_a,
     output wire         mmc_mem_cs_n,
