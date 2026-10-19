@@ -174,12 +174,10 @@ NET "scl"                 LOC="L7"  | IOSTANDARD = LVCMOS33;
 # Timings
 NET "clk" TNM_NET = "clk";
 NET "clk_bus" TNM_NET = "clk_bus";
-NET "ce_14m" TNM_NET = "ce_14m";
 NET "clk12" TNM_NET = "clk12";
 
 TIMESPEC "TS_CLK" = PERIOD "clk" 50000 kHz;
 #TIMESPEC "TS_CLK_BUS" = PERIOD "clk_bus" 28000 kHz;
-#TIMESPEC "TS_CE_14M" = PERIOD "ce_14m" 14000 kHz;
 #TIMESPEC "TS_CLK12" = PERIOD "clk12" 12000 kHz;
 
 NET "opl3_dclk" TNM_NET = "opl3_dclk";

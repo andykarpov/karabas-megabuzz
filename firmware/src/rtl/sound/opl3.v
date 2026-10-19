@@ -81,7 +81,8 @@ module opl3(
 
     // assign clock
     //assign opl3_clk = ce;
-    ODDR2 oddr_opl3(.Q(opl3_clk), .C0(ce), .C1(~ce), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
+    // ce toggles every clk cycle: sampling it on both edges of clk gives clk / 2 without a gated clock
+    ODDR2 oddr_opl3(.Q(opl3_clk), .C0(clk), .C1(~clk), .CE(1'b1), .D0(ce), .D1(ce), .R(1'b0), .S(1'b0));
 
     // resample + interpolation
     audio_resample opl3_resample_l(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_l), .data_out(out_l), .valid_out());
