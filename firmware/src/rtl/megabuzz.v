@@ -323,9 +323,9 @@ module karabas_megabuzz(
 
     assign o_reset_n = (poweron_reset) ? 1'b0 : 1'bz;
 
-    // clock for gs and opl3
-    reg ce_14m;
-    always @(negedge clk_bus)
+    // clock enable for gs and opl3
+    reg ce_14m = 0;
+    always @(posedge clk_bus)
     ce_14m <= !ce_14m;
 
     // reset
@@ -338,10 +338,12 @@ module karabas_megabuzz(
 
     // bus_iorq_n is useless on zxevo :(
     // so we're detecting bus_iorq_n cycle by bus_rd_n/bus_wr_n signal asserted without bus_m1_n/bus_mreq_n
-    reg ioreq, ioreq_prev;
-    always @(negedge clk_mem) begin
-        ioreq_prev  <= ioreq;
-        ioreq       <= bus_m1_n && bus_mreq_n && (~bus_rd_n || ~bus_wr_n);
+    // two-stage synchronizer on the rising clk_mem: clk_mem and clk_bus rise together,
+    // so the consumers in the clk_bus domain get a full clk_mem period (7.1 ns), not a half
+    reg ioreq_r = 0, ioreq = 0;
+    always @(posedge clk_mem) begin
+        ioreq_r     <= bus_m1_n && bus_mreq_n && (~bus_rd_n || ~bus_wr_n);
+        ioreq       <= ioreq_r;
     end
     wire ioreq_rd = ioreq && ~bus_rd_n;
     wire ioreq_wr = ioreq && ~bus_wr_n;
@@ -349,7 +351,7 @@ module karabas_megabuzz(
     // bus_dos_n is useless on zxevo :(
     // so we're just lock some ports access when instruction has been fetched from rom
     reg rom_m1_access;
-    always @(negedge clk_mem or posedge reset) begin
+    always @(posedge clk_mem or posedge reset) begin
         if (reset)
             rom_m1_access <= 0;
         else if (~bus_m1_n)
@@ -416,7 +418,7 @@ module karabas_megabuzz(
     // ------- i2s DAC --------------
     wire signed [15:0] audio_mix_l, audio_mix_r;
 
-    PCM5102 #(.DAC_CLK_DIV_BITS(2)) dac_inst(
+    kg_pcm5102 #(.DIV_BITS(2)) dac_inst( // 28 MHz / 8 = 3.5 MHz bck, 109 kHz lrck
         .clk              (clk_bus),
         .reset            (reset),
         .left             (audio_mix_l),
@@ -810,7 +812,7 @@ module karabas_megabuzz(
     // vs1053 (zxuno regs f5, f6, fb, fc)
     wire reg_vs = (zxuno_reg == 8'hF5 | zxuno_reg == 8'hF6 | zxuno_reg == 8'hFB | zxuno_reg == 8'hFC) & vs1053_en;
     assign vs_bus_di = bus_d;
-    assign vs_bus_cs_n = ~(port_zxuno_data & reg_vs & ~bus_iorq_n);
+    assign vs_bus_cs_n = ~(port_zxuno_data & reg_vs & ioreq);
     assign vs_bus_we_n = bus_wr_n;
     assign vs_bus_rd_n = bus_rd_n;
     assign vs_bus_addr = (zxuno_reg == 8'hF5) ? 2'b00 :

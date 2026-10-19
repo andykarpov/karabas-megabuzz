@@ -47,7 +47,7 @@ The only testbench is VS1053. Run it from `firmware/src/rtl/sound/`: `./vs1053_t
 ## Architecture notes
 
 - **Host bus**: the FPGA decodes the Z80 bus directly (`bus_a`, `bus_d`, `bus_iorq_n`, `bus_m1_n`, …) from the NemoBus slot. Each sound device module gets the decoded bus and an enable bit, and returns audio samples.
-- **Audio path**: device modules → `audio_mute` / `audio_resample` → `audio_mixer` → `pcm5102` I2S out. Two `vu_meter` instances drive the LED bars. A PCM1808 ADC is read through `i2s_transceiver` (`adc_l`/`adc_r`) and mixed in.
+- **Audio path**: device modules → `audio_mute` / `audio_resample` → `audio_mixer` (19-bit sum, saturated to 16 bits) → `kg_pcm5102` I2S out (copied from karabas-go-modules, not a submodule). Two `vu_meter` instances drive the LED bars. A PCM1808 ADC is read through `i2s_transceiver` (`adc_l`/`adc_r`) and mixed in.
 - **General Sound** (`gs_top.v`/`gs.v`) runs its own T80 Z80 core (`rtl/T80`, VHDL). At boot, `loader.vhd` + `flash.vhd` copy the GS ROM out of SPI flash.
 - **Config & control** (A2/A3): the ZXUNO-style register ports `#FC3B` (register select) and `#FD3B` (data) expose custom registers `#F5`–`#FC`: VS1053 FIFO and volume/effects, config bytes, ROM switch, host reset. Config byte 0 is a per-device enable bitmask. Writing the second config byte triggers `cfg_write`, which persists both bytes to SPI flash (the 0x1F0000 area). `PORTS.md` is the spec; keep it in sync when you change register behavior in `megabuzz.v`.
 - **SD**: `rtl/sd/zc_dicmmc.v` implements both Z-Controller and DivMMC (with the esxDOS ROM and the 128K SRAM on A2+).

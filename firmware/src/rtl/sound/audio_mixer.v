@@ -71,7 +71,7 @@ module audio_mixer (
         covox_r <= $signed({2'b00, covox_c, 2'b00}) + $signed({2'b00, covox_d, 2'b00}) + $signed({3'b000, covox_fb, 1'b0});
     end
 
-    wire signed [15:0] mix_l =  ((turbosound_en) ? $signed({tsfm_l[11:0], 4'b0000}) : $signed({16'b0})) +
+    wire signed [18:0] sum_l =  ((turbosound_en) ? $signed({tsfm_l[11:0], 4'b0000}) : $signed({16'b0})) +
                                 ((gs_en) ? $signed({gs_l[14],gs_l[14:0]}) : $signed({16'b0})) +
                                 ((midi_en) ? $signed(adc_l[15:0]) : $signed({16'b0})) +
                                 ((opl3_en) ? $signed(opl3_l[15:0]) : $signed({16'b0})) +
@@ -79,7 +79,7 @@ module audio_mixer (
                                 ((soundrive_en) ? $signed({covox_l[11:0], 4'b0000}) : $signed({16'b0})) +
                                 ((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
 
-    wire signed [15:0] mix_r =  ((turbosound_en) ? $signed({tsfm_r[11:0], 4'b0000}) : $signed({16'b0})) +
+    wire signed [18:0] sum_r =  ((turbosound_en) ? $signed({tsfm_r[11:0], 4'b0000}) : $signed({16'b0})) +
                                 ((gs_en) ? $signed({gs_r[14], gs_r[14:0]}) : $signed({16'b0})) +
                                 ((midi_en) ? $signed(adc_r[15:0]) : $signed({16'b0})) +
                                 ((opl3_en) ? $signed(opl3_r[15:0]) : $signed({16'b0})) +
@@ -87,7 +87,18 @@ module audio_mixer (
                                 ((soundrive_en) ? $signed({covox_r[11:0], 4'b0000}) : $signed({16'b0})) +
                                 ((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
 
-    assign audio_l = (mute) ? {16'b0} : mix_l;
-    assign audio_r = (mute) ? {16'b0} : mix_r;
+    // 7 sources may overflow 16 bits: clip instead of wrapping around
+    function signed [15:0] sat16(input signed [18:0] v);
+        sat16 = (v > 19'sd32767) ? 16'sh7FFF : (v < -19'sd32768) ? 16'sh8000 : v[15:0];
+    endfunction
+
+    reg signed [15:0] out_l = 0, out_r = 0;
+    always @(posedge clk) begin
+        out_l <= mute ? 16'sd0 : sat16(sum_l);
+        out_r <= mute ? 16'sd0 : sat16(sum_r);
+    end
+
+    assign audio_l = out_l;
+    assign audio_r = out_r;
 
 endmodule

@@ -16,7 +16,7 @@ CONSTRAINTS_A3  = karabas-megabuzz-a3.ucf
 
 VERILOG_SOURCES_COMMON= ../rtl/megabuzz.v\
                         ../rtl/fifo/fifo.v\
-                        ../rtl/dac/pcm5102.v\
+                        ../rtl/dac/kg_pcm5102.v\
                         ../rtl/sound/gs_top.v\
                         ../rtl/sound/gs.v\
                         ../rtl/sound/audio_mixer.v\
