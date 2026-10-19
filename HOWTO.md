@@ -32,21 +32,20 @@
 1) Ставим openFPGALoader (в современных linux-дистрибутивах он есть из коробки, но версия древняя, поэтому лучше собрать из сырцов согласно мануалу с сайта производителя). Также имеются сборки под windows и mac os.
 2) Подключаем USB Blaster
 3) Подаем питание 5В на плату (можно через специальный разъем prg на плате)
-4) make flash - прошьет прошивку под камень XC6SLX16 для revA
-5) make flash_a1 - прошьет прошивку под камень XC6SLX16 для revA1
-6) makr flash_a2 - прошьет прошивку под камень XC6SLX16 для revA2
-7) make flash_rom - прольет 32kB образ ПЗУ GS по адресу 0x100000 во флеш (актуально для revA1 и revA2, опционально для revA)
-8) make flash_cfg1 - прольет 256 байт конфига cfg1 по адресу 0x1F0000 во флеш (актуально для revA2, опционально для revA и revA1)
-9) make flash_cfg2 - прольет 256 байт конфига cfg2 по адресу 0x1F0000 во флеш (актуально для revA2, опционально для revA и revA1)
 
-Если влом юзать makefile, можно руками, пример прошивки битстрима для SLX16:
+Готовых make-целей под openFPGALoader в Makefile нет, шьем руками. Все команды выполняются из каталога `firmware/src/syn`.
 
-`openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f work16/karabas_megabuzz.bit`
+4) Прошиваем битстрим под нужную ревизию (имя файла: `karabas_megabuzz.bit` для revA, `karabas_megabuzz_a1.bit`, `karabas_megabuzz_a2.bit`, `karabas_megabuzz_a3.bit` для revA1/A2/A3), пример для revA3:
 
-Пример прошивки ПЗУ GS:
+`openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f work16/karabas_megabuzz_a3.bit`
+
+5) Прошиваем 32kB образ ПЗУ GS по адресу 0x100000 (актуально для revA1 и новее, опционально для revA):
 
 `openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f -o 0x100000 ../rtl/sound/gs105b.rom`
 
+6) Прошиваем 256 байт конфига по адресу 0x1F0000 (`cfg1.rom`, или `cfg2.rom` - без DivMMC; актуально для revA2 и новее, опционально для revA и revA1):
+
+`openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f -o 0x1F0000 cfg1.rom`
 
 После программирования плата запустится.
 Покажет индикацию уровня сигнала от максимума до минимума.
@@ -58,10 +57,22 @@
 1) Ставим openocd (в современных linux-дистрибутивах он есть из коробки). Также имеются сборки под windows и mac os.
 2) Подключаем USB Blaster
 3) Подаем питание 5В на плату (можно через специальный разъем prg на плате)
-4) make flash25 - прошьет прошивку под камень XC6SLX25 для revA
-5) make flash25_a1 - прошьет прошивку под камень XC6SLX25 для revA1 с ПЗУ GS и конфигом cfg1
-6) make flash25_a2 - прошьет прошивку под камень XC6SLX25 для revA2 с ПЗУ GS и конфигом cfg1
-7) make flash25_a2_nommc - прошьет прошивку под камень XC6SLX25 для revA2 с ПЗУ GS и конфигом cfg2
+4) Из каталога `firmware/src/syn` запускаем нужную цель. Каждая цель за один проход шьет битстрим (с адреса 0), ПЗУ GS (с адреса 0x100000) и конфиг (с адреса 0x1F0000):
+
+| Цель | Камень | Ревизия | Конфиг |
+| :--- | :--- | :--- | :--- |
+| `make flash16` | XC6SLX16 | revA | cfg1 |
+| `make flash16_a1` | XC6SLX16 | revA1 | cfg1 |
+| `make flash16_a2` | XC6SLX16 | revA2 | cfg1 |
+| `make flash16_a2_nommc` | XC6SLX16 | revA2 | cfg2 |
+| `make flash16_a3` | XC6SLX16 | revA3 | cfg1 |
+| `make flash25` | XC6SLX25 | revA | cfg1 |
+| `make flash25_a1` | XC6SLX25 | revA1 | cfg1 |
+| `make flash25_a2` | XC6SLX25 | revA2 | cfg1 |
+| `make flash25_a2_nommc` | XC6SLX25 | revA2 | cfg2 |
+| `make flash25_a3` | XC6SLX25 | revA3 | cfg1 |
+
+Цели берут уже собранный `.bin` из `work16/` или `work25/`. Если его нет, сначала соберите битстрим (`make all16_a3`, `make all25_a2` и т.п.) или используйте готовый из репозитория.
 
 Если влом юзать makefile, можно руками, пример прошивки битстрима для SLX25:
 
@@ -71,7 +82,7 @@
 Покажет индикацию уровня сигнала от максимума до минимума.
 Кнопкой RESET также покажет индикацию. Это верный признак, что FPGA-часть платы запустилась.
 
-ЗЫ: по аналогии можно шить и XC6SLX16 камни, через openocd. соответствующий jtag-spi мост есть - bscan_spi_xc6slx16.bit.
+Для XC6SLX16 команда та же, но с мостом `bscan_spi_xc6slx16.bit` и файлом из `work16/`.
 
 ### DIP-переключатели
 
