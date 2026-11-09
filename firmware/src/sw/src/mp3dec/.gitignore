@@ -1,0 +1,6 @@
+build/
+*.elf
+*.bin
+*.asm
+*.hex
+neorv32_imem_image.vhd

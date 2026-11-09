@@ -15,7 +15,7 @@ EFFORT = -Os
 #USER_FLAGS += -ggdb -gdwarf-3
 
 # Adjust processor IMEM size
-USER_FLAGS += -Wl,--defsym,__neorv32_rom_size=48k
+USER_FLAGS += -Wl,--defsym,__neorv32_rom_size=64k
 
 # Adjust processor DMEM size
 USER_FLAGS += -Wl,--defsym,__neorv32_ram_size=32k
@@ -24,7 +24,15 @@ USER_FLAGS += -Wl,--defsym,__neorv32_ram_size=32k
 #USER_FLAGS += -march=rv32imc_zicsr_zifencei -mabi=ilp32
 
 # Adjust maximum heap size
-USER_FLAGS += -Wl,--defsym,__neorv32_heap_size=25k
+USER_FLAGS += -Wl,--defsym,__neorv32_heap_size=0
+
+# Decoder options: polyphase on the MAC CFU, no heap
+USER_FLAGS += -DUSE_CFU_MAC -DHELIX_STATIC
+
+# SIM=1: UART output goes to the simulator
+ifeq ($(SIM),1)
+USER_FLAGS += -DSIM
+endif
 
 # Additional sources
 #APP_SRC += $(wildcard ./*.c)

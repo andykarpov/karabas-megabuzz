@@ -8,4 +8,5 @@ venv/
 *.asm
 *.vhd
 !tb.vhd
+!tb_rv.vhd
 mp3data.h

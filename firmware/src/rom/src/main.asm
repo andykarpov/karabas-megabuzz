@@ -12,7 +12,7 @@
         ORG 0x0000
 
 ; UI constants
-NUM_CHECKBOXES  EQU 11                              ; count of checkboxes
+NUM_CHECKBOXES  EQU 12                              ; count of checkboxes
 INDEX_APPLY     EQU NUM_CHECKBOXES                  ; Apply button index
 INDEX_CANCEL    EQU NUM_CHECKBOXES + 1              ; Cancel button index
 BUTTONS_ROW     EQU 5 + NUM_CHECKBOXES + 2          ; buttons row
@@ -321,7 +321,7 @@ GetOptionTextAddress:
 TitleText:       DB "  KARABAS MEGABUZZ CONFIG v1.4  ", 0
 LoadingText:     DB "Loading...", 0
 SavingText:      DB "Saving...", 0
-FailText:        DB "Save failed! Press a key", 0
+FailText:        DB "Save failed!", 0
 DoneText:        DB "Rebooting...", 0
 CB_Unselected:   DB "[ ]", 0
 CB_Selected:     DB "[x]", 0
@@ -340,6 +340,7 @@ Str_Opt8:        DB "OPL3 ", 0
 Str_Opt9:        DB "VU bar", 0
 Str_Opt10:       DB "VU dot", 0
 Str_Opt11:       DB "VU reversed", 0
+Str_Opt12:       DB "MP3 on RV32", 0
 
     IFDEF DEBUG_MODE
 Str_DebugCurr:   DB "VAL: #", 0
@@ -353,7 +354,7 @@ Str_Help2:       DB "Use Enter or Space to change", 0
 OptionTexts:
         DW Str_Opt1, Str_Opt2, Str_Opt3, Str_Opt4
         DW Str_Opt5, Str_Opt6, Str_Opt7, Str_Opt8
-        DW Str_Opt9, Str_Opt10, Str_Opt11
+        DW Str_Opt9, Str_Opt10, Str_Opt11, Str_Opt12
 
 ; Variables
 SelectedOption:    EQU 0x5C00  

@@ -452,6 +452,59 @@ $(BUILD_DIR25)/$(PROJECT_A3).bit: $(BUILD_DIR25)/$(PROJECT_A3).ncd
 	cd $(BUILD_DIR25) && $(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk $(PROJECT_A3).ncd $(PROJECT_A3).bit
 	@echo "=== BUILD SUCCESSFULLY COMPLETED ==="
 
+# VS1053 emulation on neorv32: XC6SLX25 only, the SLX16 has no room for it.
+# A2 uses it always, A3 selects it against the real chip with config bit 11.
+NEORV32_PKG  = ../rtl/core/neorv32_package.vhd
+NEORV32_SRC  = $(NEORV32_PKG) $(filter-out $(NEORV32_PKG),$(wildcard ../rtl/core/*.vhd))
+RV_VHDL      = ../rtl/mp3dec/rv_vs1053.vhd
+RV_FW        = mp3dec.bin
+
+define RV32_VARIANT
+all25_$(1)_rv32: $$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.bit
+
+$$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.prj: | $$(BUILD_DIR25)
+	@rm -f $$@
+	$$(foreach f,$$(VHDL_SOURCES),echo "vhdl work ../$$(f)" >> $$@;)
+	$$(foreach f,$$(NEORV32_SRC),echo "vhdl neorv32 ../$$(f)" >> $$@;)
+	@echo "vhdl work ../$$(RV_VHDL)" >> $$@
+	$$(foreach f,$$(VERILOG_SOURCES_COMMON),echo "verilog work ../$$(f)" >> $$@;)
+
+$$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.xst: | $$(BUILD_DIR25)
+	@echo "run" > $$@
+	@echo "-ifn karabas_megabuzz_$(1)_rv32.prj" >> $$@
+	@echo "-ofn karabas_megabuzz_$(1)_rv32.ngc" >> $$@
+	@echo "-ofmt NGC" >> $$@
+	@echo "-p $$(TARGET_PART25)" >> $$@
+	@echo "-top karabas_megabuzz" >> $$@
+	@echo "-opt_mode Speed" >> $$@
+	@echo "-opt_level 1" >> $$@
+	@echo "-define {$(2) RV32}" >> $$@
+
+$$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.ngc: $$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.prj $$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.xst $$(VERILOG_SOURCES_COMMON) $$(VHDL_SOURCES) $$(NEORV32_SRC) $$(RV_VHDL)
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) xst -ifn karabas_megabuzz_$(1)_rv32.xst -ofn karabas_megabuzz_$(1)_rv32.syr
+
+$$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.ngd: $$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.ngc $(3)
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) ngdbuild -p $$(TARGET_PART25) -uc ../$(3) karabas_megabuzz_$(1)_rv32.ngc karabas_megabuzz_$(1)_rv32.ngd
+
+$$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32_mapped.ncd: $$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.ngd
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) map -p $$(TARGET_PART25) -w -ol high -detail -o karabas_megabuzz_$(1)_rv32_mapped.ncd karabas_megabuzz_$(1)_rv32.ngd karabas_megabuzz_$(1)_rv32.pcf
+
+$$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.ncd: $$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32_mapped.ncd
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) par -w -ol high karabas_megabuzz_$(1)_rv32_mapped.ncd karabas_megabuzz_$(1)_rv32.ncd karabas_megabuzz_$(1)_rv32.pcf
+
+$$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.bit: $$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.ncd
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk karabas_megabuzz_$(1)_rv32.ncd karabas_megabuzz_$(1)_rv32.bit
+	@echo "=== BUILD SUCCESSFULLY COMPLETED ==="
+
+flash25_$(1)_rv32: $$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.bin
+	$$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $$(BUILD_DIR25)/karabas_megabuzz_$(1)_rv32.bin 0; jtagspi_program $$(GS_ROM) 0x100000; jtagspi_program $$(RV_FW) 0x180000; jtagspi_program $$(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
+
+.PHONY: all25_$(1)_rv32 flash25_$(1)_rv32
+endef
+
+$(eval $(call RV32_VARIANT,a2,HW_A2,$(CONSTRAINTS_A2)))
+$(eval $(call RV32_VARIANT,a3,HW_A3,$(CONSTRAINTS_A3)))
+
 # Work dir creation
 $(BUILD_DIR16):
 	mkdir -p $(BUILD_DIR16)

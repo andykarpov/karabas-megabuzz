@@ -35,6 +35,16 @@
 // ----------------------------------------------------------------------------
 /* verilator lint_off DECLFILENAME */
 module vs1053 (
+`ifdef RV32
+    // the FIFO and the registers are shared with the neorv32 decoder (rv_vs1053)
+    input  wire        use_chip,        // 0: the neorv32 decoder owns the FIFO, the chip side is held in reset
+    input  wire        fifo_rd_ext,
+    output wire [7:0]  fifo_data_ext,
+    output wire        fifo_empty_ext,
+    output wire        soft_reset_ext,
+    output wire        hard_reset_ext,
+    output wire [7:0]  volume_ext,
+`endif
     input  wire        clk,
     input  wire        reset,
 
@@ -76,6 +86,20 @@ module vs1053 (
     wire [3:0]  chip_version;
     wire [7:0]  reg_volume;
     wire [7:0]  reg_effects;
+    wire        ctrl_fifo_rd;
+
+`ifdef RV32
+    wire        ctrl_rst = reset | ~use_chip;
+    assign      fifo_rd_en = use_chip ? ctrl_fifo_rd : fifo_rd_ext;
+    assign      fifo_data_ext = fifo_data_out;
+    assign      fifo_empty_ext = fifo_empty;
+    assign      soft_reset_ext = soft_reset_cmd;
+    assign      hard_reset_ext = hard_reset_cmd;
+    assign      volume_ext = reg_volume;
+`else
+    wire        ctrl_rst = reset;
+    assign      fifo_rd_en = ctrl_fifo_rd;
+`endif
 
     vs1053_host_interface #(.DEFAULT_VOLUME(DEFAULT_VOLUME), .DEFAULT_EFFECT(DEFAULT_EFFECT)) host_if_inst (
         .clk(clk),
@@ -99,10 +123,10 @@ module vs1053 (
 
     vs1053_controller ctrl_inst (
         .clk(clk),
-        .rst(reset),
+        .rst(ctrl_rst),
         .soft_reset_cmd(soft_reset_cmd),
         .hard_reset_cmd(hard_reset_cmd),
-        .fifo_rd_en(fifo_rd_en),
+        .fifo_rd_en(ctrl_fifo_rd),
         .fifo_data_out(fifo_data_out),
         .fifo_empty(fifo_empty),
         .fifo_count(fifo_count),
@@ -123,7 +147,7 @@ module vs1053 (
 
     vs1053_spi_master spi_master_inst (
         .clk(clk),
-        .rst(reset || soft_reset_cmd || hard_reset_cmd),
+        .rst(ctrl_rst || soft_reset_cmd || hard_reset_cmd),
         .fast_mode(spi_fast_mode),
         .start(spi_start),
         .is_data(spi_is_data),

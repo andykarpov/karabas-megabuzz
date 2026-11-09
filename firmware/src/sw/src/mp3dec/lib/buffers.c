@@ -91,6 +91,47 @@ static void ClearBuffer(void *buf, int nBytes)
  * Notes:       if one or more mallocs fail, function frees any buffers already
  *                allocated before returning
  **************************************************************************************/
+#ifdef HELIX_STATIC
+
+/* one decoder instance, no heap: the RAM of the FPGA build has no room for malloc overhead */
+static MP3DecInfo      s_info;
+static FrameHeader     s_fh;
+static SideInfo        s_si;
+static ScaleFactorInfo s_sfi;
+static HuffmanInfo     s_hi;
+static DequantInfo     s_di;
+static IMDCTInfo       s_mi;
+static SubbandInfo     s_sbi;
+
+MP3DecInfo *AllocateBuffers(void)
+{
+	ClearBuffer(&s_info, sizeof(s_info));
+	ClearBuffer(&s_fh, sizeof(s_fh));
+	ClearBuffer(&s_si, sizeof(s_si));
+	ClearBuffer(&s_sfi, sizeof(s_sfi));
+	ClearBuffer(&s_hi, sizeof(s_hi));
+	ClearBuffer(&s_di, sizeof(s_di));
+	ClearBuffer(&s_mi, sizeof(s_mi));
+	ClearBuffer(&s_sbi, sizeof(s_sbi));
+
+	s_info.FrameHeaderPS =     (void *)&s_fh;
+	s_info.SideInfoPS =        (void *)&s_si;
+	s_info.ScaleFactorInfoPS = (void *)&s_sfi;
+	s_info.HuffmanInfoPS =     (void *)&s_hi;
+	s_info.DequantInfoPS =     (void *)&s_di;
+	s_info.IMDCTInfoPS =       (void *)&s_mi;
+	s_info.SubbandInfoPS =     (void *)&s_sbi;
+
+	return &s_info;
+}
+
+void FreeBuffers(MP3DecInfo *mp3DecInfo)
+{
+	(void)mp3DecInfo;
+}
+
+#else /* !HELIX_STATIC */
+
 MP3DecInfo *AllocateBuffers(void)
 {
 	MP3DecInfo *mp3DecInfo;
@@ -170,3 +211,5 @@ void FreeBuffers(MP3DecInfo *mp3DecInfo)
 
 	SAFE_FREE(mp3DecInfo);
 }
+
+#endif /* HELIX_STATIC */
