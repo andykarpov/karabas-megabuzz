@@ -173,7 +173,11 @@ module karabas_megabuzz(
     wire turbosound_en  = cfg_n[3];
     wire midi_en        = cfg_n[3]; // depends on AY port
     wire opl3_en        = cfg_n[4];
+`ifdef RV32
+    wire vs1053_en      = 1; // the neorv32 decoder answers on the VS1053 registers
+`else
     wire vs1053_en      = 0;
+`endif
     wire vu_bar         = 1;
     wire vu_dot         = 0;
     wire vu_reverse     = tp[2];
@@ -265,7 +269,11 @@ module karabas_megabuzz(
     wire turbosound_en  = cfg_byte[6];
     wire midi_en        = cfg_byte[6]; // depends on AY port
     wire opl3_en        = cfg_byte[7];
+`ifdef RV32
+    wire vs1053_en      = 1; // the neorv32 decoder answers on the VS1053 registers
+`else
     wire vs1053_en      = 0;
+`endif
     wire vu_bar         = cfg_byte[8];
     wire vu_dot         = cfg_byte[9];
     wire vu_reverse     = cfg_byte[10]; // ~cfg_n[5]; // solder jumper (reversed VU meters)
@@ -306,13 +314,14 @@ module karabas_megabuzz(
 `endif
 
     // pll
-    wire clk_bus, clk_mem, clk12, clk_opl3, locked, areset;
+    wire clk_bus, clk_mem, clk12, clk_opl3, clk_cpu, locked, areset;
     pll pll_inst(
         .CLK_IN1         (clk),
         .CLK_OUT1        (clk_mem), // 140
         .CLK_OUT2        (clk_bus), // 28
         .CLK_OUT3        (clk12), // 12
         .CLK_OUT4        (clk_opl3), // 14.286, the nominal 14.318 is out of reach of the 700 MHz VCO
+        .CLK_OUT5        (clk_cpu), // 70, neorv32 (RV32 builds only)
         .LOCKED          (locked)
     );
     assign areset = ~locked;
@@ -402,7 +411,20 @@ module karabas_megabuzz(
     wire [15:0] cfg_byte;
     reg [15:0] new_cfg_byte = 16'hFFFF;
     reg cfg_write = 0;
-    loader loader(
+`ifdef RV32
+    localparam RV_ROM_BYTES = 32768;
+`else
+    localparam RV_ROM_BYTES = 0;
+`endif
+    wire [20:0] rv_rom_a;
+    wire [7:0] rv_rom_do;
+    wire rv_rom_wr, rv_rom_busy;
+    loader #(.RV_SIZE_TO_READ(RV_ROM_BYTES)) loader(
+        .RV_A             (rv_rom_a),
+        .RV_DO            (rv_rom_do),
+        .RV_WR            (rv_rom_wr),
+        .RV_BUSY          (rv_rom_busy),
+
         .CLK              (clk_bus),
         .RESET            (areset),
 
@@ -636,7 +658,56 @@ module karabas_megabuzz(
     wire vs_bus_cs_n, vs_bus_we_n, vs_bus_rd_n;
     wire [1:0] vs_bus_addr;
     wire [7:0] vs_bus_di, vs_bus_do;
+
+    wire signed [15:0] rv_audio_l, rv_audio_r;
+`ifdef RV32
+    // A3 has both decoders, config bit 11 selects one (0 = the chip); A2 only has neorv32
+`ifdef HW_A3
+    wire vs_use_chip = ~cfg_byte[11];
+`else
+    wire vs_use_chip = 1'b0;
+`endif
+    wire mp3_rv_en = ~vs_use_chip;
+    wire vs_adc_en = vs_use_chip;
+
+    wire rv_fifo_rd, rv_fifo_empty, rv_soft_reset, rv_hard_reset;
+    wire [7:0] rv_fifo_data, rv_volume;
+
+    rv_vs1053 rv_vs1053_inst(
+        .clk_bus          (clk_bus),
+        .clk_cpu          (clk_cpu),
+        .reset            (reset | vs_use_chip),
+        .rom_busy         (rv_rom_busy),
+        .rom_a            (rv_rom_a),
+        .rom_do           (rv_rom_do),
+        .rom_wr           (rv_rom_wr),
+        .fifo_rd_en       (rv_fifo_rd),
+        .fifo_data        (rv_fifo_data),
+        .fifo_empty       (rv_fifo_empty),
+        .soft_reset_cmd   (rv_soft_reset),
+        .hard_reset_cmd   (rv_hard_reset),
+        .reg_volume       (rv_volume),
+        .audio_l          (rv_audio_l),
+        .audio_r          (rv_audio_r)
+    );
+`else
+    wire vs_use_chip = 1'b1;
+    wire mp3_rv_en = 1'b0;
+    wire vs_adc_en = vs1053_en;
+    assign rv_audio_l = 16'd0;
+    assign rv_audio_r = 16'd0;
+`endif
+
     vs1053 vs1053(
+`ifdef RV32
+        .use_chip         (vs_use_chip),
+        .fifo_rd_ext      (rv_fifo_rd),
+        .fifo_data_ext    (rv_fifo_data),
+        .fifo_empty_ext   (rv_fifo_empty),
+        .soft_reset_ext   (rv_soft_reset),
+        .hard_reset_ext   (rv_hard_reset),
+        .volume_ext       (rv_volume),
+`endif
         .clk              (clk_bus),
         .reset            (reset),
 
@@ -669,7 +740,7 @@ module karabas_megabuzz(
     wire mute;
     audio_mute audio_mute(
         .clk              (clk_bus),
-        .on               (reset | ~vs_reset_n),
+        .on               (reset | (vs_use_chip & ~vs_reset_n)), // the chip stays in reset while neorv32 plays
         .mute             (mute)
     );
 
@@ -685,7 +756,7 @@ module karabas_megabuzz(
         .turbosound_en    (turbosound_en),
         .saa_en           (saa_en),
         .gs_en            (gs_en),
-        .midi_en          ((midi_en & midi_active) | vs1053_en),
+        .midi_en          ((midi_en & midi_active) | vs_adc_en),
         .opl3_en          (opl3_en),
 
         .speaker          (beeper),
@@ -719,6 +790,10 @@ module karabas_megabuzz(
 
         .opl3_l           (opl3_l),
         .opl3_r           (opl3_r),
+
+        .mp3_en           (mp3_rv_en),
+        .mp3_l            (rv_audio_l),
+        .mp3_r            (rv_audio_r),
 
         .audio_l          (audio_mix_l),
         .audio_r          (audio_mix_r)

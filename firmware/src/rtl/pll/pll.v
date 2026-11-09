@@ -59,6 +59,7 @@
 // CLK_OUT2____28.000______0.000______50.0______297.991____199.399
 // CLK_OUT3____12.069______0.000______50.0______352.195____199.399
 // CLK_OUT4____14.286______0.000______50.0______(added by hand, OPL3 master clock)
+// CLK_OUT5____70.000______0.000______50.0______(added by hand, neorv32 CPU clock, only used in the RV32 builds)
 //
 //----------------------------------------------------------------------------
 // "Input Clock   Freq (MHz)    Input Jitter (UI)"
@@ -76,6 +77,7 @@ module pll
   output wire       CLK_OUT2,
   output wire       CLK_OUT3,
   output wire       CLK_OUT4,
+  output wire       CLK_OUT5,
   // Status and control signals
   output wire       LOCKED
 );
@@ -97,8 +99,7 @@ module pll
   wire        drdy_unused;
   wire        clkfbout;
   wire        clkfbout_buf;
-  wire        clkout0, clkout1, clkout2, clkout3;
-  wire        clkout4_unused;
+  wire        clkout0, clkout1, clkout2, clkout3, clkout4;
   wire        clkout5_unused;
 
   PLL_BASE
@@ -120,6 +121,9 @@ module pll
     .CLKOUT3_DIVIDE         (49),
     .CLKOUT3_PHASE          (0.000),
     .CLKOUT3_DUTY_CYCLE     (0.500),
+    .CLKOUT4_DIVIDE         (10),
+    .CLKOUT4_PHASE          (0.000),
+    .CLKOUT4_DUTY_CYCLE     (0.500),
     .CLKIN_PERIOD           (20.000),
     .REF_JITTER             (0.010))
   pll_base_inst
@@ -129,7 +133,7 @@ module pll
     .CLKOUT1               (clkout1),
     .CLKOUT2               (clkout2),
     .CLKOUT3               (clkout3),
-    .CLKOUT4               (clkout4_unused),
+    .CLKOUT4               (clkout4),
     .CLKOUT5               (clkout5_unused),
     // Status and control signals
     .LOCKED                (LOCKED),
@@ -161,6 +165,10 @@ module pll
   BUFG clkout4_buf
   (.O   (CLK_OUT4),
     .I   (clkout3));
+
+  BUFG clkout5_buf
+  (.O   (CLK_OUT5),
+    .I   (clkout4));
 
 
 

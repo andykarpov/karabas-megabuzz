@@ -203,7 +203,12 @@ module zc_divmmc(
 `else 
 
     wire [7:0] ram_do;
+`ifdef HW_A
+    // rev A has no DivMMC: XST would count this RAM as used block RAM and then push others out to LUTs
+    assign ram_do = 8'hFF;
+`else
     spram #(.ADDRWIDTH(16)) esxdos_ram(.clock(clk_mem), .address({port_e3_reg[2:0], bus_a[12:0]}), .data(bus_d), .wren(is_ram_divmmc & ~bus_wr_n), .q(ram_do));
+`endif
 
     assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc) ? 1 : 0;
     assign divmmc_dout = (is_ram_divmmc) ? ram_do : (is_rom_divmmc) ? rom_do : 8'hFF;

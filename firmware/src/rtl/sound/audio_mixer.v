@@ -44,6 +44,10 @@ module audio_mixer (
     input wire [15:0] opl3_l,
     input wire [15:0] opl3_r,
 
+    input wire mp3_en,
+    input wire [15:0] mp3_l,
+    input wire [15:0] mp3_r,
+
     input wire fm_ena,
 
     output wire signed [15:0] audio_l,
@@ -75,6 +79,7 @@ module audio_mixer (
                                 ((gs_en) ? $signed({gs_l[14],gs_l[14:0]}) : $signed({16'b0})) +
                                 ((midi_en) ? $signed(adc_l[15:0]) : $signed({16'b0})) +
                                 ((opl3_en) ? $signed(opl3_l[15:0]) : $signed({16'b0})) +
+                                ((mp3_en) ? $signed(mp3_l[15:0]) : $signed({16'b0})) +
                                 ((saa_en) ? $signed({2'b00, saa_l, 6'b000000}) : $signed({16'b0})) +
                                 ((soundrive_en) ? $signed({covox_l, 4'b0000}) : $signed({16'b0})) +
                                 ((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
@@ -83,6 +88,7 @@ module audio_mixer (
                                 ((gs_en) ? $signed({gs_r[14], gs_r[14:0]}) : $signed({16'b0})) +
                                 ((midi_en) ? $signed(adc_r[15:0]) : $signed({16'b0})) +
                                 ((opl3_en) ? $signed(opl3_r[15:0]) : $signed({16'b0})) +
+                                ((mp3_en) ? $signed(mp3_r[15:0]) : $signed({16'b0})) +
                                 ((saa_en) ? $signed({2'b00, saa_r, 6'b000000}) : $signed({16'b0})) +
                                 ((soundrive_en) ? $signed({covox_r, 4'b0000}) : $signed({16'b0})) +
                                 ((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));

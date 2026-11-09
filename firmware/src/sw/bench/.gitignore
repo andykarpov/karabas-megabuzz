@@ -1,0 +1,12 @@
+lib/
+lib_*/
+build/
+venv/
+*.o
+*.elf
+*.bin
+*.asm
+*.vhd
+!tb.vhd
+!tb_rv.vhd
+mp3data.h

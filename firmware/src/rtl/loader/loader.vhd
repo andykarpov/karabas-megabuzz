@@ -25,6 +25,8 @@ entity loader is
         RAM_ADDR_START   : std_logic_vector(20 downto 0) := "000000000000000000000"; -- 21 bit address / RAM address to copy ROM image to
         --                                                                        101000000000000000000 (X140000)- DIVMMC address in Sram
         SIZE_TO_READ     : integer                       := 32768; -- count of bytes to read (32KB rom)
+        RV_FLASH_ADDR    : std_logic_vector(23 downto 0) := x"180000"; -- neorv32 firmware image
+        RV_SIZE_TO_READ  : integer                       := 0; -- its size in bytes, 0 = no such phase
         CFG_SIZE_TO_READ : integer                       := 2; -- count of bytes to read for cfg (2 bytes)
         CFG_ADDR         : std_logic_vector(23 downto 0) := "000111110000000000000000" -- 0x1F0000; -- 24bit address / config byte address    
     );
@@ -52,6 +54,11 @@ entity loader is
         NEW_CFG       : in  std_logic_vector(15 downto 0) := x"FFFF";
         NEW_CFG_WR    : in  std_logic                     := '0';
         -- loader state pulses
+        -- neorv32 ROM image: RV_BUSY stays high until the first load is over, a config rewrite does not touch it
+        RV_A          : out std_logic_vector(20 downto 0);
+        RV_DO         : out std_logic_vector(7 downto 0);
+        RV_WR         : out std_logic;
+        RV_BUSY       : out std_logic;
         LOADER_ACTIVE : out std_logic;
         LOADER_RESET  : out std_logic
     );
@@ -76,10 +83,13 @@ architecture rtl of loader is
 
     signal prev_new_cfg_wr : std_logic := '0';
 
+    signal rv_phase : std_logic := '0';
+    signal rv_load  : std_logic := '1';
+
     type   machine IS (
         ready,
         cmd_read_cfg, do_read_cfg, finish_cfg,
-        cmd_read, do_read, do_next, finish, finish2,
+        cmd_read, do_read, do_next, rv_start, finish, finish2,
         cmd_erase_cfg, do_erase_cfg, cmd_write_cfg, do_write_cfg, finish_write_cfg
     );                                  --state machine datatype
     signal state   : machine;           --current state
@@ -109,6 +119,10 @@ begin
             RAM_WR          <= '0';
             CFG             <= x"FFFF";
             prev_new_cfg_wr <= '0';
+            rv_phase        <= '0';
+            rv_load         <= '1';
+            RV_WR           <= '0';
+            RV_DO           <= (others => '0');
         elsif CLK'event and CLK = '1' then
 
             prev_new_cfg_wr <= NEW_CFG_WR;
@@ -120,11 +134,21 @@ begin
                         state <= ready;
                     elsif (cfg_read = '0') then
                         state <= cmd_read_cfg;
-                    elsif (read_cnt < SIZE_TO_READ) then
+                    elsif (rv_phase = '0' and read_cnt < SIZE_TO_READ) or
+                          (rv_phase = '1' and read_cnt < RV_SIZE_TO_READ) then
                         state <= cmd_read;
+                    elsif (rv_phase = '0' and RV_SIZE_TO_READ > 0) then
+                        state <= rv_start;
                     else
                         state <= finish;
                     end if;
+
+                when rv_start =>        -- second image: the neorv32 ROM
+                    rv_phase     <= '1';
+                    read_cnt     <= (others => '0');
+                    spi_page_bus <= RV_FLASH_ADDR(23 downto 8);
+                    spi_a_bus    <= RV_FLASH_ADDR(7 downto 0);
+                    state        <= ready;
 
                 -- read cfg byte from spi flash
                 when cmd_read_cfg =>
@@ -171,8 +195,13 @@ begin
                 when do_read =>         -- wait for spi transfer
                     FLASH_RD_N <= '1';
                     if (flash_ready = '1') then
-                        RAM_WR <= '1';  -- begin ram write
-                        RAM_DO <= FLASH_DO;
+                        if (rv_phase = '1') then
+                            RV_WR <= '1';
+                            RV_DO <= FLASH_DO;
+                        else
+                            RAM_WR <= '1';  -- begin ram write
+                            RAM_DO <= FLASH_DO;
+                        end if;
                         state  <= do_next;
                     else
                         state <= do_read;
@@ -180,6 +209,7 @@ begin
 
                 when do_next =>         -- increment address / page
                     RAM_WR   <= '0';    -- end ram write
+                    RV_WR    <= '0';
                     read_cnt <= read_cnt + 1; -- increment read counter
                     if (spi_a_bus = X"FF") then -- increment flash page
                         spi_page_bus <= spi_page_bus + 1;
@@ -193,6 +223,7 @@ begin
 
                 when finish2 =>         -- read all the required data from SPI flash
                     loader_act <= '0';  -- loader finished
+                    rv_load    <= '0';
 
                     -- listening for cfg write command
                     if (NEW_CFG_WR = '1') then
@@ -266,6 +297,8 @@ begin
 
     -------------------------------------------------------------------------------
 
+    RV_A          <= read_cnt;
+    RV_BUSY       <= rv_load;
     LOADER_ACTIVE <= loader_act;
     LOADER_RESET  <= reset_cnt(2);
     FLASH_A       <= spi_page_bus & spi_a_bus;

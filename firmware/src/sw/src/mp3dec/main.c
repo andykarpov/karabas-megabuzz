@@ -1,167 +1,180 @@
 /**
- * MP3 decoder firmware. 
- * VS1053 emulation:
- * - SPI + DREQ for incoming data
- * - CSF + DATA_READY for decoded stereo data
+ * MP3 decoder firmware, VS1053 emulation on neorv32 (see rtl/mp3dec/rv_vs1053.vhd).
+ *
+ * The host writes MP3 data into the FIFO of the VS1053 host interface. The firmware pulls it byte by
+ * byte, decodes a frame straight into the PCM ring and commits it to the hardware, which plays the
+ * ring at the sample rate of the stream.
  */
 
 #include <neorv32.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <stdint.h>
 #include "lib/mp3dec.h"
-#ifdef __cplusplus
+
+// memory map of rv_vs1053
+#define PCM_BASE        0x10000000u         // ring of 2048 words, mirrored: a frame may run past its end
+#define REG_DATA        (*(volatile uint32_t *)0x20000000u)  // r: bit 8 = byte valid, bits 7:0 = byte
+#define REG_VOLUME      (*(volatile uint32_t *)0x20000004u)  // r: bits 7:0 = #FB
+#define REG_PCM_PTR     (*(volatile uint32_t *)0x20000008u)  // r: play pointer, w: end of the committed data
+#define REG_NCO         (*(volatile uint32_t *)0x2000000Cu)  // w: phase increment per CPU clock
+
+#define PCM_WORDS       2048
+#define PTR_MASK        0xFFFu              // pointers are one bit wider than the ring
+#define FRAME_WORDS     1152
+#define NCO_PER_KHZ     61357u              // 2^32 / 70 MHz is 61.357 per Hz
+
+#define INBUF_SIZE      (MAINBUF_SIZE + 108)
+#define HEADER_BYTES    38                  // frame header, CRC and the longest side info
+
+static uint8_t inbuf[INBUF_SIZE];
+static int in_left;                         // valid bytes at the start of inbuf
+static uint32_t tag_left;                   // bytes of an ID3v2 tag still to drop
+
+// VS1053 volume is in -0.5 dB steps: one table entry per step within 6 dB, Q15
+static const uint16_t gain_table[12] = {
+  32768, 30935, 29205, 27571, 26029, 24572, 23198, 21900, 20675, 19519, 18427, 17396
+};
+
+static int32_t volume_gain(uint32_t vol) {
+  uint32_t shift = vol / 12;
+  if (vol >= 0xFE || shift > 15) return 0;
+  return gain_table[vol % 12] >> shift;
 }
-#endif
 
-#define BAUD_RATE        115200    // UART baud
-#define DREQ_PIN         0         // GPIO output: 1 - host can send 32 bytes by SPI
-#define DATA_READY_PIN   1         // GPIO output: PCM data ready strobe
+static void input_compact(uint8_t *from) {
+  int n = in_left;
+  uint8_t *to = inbuf;
+  while (n--) *to++ = *from++;
+}
 
-#define RING_BUF_SIZE   4096       // Ring buffer size
-uint8_t ring_buf[RING_BUF_SIZE];
-volatile uint32_t head = 0;
-volatile uint32_t tail = 0;
+static void input_fill(void) {
+  while (in_left < INBUF_SIZE) {
+    uint32_t w = REG_DATA;
+    if (!(w & 0x100)) break;
+    inbuf[in_left++] = (uint8_t)w;
+  }
+}
 
-// Get data from SDI buffer (our SPI-Slave)
-void check_and_receive_spi_stream(void) {
-    while (!neorv32_sdi_rx_empty()) {
-        uint32_t next = (head + 1) & (RING_BUF_SIZE - 1);
-        if (next != tail) {
-            ring_buf[head] = (uint8_t)neorv32_sdi_get_nonblocking();
-            head = next;
-        } else {
-            break; // Ring buffer overflow
-        }
+// Returns 1 while the start of inbuf is, or may still become, an ID3v2 tag. Skipping the tag keeps the
+// sync words inside cover art away from the decoder.
+static int id3_check(void) {
+  static const char id[3] = {'I', 'D', '3'};
+  for (int i = 0; i < 3 && i < in_left; i++) {
+    if (inbuf[i] != (uint8_t)id[i]) return 0;
+  }
+  if (in_left < 10) return 1;
+  if ((inbuf[6] | inbuf[7] | inbuf[8] | inbuf[9]) & 0x80) return 0;   // size bytes are 7 bit: not a tag
+  tag_left = 10u + (((uint32_t)inbuf[6] << 21) | ((uint32_t)inbuf[7] << 14) | ((uint32_t)inbuf[8] << 7) | inbuf[9]);
+  if (inbuf[5] & 0x10) tag_left += 10;                                // footer
+  return 1;
+}
+
+// Layer III with a usable bit rate and sample rate. Bit rate 0 is free format: a false sync word of that
+// kind switches Helix into free format mode for good, so that no real frame decodes after it.
+static int header_valid(const uint8_t *h) {
+  uint32_t version = (h[1] >> 3) & 3;
+  uint32_t layer = (h[1] >> 1) & 3;
+  uint32_t bitrate = h[2] >> 4;
+  uint32_t samprate = (h[2] >> 2) & 3;
+  return version != 1 && layer == 1 && bitrate != 0 && bitrate != 15 && samprate != 3;
+}
+
+// PCM of the frame, in place at the ring; mono is expanded from the end so nothing is overwritten
+static void pcm_finish(uint32_t wp, const MP3FrameInfo *fi) {
+  uint32_t words = fi->outputSamps / fi->nChans;
+  int32_t gain = volume_gain(REG_VOLUME & 0xFF);
+  volatile uint32_t *ring = (volatile uint32_t *)PCM_BASE + (wp & (PCM_WORDS - 1));
+  volatile int16_t *mono = (volatile int16_t *)ring;
+
+  if (fi->nChans == 1) {
+    for (int i = (int)words - 1; i >= 0; i--) {
+      uint16_t s = (uint16_t)mono[i];
+      ring[i] = ((uint32_t)s << 16) | s;
     }
-}
-
-uint32_t ring_buf_free_space(void) {
-    return RING_BUF_SIZE - 1 - ((head - tail) & (RING_BUF_SIZE - 1));
+  }
+  if (gain != 32768) {
+    for (uint32_t i = 0; i < words; i++) {
+      uint32_t w = ring[i];
+      int32_t l = ((int16_t)w * gain) >> 15;
+      int32_t r = ((int16_t)(w >> 16) * gain) >> 15;
+      ring[i] = ((uint32_t)r << 16) | ((uint32_t)l & 0xFFFF);
+    }
+  }
 }
 
 int main(void) {
-    
-    neorv32_rte_setup();
+  static MP3FrameInfo fi;
+  uint32_t wp = 0;
 
-    neorv32_uart0_setup(BAUD_RATE, 0);
+  HMP3Decoder decoder = MP3InitDecoder();
+  in_left = 0;
 
-    if (neorv32_uart0_available() == 0) {
-        return 1;
+  for (;;) {
+    input_fill();
+
+    if (tag_left > 0) {
+      uint32_t n = tag_left < (uint32_t)in_left ? tag_left : (uint32_t)in_left;
+      tag_left -= n;
+      in_left -= (int)n;
+      input_compact(inbuf + n);
+      continue;
     }
-    
-    neorv32_uart0_printf("\n<<< NEORV32 MP3 decoder >>>\n\n");
+    if (id3_check()) continue;
 
-    if (neorv32_sdi_available() == 0) {
-        neorv32_uart0_printf("ERROR! No SDI unit implemented.");
-        return 1;
+    int off = MP3FindSyncWord(inbuf, in_left);
+    if (off < 0) {
+      // keep the tail in case a sync word starts at the very end
+      if (in_left > 3) {
+        uint8_t *tail = inbuf + in_left - 3;
+        in_left = 3;
+        input_compact(tail);
+      }
+      continue;
     }
 
-    if (neorv32_smc_available() == 0) {
-        neorv32_uart0_printf("ERROR! No SMC unit implemented.\n");
-        return 1;
+    if (off > 0) {
+      in_left -= off;
+      input_compact(inbuf + off);
+    }
+    // the host is much slower than this loop, and MP3Decode trusts the buffer for the headers
+    if (in_left < HEADER_BYTES) continue;
+
+    if (!header_valid(inbuf)) {
+      in_left--;
+      input_compact(inbuf + 1);
+      continue;
     }
 
-    if (neorv32_gpio_available() == 0) { // GPIO available?
-        neorv32_uart0_printf("ERROR! No GPIO module implemented!\n");
-        return 1;
+    while (((wp - REG_PCM_PTR) & PTR_MASK) > PCM_WORDS - FRAME_WORDS) { }
+
+    uint8_t *start = inbuf;
+    uint8_t *ptr = start;
+    int left = in_left;
+    short *out = (short *)(PCM_BASE + (wp & (PCM_WORDS - 1)) * 4u);
+    int err = MP3Decode(decoder, &ptr, &left, out, 0);
+
+    if (err == ERR_MP3_INDATA_UNDERFLOW) {
+      if (left + (int)(ptr - start) >= INBUF_SIZE) {
+        // can not be a real frame: the buffer holds more than any frame has
+        ptr = start + 1;
+        left = in_left - 1;
+      } else {
+        ptr = start;            // MP3Decode has consumed the headers, the data must stay for the retry
+        left = in_left;
+      }
+    } else if (err == ERR_MP3_NONE) {
+      MP3GetLastFrameInfo(decoder, &fi);
+      pcm_finish(wp, &fi);
+      REG_NCO = (uint32_t)fi.samprate * NCO_PER_KHZ / 1000u;
+      wp = (wp + fi.outputSamps / fi.nChans) & PTR_MASK;
+      REG_PCM_PTR = wp;
+    } else if (err != ERR_MP3_MAINDATA_UNDERFLOW) {
+      ptr = start + 1;          // a corrupt frame: look for the next sync word
+      left = in_left - 1;
     }
 
-    // setup SDI module
-    neorv32_sdi_setup(0); // no interrupts
+    in_left = left;
+    input_compact(ptr);
+  }
 
-    // setup GPIO (pin, value)
-    neorv32_gpio_pin_set(DREQ_PIN, 0);       // Default: DREQ = 0
-    neorv32_gpio_pin_set(DATA_READY_PIN, 0); // Default: DATA_READY = 0
-
-    // setup SMC (PSRAM)
-    neorv32_smc_setup(
-        0,             // single-chip mode; use only one PSRAM
-        SMC_MSIZE_8MB, // PSRAM size = 8MB
-        6,             // clock prescaler; use second-slowest PSRAM clock as default
-        0,             // wait cycles for read access
-        0x03,          // read command
-        0x02,          // write command
-        0x996600       // initialization sequence: 1. NOP (0x00), 2. RESET-EN (0x66), 3. RESET (0x99)
-    );
-
-    // get configured PSRAM clock speed in Hz
-    uint32_t psram_fclk = neorv32_smc_get_clockspeed();
-    neorv32_uart0_printf("PSRAM clock: %u Hz\n", psram_fclk);
-
-    // get PSRAM base address (configured via top generic)
-    uint32_t psram_base = neorv32_smc_get_baseaddr();
-    neorv32_uart0_printf("PSRAM base:  0x%x\n", psram_base);
-
-
-    // init MP3 decoder    
-    HMP3Decoder hMP3Decoder = MP3InitDecoder();
-    MP3FrameInfo mp3FrameInfo;
-    
-    uint8_t local_dec_buf[2 * MAINBUF_SIZE]; 
-    short pcm_out_buf[1152 * 2];
-
-    while(1) {
-        // DREQ control logic for external hw
-        if (ring_buf_free_space() >= 32) {
-            neorv32_gpio_pin_set(DREQ_PIN, 1);
-        } else {
-            neorv32_gpio_pin_set(DREQ_PIN, 0);
-        }
-
-        // Receive data by SPI
-        check_and_receive_spi_stream();
-
-        // If is enough data to decode a frame
-        uint32_t available = (head - tail) & (RING_BUF_SIZE - 1);
-        if (available >= MAINBUF_SIZE) {
-            
-            for(int i = 0; i < MAINBUF_SIZE; i++) {
-                local_dec_buf[i] = ring_buf[tail];
-                tail = (tail + 1) & (RING_BUF_SIZE - 1);
-            }
-            
-            int bytesLeft = MAINBUF_SIZE;
-            uint8_t *readPtr = local_dec_buf;
-            
-            int offset = MP3FindSyncWord(readPtr, bytesLeft);
-            if (offset >= 0) {
-                readPtr += offset;
-                bytesLeft -= offset;
-                
-                int err = MP3Decode(hMP3Decoder, &readPtr, &bytesLeft, pcm_out_buf, 0);
-                if (err == ERR_MP3_NONE) {
-                    MP3GetLastFrameInfo(hMP3Decoder, &mp3FrameInfo);
-                    int samples = mp3FrameInfo.outputSamps;
-                    
-                    // Otput decoded audio data to CFS ports
-                    if (mp3FrameInfo.nChans == 2) {
-                        // Stereo streasm
-                        for (int i = 0; i < samples; i += 2) {
-                            NEORV32_CFS->REG[0] = (uint32_t)pcm_out_buf[i];   // Index [0] - Left
-                            NEORV32_CFS->REG[1] = (uint32_t)pcm_out_buf[i+1]; // Index [1] - Right
-                            
-                            neorv32_gpio_pin_set(DATA_READY_PIN, 1);
-                            asm volatile("nop");
-                            neorv32_gpio_pin_set(DATA_READY_PIN, 0);
-                        }
-                    } else {
-                        // Mono stream
-                        for (int i = 0; i < samples; i++) {
-                            NEORV32_CFS->REG[0] = (uint32_t)pcm_out_buf[i];
-                            NEORV32_CFS->REG[1] = (uint32_t)pcm_out_buf[i];
-                            
-                            neorv32_gpio_pin_set(DATA_READY_PIN, 1);
-                            asm volatile("nop");
-                            neorv32_gpio_pin_set(DATA_READY_PIN, 0);
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-    return 0;
+  return 0;
 }
-

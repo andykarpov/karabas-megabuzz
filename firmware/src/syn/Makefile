@@ -101,6 +101,9 @@ OPENOCD_BIN = /usr/bin/openocd
 GS_ROM = ../rtl/sound/gs105b.rom
 CFG1_ROM = cfg1.rom
 CFG2_ROM = cfg2.rom
+# A2 on the SLX25 has only the neorv32 MP3 decoder: its option is on from the start
+CFG1_A2_RV32_ROM = cfg1_a2_rv32.rom
+CFG2_A2_RV32_ROM = cfg2_a2_rv32.rom
 
 # ----------------------------------------------
 
@@ -143,29 +146,11 @@ $(BUILD_DIR16)/$(PROJECT_A3).prj: | $(BUILD_DIR16)
 	$(foreach f,$(VHDL_SOURCES),echo "vhdl work ../$(f)" >> $@;)
 	$(foreach f,$(VERILOG_SOURCES_A3),echo "verilog work ../$(f)" >> $@;)
 
-$(BUILD_DIR25)/$(PROJECT_A).prj: | $(BUILD_DIR25)
-	@echo "=== GENERATING PRJ FILE ==="
-	@rm -f $@
-	$(foreach f,$(VHDL_SOURCES),echo "vhdl work ../$(f)" >> $@;)
-	$(foreach f,$(VERILOG_SOURCES_A),echo "verilog work ../$(f)" >> $@;)
-
 $(BUILD_DIR25)/$(PROJECT_A1).prj: | $(BUILD_DIR25)
 	@echo "=== GENERATING PRJ FILE ==="
 	@rm -f $@
 	$(foreach f,$(VHDL_SOURCES),echo "vhdl work ../$(f)" >> $@;)
 	$(foreach f,$(VERILOG_SOURCES_A1),echo "verilog work ../$(f)" >> $@;)
-
-$(BUILD_DIR25)/$(PROJECT_A2).prj: | $(BUILD_DIR25)
-	@echo "=== GENERATING PRJ FILE ==="
-	@rm -f $@
-	$(foreach f,$(VHDL_SOURCES),echo "vhdl work ../$(f)" >> $@;)
-	$(foreach f,$(VERILOG_SOURCES_A2),echo "verilog work ../$(f)" >> $@;)
-
-$(BUILD_DIR25)/$(PROJECT_A3).prj: | $(BUILD_DIR25)
-	@echo "=== GENERATING PRJ FILE ==="
-	@rm -f $@
-	$(foreach f,$(VHDL_SOURCES),echo "vhdl work ../$(f)" >> $@;)
-	$(foreach f,$(VERILOG_SOURCES_A3),echo "verilog work ../$(f)" >> $@;)
 
 $(BUILD_DIR16)/$(PROJECT_A).xst: | $(BUILD_DIR16)
 	@echo "run" > $@
@@ -211,17 +196,6 @@ $(BUILD_DIR16)/$(PROJECT_A3).xst: | $(BUILD_DIR16)
 	@echo "-opt_level 1" >> $@
 	@echo "-define {HW_A3}" >> $@
 
-$(BUILD_DIR25)/$(PROJECT_A).xst: | $(BUILD_DIR25)
-	@echo "run" > $@
-	@echo "-ifn $(PROJECT_A).prj" >> $@
-	@echo "-ofn $(PROJECT_A).ngc" >> $@
-	@echo "-ofmt NGC" >> $@
-	@echo "-p $(TARGET_PART25)" >> $@
-	@echo "-top karabas_megabuzz" >> $@
-	@echo "-opt_mode Speed" >> $@
-	@echo "-opt_level 1" >> $@
-	@echo "-define {HW_A}" >> $@
-
 $(BUILD_DIR25)/$(PROJECT_A1).xst: | $(BUILD_DIR25)
 	@echo "run" > $@
 	@echo "-ifn $(PROJECT_A1).prj" >> $@
@@ -232,28 +206,6 @@ $(BUILD_DIR25)/$(PROJECT_A1).xst: | $(BUILD_DIR25)
 	@echo "-opt_mode Speed" >> $@
 	@echo "-opt_level 1" >> $@
 	@echo "-define {HW_A1}" >> $@
-
-$(BUILD_DIR25)/$(PROJECT_A2).xst: | $(BUILD_DIR25)
-	@echo "run" > $@
-	@echo "-ifn $(PROJECT_A2).prj" >> $@
-	@echo "-ofn $(PROJECT_A2).ngc" >> $@
-	@echo "-ofmt NGC" >> $@
-	@echo "-p $(TARGET_PART25)" >> $@
-	@echo "-top karabas_megabuzz" >> $@
-	@echo "-opt_mode Speed" >> $@
-	@echo "-opt_level 1" >> $@
-	@echo "-define {HW_A2}" >> $@
-
-$(BUILD_DIR25)/$(PROJECT_A3).xst: | $(BUILD_DIR25)
-	@echo "run" > $@
-	@echo "-ifn $(PROJECT_A3).prj" >> $@
-	@echo "-ofn $(PROJECT_A3).ngc" >> $@
-	@echo "-ofmt NGC" >> $@
-	@echo "-p $(TARGET_PART25)" >> $@
-	@echo "-top karabas_megabuzz" >> $@
-	@echo "-opt_mode Speed" >> $@
-	@echo "-opt_level 1" >> $@
-	@echo "-define {HW_A3}" >> $@
 
 # 2. XST
 $(BUILD_DIR16)/$(PROJECT_A).ngc: $(BUILD_DIR16)/$(PROJECT_A).prj $(BUILD_DIR16)/$(PROJECT_A).xst $(VERILOG_SOURCES_A) $(VHDL_SOURCES)
@@ -284,30 +236,9 @@ $(BUILD_DIR16)/$(PROJECT_A3).ngc: $(BUILD_DIR16)/$(PROJECT_A3).prj $(BUILD_DIR16
 	@rm -f $(BUILD_DIR16)/xsc_report.xml
 	@rm -rf $(BUILD_DIR16)/xst
 
-$(BUILD_DIR25)/$(PROJECT_A).ngc: $(BUILD_DIR25)/$(PROJECT_A).prj $(BUILD_DIR25)/$(PROJECT_A).xst $(VERILOG_SOURCES_A) $(VHDL_SOURCES)
-	@echo "=== RUNNING XST ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) xst -ifn $(PROJECT_A).xst -ofn $(PROJECT_A).syr
-	@rm -f $(BUILD_DIR25)/netlist.lst
-	@rm -f $(BUILD_DIR25)/xsc_report.xml
-	@rm -rf $(BUILD_DIR25)/xst
-
 $(BUILD_DIR25)/$(PROJECT_A1).ngc: $(BUILD_DIR25)/$(PROJECT_A1).prj $(BUILD_DIR25)/$(PROJECT_A1).xst $(VERILOG_SOURCES_A1) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
 	cd $(BUILD_DIR25) && $(ISE_ENV) xst -ifn $(PROJECT_A1).xst -ofn $(PROJECT_A1).syr
-	@rm -f $(BUILD_DIR25)/netlist.lst
-	@rm -f $(BUILD_DIR25)/xsc_report.xml
-	@rm -rf $(BUILD_DIR25)/xst
-
-$(BUILD_DIR25)/$(PROJECT_A2).ngc: $(BUILD_DIR25)/$(PROJECT_A2).prj $(BUILD_DIR25)/$(PROJECT_A2).xst $(VERILOG_SOURCES_A2) $(VHDL_SOURCES)
-	@echo "=== RUNNING XST ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) xst -ifn $(PROJECT_A2).xst -ofn $(PROJECT_A2).syr
-	@rm -f $(BUILD_DIR25)/netlist.lst
-	@rm -f $(BUILD_DIR25)/xsc_report.xml
-	@rm -rf $(BUILD_DIR25)/xst
-
-$(BUILD_DIR25)/$(PROJECT_A3).ngc: $(BUILD_DIR25)/$(PROJECT_A3).prj $(BUILD_DIR25)/$(PROJECT_A3).xst $(VERILOG_SOURCES_A3) $(VHDL_SOURCES)
-	@echo "=== RUNNING XST ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) xst -ifn $(PROJECT_A3).xst -ofn $(PROJECT_A3).syr
 	@rm -f $(BUILD_DIR25)/netlist.lst
 	@rm -f $(BUILD_DIR25)/xsc_report.xml
 	@rm -rf $(BUILD_DIR25)/xst
@@ -329,21 +260,9 @@ $(BUILD_DIR16)/$(PROJECT_A3).ngd: $(BUILD_DIR16)/$(PROJECT_A3).ngc $(CONSTRAINTS
 	@echo "=== RUNNING NGBUILD ==="
 	cd $(BUILD_DIR16) && $(ISE_ENV) ngdbuild -p $(TARGET_PART16) -uc ../$(CONSTRAINTS_A3) $(PROJECT_A3).ngc $(PROJECT_A3).ngd
 
-$(BUILD_DIR25)/$(PROJECT_A).ngd: $(BUILD_DIR25)/$(PROJECT_A).ngc $(CONSTRAINTS_A)
-	@echo "=== RUNNING NGBUILD ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) ngdbuild -p $(TARGET_PART25) -uc ../$(CONSTRAINTS_A) $(PROJECT_A).ngc $(PROJECT_A).ngd
-
 $(BUILD_DIR25)/$(PROJECT_A1).ngd: $(BUILD_DIR25)/$(PROJECT_A1).ngc $(CONSTRAINTS_A1)
 	@echo "=== RUNNING NGBUILD ==="
 	cd $(BUILD_DIR25) && $(ISE_ENV) ngdbuild -p $(TARGET_PART25) -uc ../$(CONSTRAINTS_A1) $(PROJECT_A1).ngc $(PROJECT_A1).ngd
-
-$(BUILD_DIR25)/$(PROJECT_A2).ngd: $(BUILD_DIR25)/$(PROJECT_A2).ngc $(CONSTRAINTS_A2)
-	@echo "=== RUNNING NGBUILD ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) ngdbuild -p $(TARGET_PART25) -uc ../$(CONSTRAINTS_A2) $(PROJECT_A2).ngc $(PROJECT_A2).ngd
-
-$(BUILD_DIR25)/$(PROJECT_A3).ngd: $(BUILD_DIR25)/$(PROJECT_A3).ngc $(CONSTRAINTS_A3)
-	@echo "=== RUNNING NGBUILD ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) ngdbuild -p $(TARGET_PART25) -uc ../$(CONSTRAINTS_A3) $(PROJECT_A3).ngc $(PROJECT_A3).ngd
 
 # 4. MAP
 $(BUILD_DIR16)/$(PROJECT_A)_mapped.ncd: $(BUILD_DIR16)/$(PROJECT_A).ngd
@@ -362,21 +281,9 @@ $(BUILD_DIR16)/$(PROJECT_A3)_mapped.ncd: $(BUILD_DIR16)/$(PROJECT_A3).ngd
 	@echo "=== RUNNING MAP ==="
 	cd $(BUILD_DIR16) && $(ISE_ENV) map -p $(TARGET_PART16) -w -ol high -detail -o $(PROJECT_A3)_mapped.ncd $(PROJECT_A3).ngd $(PROJECT_A3).pcf
 
-$(BUILD_DIR25)/$(PROJECT_A)_mapped.ncd: $(BUILD_DIR25)/$(PROJECT_A).ngd
-	@echo "=== RUNNING MAP ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) map -p $(TARGET_PART25) -w -ol high -detail -o $(PROJECT_A)_mapped.ncd $(PROJECT_A).ngd $(PROJECT_A).pcf
-
 $(BUILD_DIR25)/$(PROJECT_A1)_mapped.ncd: $(BUILD_DIR25)/$(PROJECT_A1).ngd
 	@echo "=== RUNNING MAP ==="
 	cd $(BUILD_DIR25) && $(ISE_ENV) map -p $(TARGET_PART25) -w -ol high -detail -o $(PROJECT_A1)_mapped.ncd $(PROJECT_A1).ngd $(PROJECT_A1).pcf
-
-$(BUILD_DIR25)/$(PROJECT_A2)_mapped.ncd: $(BUILD_DIR25)/$(PROJECT_A2).ngd
-	@echo "=== RUNNING MAP ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) map -p $(TARGET_PART25) -w -ol high -detail -o $(PROJECT_A2)_mapped.ncd $(PROJECT_A2).ngd $(PROJECT_A2).pcf
-
-$(BUILD_DIR25)/$(PROJECT_A3)_mapped.ncd: $(BUILD_DIR25)/$(PROJECT_A3).ngd
-	@echo "=== RUNNING MAP ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) map -p $(TARGET_PART25) -w -ol high -detail -o $(PROJECT_A3)_mapped.ncd $(PROJECT_A3).ngd $(PROJECT_A3).pcf
 
 # 5. PAR
 $(BUILD_DIR16)/$(PROJECT_A).ncd: $(BUILD_DIR16)/$(PROJECT_A)_mapped.ncd
@@ -395,21 +302,9 @@ $(BUILD_DIR16)/$(PROJECT_A3).ncd: $(BUILD_DIR16)/$(PROJECT_A3)_mapped.ncd
 	@echo "=== RUNNING PAR ==="
 	cd $(BUILD_DIR16) && $(ISE_ENV) par -w -ol high $(PROJECT_A3)_mapped.ncd $(PROJECT_A3).ncd $(PROJECT_A3).pcf
 
-$(BUILD_DIR25)/$(PROJECT_A).ncd: $(BUILD_DIR25)/$(PROJECT_A)_mapped.ncd
-	@echo "=== RUNNING PAR ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) par -w -ol high $(PROJECT_A)_mapped.ncd $(PROJECT_A).ncd $(PROJECT_A).pcf
-
 $(BUILD_DIR25)/$(PROJECT_A1).ncd: $(BUILD_DIR25)/$(PROJECT_A1)_mapped.ncd
 	@echo "=== RUNNING PAR ==="
 	cd $(BUILD_DIR25) && $(ISE_ENV) par -w -ol high $(PROJECT_A1)_mapped.ncd $(PROJECT_A1).ncd $(PROJECT_A1).pcf
-
-$(BUILD_DIR25)/$(PROJECT_A2).ncd: $(BUILD_DIR25)/$(PROJECT_A2)_mapped.ncd
-	@echo "=== RUNNING PAR ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) par -w -ol high $(PROJECT_A2)_mapped.ncd $(PROJECT_A2).ncd $(PROJECT_A2).pcf
-
-$(BUILD_DIR25)/$(PROJECT_A3).ncd: $(BUILD_DIR25)/$(PROJECT_A3)_mapped.ncd
-	@echo "=== RUNNING PAR ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) par -w -ol high $(PROJECT_A3)_mapped.ncd $(PROJECT_A3).ncd $(PROJECT_A3).pcf
 
 # 6. BITGEN: Генерация финальной прошивки (.bit)
 $(BUILD_DIR16)/$(PROJECT_A).bit: $(BUILD_DIR16)/$(PROJECT_A).ncd
@@ -432,25 +327,59 @@ $(BUILD_DIR16)/$(PROJECT_A3).bit: $(BUILD_DIR16)/$(PROJECT_A3).ncd
 	cd $(BUILD_DIR16) && $(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk $(PROJECT_A3).ncd $(PROJECT_A3).bit
 	@echo "=== BUILD SUCCESSFULLY COMPLETED ==="
 
-$(BUILD_DIR25)/$(PROJECT_A).bit: $(BUILD_DIR25)/$(PROJECT_A).ncd
-	@echo "=== GENERATING BITSTREAM ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk $(PROJECT_A).ncd $(PROJECT_A).bit
-	@echo "=== BUILD SUCCESSFULLY COMPLETED ==="
-
 $(BUILD_DIR25)/$(PROJECT_A1).bit: $(BUILD_DIR25)/$(PROJECT_A1).ncd
 	@echo "=== GENERATING BITSTREAM ==="
 	cd $(BUILD_DIR25) && $(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk $(PROJECT_A1).ncd $(PROJECT_A1).bit
 	@echo "=== BUILD SUCCESSFULLY COMPLETED ==="
 
-$(BUILD_DIR25)/$(PROJECT_A2).bit: $(BUILD_DIR25)/$(PROJECT_A2).ncd
-	@echo "=== GENERATING BITSTREAM ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk $(PROJECT_A2).ncd $(PROJECT_A2).bit
+# VS1053 emulation on neorv32: XC6SLX25 only, the SLX16 has no room for it.
+# all25_a, all25_a2 and all25_a3 are built with it: A and A2 use it always, A3 selects it against the real
+# chip with config bit 11. A1 keeps its DivMMC RAM in block RAM, so there is no room for it.
+NEORV32_PKG  = ../rtl/core/neorv32_package.vhd
+NEORV32_SRC  = $(NEORV32_PKG) $(filter-out $(NEORV32_PKG),$(wildcard ../rtl/core/*.vhd))
+RV_VHDL      = ../rtl/mp3dec/rv_vs1053.vhd
+RV_FW        = mp3dec.bin
+
+define RV32_VARIANT
+$$(BUILD_DIR25)/karabas_megabuzz$(1).prj: | $$(BUILD_DIR25)
+	@rm -f $$@
+	$$(foreach f,$$(VHDL_SOURCES),echo "vhdl work ../$$(f)" >> $$@;)
+	$$(foreach f,$$(NEORV32_SRC),echo "vhdl neorv32 ../$$(f)" >> $$@;)
+	@echo "vhdl work ../$$(RV_VHDL)" >> $$@
+	$$(foreach f,$$(VERILOG_SOURCES_COMMON),echo "verilog work ../$$(f)" >> $$@;)
+
+$$(BUILD_DIR25)/karabas_megabuzz$(1).xst: | $$(BUILD_DIR25)
+	@echo "run" > $$@
+	@echo "-ifn karabas_megabuzz$(1).prj" >> $$@
+	@echo "-ofn karabas_megabuzz$(1).ngc" >> $$@
+	@echo "-ofmt NGC" >> $$@
+	@echo "-p $$(TARGET_PART25)" >> $$@
+	@echo "-top karabas_megabuzz" >> $$@
+	@echo "-opt_mode Speed" >> $$@
+	@echo "-opt_level 1" >> $$@
+	@echo "-define {$(2) RV32}" >> $$@
+
+$$(BUILD_DIR25)/karabas_megabuzz$(1).ngc: $$(BUILD_DIR25)/karabas_megabuzz$(1).prj $$(BUILD_DIR25)/karabas_megabuzz$(1).xst $$(VERILOG_SOURCES_COMMON) $$(VHDL_SOURCES) $$(NEORV32_SRC) $$(RV_VHDL)
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) xst -ifn karabas_megabuzz$(1).xst -ofn karabas_megabuzz$(1).syr
+
+$$(BUILD_DIR25)/karabas_megabuzz$(1).ngd: $$(BUILD_DIR25)/karabas_megabuzz$(1).ngc $(3)
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) ngdbuild -p $$(TARGET_PART25) -uc ../$(3) karabas_megabuzz$(1).ngc karabas_megabuzz$(1).ngd
+
+$$(BUILD_DIR25)/karabas_megabuzz$(1)_mapped.ncd: $$(BUILD_DIR25)/karabas_megabuzz$(1).ngd
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) map -p $$(TARGET_PART25) -w -ol high -detail -o karabas_megabuzz$(1)_mapped.ncd karabas_megabuzz$(1).ngd karabas_megabuzz$(1).pcf
+
+$$(BUILD_DIR25)/karabas_megabuzz$(1).ncd: $$(BUILD_DIR25)/karabas_megabuzz$(1)_mapped.ncd
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) par -w -ol high karabas_megabuzz$(1)_mapped.ncd karabas_megabuzz$(1).ncd karabas_megabuzz$(1).pcf
+
+$$(BUILD_DIR25)/karabas_megabuzz$(1).bit: $$(BUILD_DIR25)/karabas_megabuzz$(1).ncd
+	cd $$(BUILD_DIR25) && $$(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk karabas_megabuzz$(1).ncd karabas_megabuzz$(1).bit
 	@echo "=== BUILD SUCCESSFULLY COMPLETED ==="
 
-$(BUILD_DIR25)/$(PROJECT_A3).bit: $(BUILD_DIR25)/$(PROJECT_A3).ncd
-	@echo "=== GENERATING BITSTREAM ==="
-	cd $(BUILD_DIR25) && $(ISE_ENV) bitgen -w -g Binary:Yes -g StartupClk:Cclk $(PROJECT_A3).ncd $(PROJECT_A3).bit
-	@echo "=== BUILD SUCCESSFULLY COMPLETED ==="
+endef
+
+$(eval $(call RV32_VARIANT,,HW_A,$(CONSTRAINTS_A)))
+$(eval $(call RV32_VARIANT,_a2,HW_A2,$(CONSTRAINTS_A2)))
+$(eval $(call RV32_VARIANT,_a3,HW_A3,$(CONSTRAINTS_A3)))
 
 # Work dir creation
 $(BUILD_DIR16):
@@ -482,18 +411,18 @@ flash16_a3: $(BUILD_DIR16)/$(PROJECT_A3).bin
 	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx16.bit; jtagspi_program $(BUILD_DIR16)/$(PROJECT_A3).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
 flash25: $(BUILD_DIR25)/$(PROJECT_A).bin
-	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
+	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(RV_FW) 0x180000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
 flash25_a1: $(BUILD_DIR25)/$(PROJECT_A1).bin
 	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A1).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
 flash25_a2: $(BUILD_DIR25)/$(PROJECT_A2).bin
-	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A2).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
+	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A2).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(RV_FW) 0x180000; jtagspi_program $(CFG1_A2_RV32_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
 flash25_a2_nommc: $(BUILD_DIR25)/$(PROJECT_A2).bin
-	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A2).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG2_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
+	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A2).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(RV_FW) 0x180000; jtagspi_program $(CFG2_A2_RV32_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
 flash25_a3: $(BUILD_DIR25)/$(PROJECT_A3).bin
-	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A3).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
+	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A3).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(RV_FW) 0x180000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
 
