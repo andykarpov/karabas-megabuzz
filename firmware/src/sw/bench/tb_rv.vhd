@@ -7,7 +7,8 @@ use ieee.numeric_std.all;
 use std.textio.all;
 
 entity tb_rv is
-  generic (FW_HEX : string := "fw.hex"; MP3_HEX : string := "mp3.hex"; FRAMES : natural := 2; FRAME_SAMPLES : natural := 2304);
+  generic (FW_HEX : string := "fw.hex"; MP3_HEX : string := "mp3.hex"; FRAMES : natural := 2; FRAME_SAMPLES : natural := 2304;
+           FIFO_GAP : natural := 40); -- clk_bus clocks without data after each byte: the host is slower than the CPU
 end entity;
 
 architecture sim of tb_rv is
@@ -17,7 +18,7 @@ architecture sim of tb_rv is
   signal rom_a : std_logic_vector(20 downto 0) := (others => '0');
   signal rom_do : std_logic_vector(7 downto 0) := (others => '0');
   signal rom_wr : std_logic := '0';
-  signal fifo_rd, uart_tx : std_logic;
+  signal fifo_rd : std_logic;
   signal fifo_data : std_logic_vector(7 downto 0) := (others => '0');
   signal fifo_empty : std_logic := '1';
   signal audio_l, audio_r : std_logic_vector(15 downto 0);
@@ -32,10 +33,10 @@ begin
     rom_a => rom_a, rom_do => rom_do, rom_wr => rom_wr,
     fifo_rd_en => fifo_rd, fifo_data => fifo_data, fifo_empty => fifo_empty,
     soft_reset_cmd => '0', hard_reset_cmd => '0', reg_volume => x"00",
-    audio_l => audio_l, audio_r => audio_r, uart_tx => uart_tx
+    audio_l => audio_l, audio_r => audio_r
   );
 
-  -- ROM load, then the MP3 data as a FIFO that always has bytes while the file lasts
+  -- ROM load, then the MP3 data as a FIFO that gets a byte every FIFO_GAP clocks while the file lasts
   stim: process
     file f : text;
     variable l : line;
@@ -44,6 +45,7 @@ begin
     variable mp3 : bytes_t(0 to 65535);
     variable mp3_len : natural := 0;
     variable pos : natural := 0;
+    variable gap : natural := 0;
   begin
     wait for 200 ns;
     reset <= '0';
@@ -77,8 +79,14 @@ begin
       if (fifo_rd = '1') and (fifo_empty = '0') then
         fifo_data <= mp3(pos);
         pos := pos + 1;
-        if (pos = mp3_len) then
+        gap := FIFO_GAP;
+        if (pos = mp3_len) or (FIFO_GAP > 0) then
           fifo_empty <= '1';
+        end if;
+      elsif (gap > 0) then
+        gap := gap - 1;
+        if (gap = 0) and (pos /= mp3_len) then
+          fifo_empty <= '0';
         end if;
       end if;
     end loop;

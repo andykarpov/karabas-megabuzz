@@ -23,9 +23,11 @@
 #define NCO_PER_KHZ     61357u              // 2^32 / 70 MHz is 61.357 per Hz
 
 #define INBUF_SIZE      (MAINBUF_SIZE + 108)
+#define HEADER_BYTES    38                  // frame header, CRC and the longest side info
 
 static uint8_t inbuf[INBUF_SIZE];
 static int in_left;                         // valid bytes at the start of inbuf
+static uint32_t tag_left;                   // bytes of an ID3v2 tag still to drop
 
 // VS1053 volume is in -0.5 dB steps: one table entry per step within 6 dB, Q15
 static const uint16_t gain_table[12] = {
@@ -50,6 +52,30 @@ static void input_fill(void) {
     if (!(w & 0x100)) break;
     inbuf[in_left++] = (uint8_t)w;
   }
+}
+
+// Returns 1 while the start of inbuf is, or may still become, an ID3v2 tag. Skipping the tag keeps the
+// sync words inside cover art away from the decoder.
+static int id3_check(void) {
+  static const char id[3] = {'I', 'D', '3'};
+  for (int i = 0; i < 3 && i < in_left; i++) {
+    if (inbuf[i] != (uint8_t)id[i]) return 0;
+  }
+  if (in_left < 10) return 1;
+  if ((inbuf[6] | inbuf[7] | inbuf[8] | inbuf[9]) & 0x80) return 0;   // size bytes are 7 bit: not a tag
+  tag_left = 10u + (((uint32_t)inbuf[6] << 21) | ((uint32_t)inbuf[7] << 14) | ((uint32_t)inbuf[8] << 7) | inbuf[9]);
+  if (inbuf[5] & 0x10) tag_left += 10;                                // footer
+  return 1;
+}
+
+// Layer III with a usable bit rate and sample rate. Bit rate 0 is free format: a false sync word of that
+// kind switches Helix into free format mode for good, so that no real frame decodes after it.
+static int header_valid(const uint8_t *h) {
+  uint32_t version = (h[1] >> 3) & 3;
+  uint32_t layer = (h[1] >> 1) & 3;
+  uint32_t bitrate = h[2] >> 4;
+  uint32_t samprate = (h[2] >> 2) & 3;
+  return version != 1 && layer == 1 && bitrate != 0 && bitrate != 15 && samprate != 3;
 }
 
 // PCM of the frame, in place at the ring; mono is expanded from the end so nothing is overwritten
@@ -79,18 +105,20 @@ int main(void) {
   static MP3FrameInfo fi;
   uint32_t wp = 0;
 
-  neorv32_rte_setup();
-  neorv32_uart0_setup(115200, 0);
-#ifdef SIM
-  NEORV32_UART0->CTRL |= (1 << UART_CTRL_SIM_MODE);
-#endif
-  neorv32_uart0_puts("mp3dec\n");
-
   HMP3Decoder decoder = MP3InitDecoder();
   in_left = 0;
 
   for (;;) {
     input_fill();
+
+    if (tag_left > 0) {
+      uint32_t n = tag_left < (uint32_t)in_left ? tag_left : (uint32_t)in_left;
+      tag_left -= n;
+      in_left -= (int)n;
+      input_compact(inbuf + n);
+      continue;
+    }
+    if (id3_check()) continue;
 
     int off = MP3FindSyncWord(inbuf, in_left);
     if (off < 0) {
@@ -103,28 +131,35 @@ int main(void) {
       continue;
     }
 
+    if (off > 0) {
+      in_left -= off;
+      input_compact(inbuf + off);
+    }
+    // the host is much slower than this loop, and MP3Decode trusts the buffer for the headers
+    if (in_left < HEADER_BYTES) continue;
+
+    if (!header_valid(inbuf)) {
+      in_left--;
+      input_compact(inbuf + 1);
+      continue;
+    }
+
     while (((wp - REG_PCM_PTR) & PTR_MASK) > PCM_WORDS - FRAME_WORDS) { }
 
-    uint8_t *start = inbuf + off;
+    uint8_t *start = inbuf;
     uint8_t *ptr = start;
-    int left = in_left - off;
+    int left = in_left;
     short *out = (short *)(PCM_BASE + (wp & (PCM_WORDS - 1)) * 4u);
-#ifdef SIM
-    uint32_t t0 = (uint32_t)neorv32_cpu_get_cycle();
-#endif
     int err = MP3Decode(decoder, &ptr, &left, out, 0);
-#ifdef SIM
-    neorv32_uart0_printf("err=%d cycles=%u\n", err, (uint32_t)neorv32_cpu_get_cycle() - t0);
-#endif
 
     if (err == ERR_MP3_INDATA_UNDERFLOW) {
       if (left + (int)(ptr - start) >= INBUF_SIZE) {
         // can not be a real frame: the buffer holds more than any frame has
         ptr = start + 1;
-        left = in_left - off - 1;
+        left = in_left - 1;
       } else {
         ptr = start;            // MP3Decode has consumed the headers, the data must stay for the retry
-        left = in_left - off;
+        left = in_left;
       }
     } else if (err == ERR_MP3_NONE) {
       MP3GetLastFrameInfo(decoder, &fi);
@@ -134,7 +169,7 @@ int main(void) {
       REG_PCM_PTR = wp;
     } else if (err != ERR_MP3_MAINDATA_UNDERFLOW) {
       ptr = start + 1;          // a corrupt frame: look for the next sync word
-      left = in_left - off - 1;
+      left = in_left - 1;
     }
 
     in_left = left;

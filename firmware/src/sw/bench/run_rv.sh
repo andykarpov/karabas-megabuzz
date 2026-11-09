@@ -8,7 +8,7 @@ export PATH=$(ls -d /opt/xpack-riscv-none-elf-gcc-*/bin | tail -1):$PATH
 MP3=${1:-st320.mp3}; NBYTES=${2:-4300}; FRAMES=${3:-2}
 OUT=${OUT:-lib_rv}
 BENCH=$PWD
-make -C ../src/mp3dec clean bin SIM=1 > /dev/null
+make -C ../src/mp3dec clean bin > /dev/null
 rm -rf $OUT && mkdir $OUT
 python3 -I - ../src/mp3dec/neorv32_raw_exe.bin $OUT/fw.hex $MP3 $NBYTES $OUT/mp3.hex <<'EOF'
 import sys

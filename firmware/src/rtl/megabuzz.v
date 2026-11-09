@@ -173,7 +173,11 @@ module karabas_megabuzz(
     wire turbosound_en  = cfg_n[3];
     wire midi_en        = cfg_n[3]; // depends on AY port
     wire opl3_en        = cfg_n[4];
+`ifdef RV32
+    wire vs1053_en      = 1; // the neorv32 decoder answers on the VS1053 registers
+`else
     wire vs1053_en      = 0;
+`endif
     wire vu_bar         = 1;
     wire vu_dot         = 0;
     wire vu_reverse     = tp[2];
@@ -249,12 +253,7 @@ module karabas_megabuzz(
 `ifdef HW_A2
     // unused signals
     assign psram_cs_n   = 1'b1;
-`ifdef RV32
-    assign tp[4:2]      = 3'bz;
-    assign tp[1]        = rv_uart_tx; // neorv32 debug console
-`else
     assign tp[4:1]      = 4'bz;
-`endif
     assign sda          = 1'bz;
     assign scl          = 1'b1;
     // sd led
@@ -291,12 +290,7 @@ module karabas_megabuzz(
 `ifdef HW_A3
     // unused signals
     assign psram_cs_n   = 1'b1;
-`ifdef RV32
-    assign tp[4:2]      = 3'bz;
-    assign tp[1]        = rv_uart_tx; // neorv32 debug console
-`else
     assign tp[4:1]      = 4'bz;
-`endif
     assign sda          = 1'bz;
     assign scl          = 1'b1;
     // sd led
@@ -418,7 +412,7 @@ module karabas_megabuzz(
     reg [15:0] new_cfg_byte = 16'hFFFF;
     reg cfg_write = 0;
 `ifdef RV32
-    localparam RV_ROM_BYTES = 36864;
+    localparam RV_ROM_BYTES = 32768;
 `else
     localparam RV_ROM_BYTES = 0;
 `endif
@@ -665,7 +659,6 @@ module karabas_megabuzz(
     wire [1:0] vs_bus_addr;
     wire [7:0] vs_bus_di, vs_bus_do;
 
-    wire rv_uart_tx;
     wire signed [15:0] rv_audio_l, rv_audio_r;
 `ifdef RV32
     // A3 has both decoders, config bit 11 selects one (0 = the chip); A2 only has neorv32
@@ -695,8 +688,7 @@ module karabas_megabuzz(
         .hard_reset_cmd   (rv_hard_reset),
         .reg_volume       (rv_volume),
         .audio_l          (rv_audio_l),
-        .audio_r          (rv_audio_r),
-        .uart_tx          (rv_uart_tx)
+        .audio_r          (rv_audio_r)
     );
 `else
     wire vs_use_chip = 1'b1;
