@@ -23,7 +23,7 @@ make all           # all 8 variants (slow)
 make clean
 ```
 
-Target names follow `all{16,25}_{a,a1,a2,a3}`; `all25_a`, `all25_a2` and `all25_a3` are always built with neorv32 (`-define RV32`). The pipeline is: `.prj` → xst → ngdbuild → map → par → bitgen (`-g Binary:Yes`, so a `.bin` is produced too). The `.prj`/`.xst` files are generated in the work dir, and they are only rebuilt when missing.
+Target names follow `all{16,25}_{a,a1,a2,a3}`; `all25_a`, `all25_a1`, `all25_a2` and `all25_a3` are always built with neorv32 (`-define RV32`). The pipeline is: `.prj` → xst → ngdbuild → map → par → bitgen (`-g Binary:Yes`, so a `.bin` is produced too). The `.prj`/`.xst` files are generated in the work dir, and they are only rebuilt when missing.
 
 **Source lists are explicit.** `VERILOG_SOURCES_COMMON` and `VHDL_SOURCES` in `syn/Makefile` are the source of truth. A new RTL file has to be added there, and you have to delete the stale `work*/*.prj` so it gets regenerated. Many files under `rtl/` are not in the build: `rtl/core/` (NEORV32 RISC-V, see below), `rtl/mp3dec/`, `rtl/sound/jtopl/`, `ay_3_8912.v`, `saa1099.v`/`.sv`, and the `.v` twins of VHDL files in `adc/` and `flash/`. Note that `saa1099_new.v` is the one actually synthesized, while its module is still named `saa1099`.
 
@@ -31,7 +31,7 @@ The built `.bit`/`.bin` files in `syn/work16` and `syn/work25` are committed on 
 
 ## Flashing (openocd + USB Blaster)
 
-From `firmware/src/syn/`: `make flash{16,25}[_a1|_a2|_a3]`, plus `flash{16,25}_a2_nommc`, which uses `cfg2.rom`. The SPI flash layout is: bitstream at `0x0`, GS ROM (`rtl/sound/gs105b.rom`) at `0x100000`, 256-byte config ROM (`cfg1.rom` or `cfg2.rom`) at `0x1F0000`, and on `flash25`, `flash25_a2`, `flash25_a2_nommc`, `flash25_a3` also the neorv32 firmware (`syn/mp3dec.bin`) at `0x180000`; `flash25_a2*` use `cfg{1,2}_a2_rv32.rom`, with the MP3 option already on. `cfg2.rom` differs from `cfg1.rom` only in having DivMMC disabled (byte 0 bit 0). The `flash*` targets need an existing `.bin` (there is no rule that builds one). The Makefile has no openFPGALoader targets; HOWTO.md lists the manual openFPGALoader commands.
+From `firmware/src/syn/`: `make flash{16,25}[_a1|_a2|_a3]`, plus `flash{16,25}_a2_nommc`, which uses `cfg2.rom`. The SPI flash layout is: bitstream at `0x0`, GS ROM (`rtl/sound/gs105b.rom`) at `0x100000`, 256-byte config ROM (`cfg1.rom` or `cfg2.rom`) at `0x1F0000`, and on `flash25`, `flash25_a1`, `flash25_a2`, `flash25_a2_nommc`, `flash25_a3` also the neorv32 firmware (`syn/mp3dec.bin`) at `0x180000`; `flash25_a2*` use `cfg{1,2}_a2_rv32.rom`, with the MP3 option already on. `cfg2.rom` differs from `cfg1.rom` only in having DivMMC disabled (byte 0 bit 0). The `flash*` targets need an existing `.bin` (there is no rule that builds one). The Makefile has no openFPGALoader targets; HOWTO.md lists the manual openFPGALoader commands.
 
 ## Z80 / Spectrum-side code (sjasmplus)
 
@@ -48,8 +48,8 @@ The only RTL testbench is VS1053. Run it from `firmware/src/rtl/sound/`: `./vs10
 
 ## NEORV32 / MP3 emulation (work in progress)
 
-`PLAN.md` holds the plan and measurements for emulating VS1053 on neorv32 on SLX25 (`all25_a`, `all25_a2`, `all25_a3`); section 7 describes what is implemented. Read it before touching `rtl/core`, `rtl/mp3dec` or `sw/`. Key facts:
-- `rtl/mp3dec/rv_vs1053.vhd` is the wrapper. On A3 the decoder is chosen by config bit 11 (`0` = VS1053 chip, `1` = neorv32), on A and A2 it is always neorv32. They use ~85-88% slices and 38-43/52 RAMB16. A1 has no room: its DivMMC RAM lives in BRAM.
+`PLAN.md` holds the plan and measurements for emulating VS1053 on neorv32 on SLX25 (`all25_a`, `all25_a1`, `all25_a2`, `all25_a3`); section 7 describes what is implemented. Read it before touching `rtl/core`, `rtl/mp3dec` or `sw/`. Key facts:
+- `rtl/mp3dec/rv_vs1053.vhd` is the wrapper. On A3 the decoder is chosen by config bit 11 (`0` = VS1053 chip, `1` = neorv32), on A, A1 and A2 it is always neorv32. They use ~85-88% slices and 38-43/52 RAMB16.
 - Firmware image for the flash: after changing `sw/src/mp3dec` run `make clean bin` there and copy `neorv32_raw_exe.bin` to `syn/mp3dec.bin`. It must not exceed 32768 bytes (the linker enforces it). End-to-end test: `sw/bench/run_rv.sh`; it rebuilds the firmware, so copy the image only from a build of the current sources.
 - `rtl/core` is neorv32 v1.13.5.4. XST 14.7 synthesizes it: compile it into library `neorv32` (`vhdl neorv32 <file>`, package first). Use `CPU_FAST_MUL_REGS => 3`, otherwise the DSP cascade limits Fmax to ~54 MHz.
 - RISC-V toolchain: `/opt/xpack-riscv-none-elf-gcc-15.2.0-1/bin` (not in PATH). Firmware: `sw/src/mp3dec` (`make elf|image|bin`, `NEORV32_HOME` points to `firmware/src`). `make install` overwrites `rtl/core/neorv32_imem_image.vhd`.
@@ -62,6 +62,7 @@ The only RTL testbench is VS1053. Run it from `firmware/src/rtl/sound/`: `./vs10
 - **General Sound** (`gs_top.v`/`gs.v`) runs its own T80 Z80 core (`rtl/T80`, VHDL). At boot, `loader.vhd` + `flash.vhd` copy the GS ROM out of SPI flash.
 - **Config & control** (A2/A3): the ZXUNO-style register ports `#FC3B` (register select) and `#FD3B` (data) expose custom registers `#F5`–`#FC`: VS1053 FIFO and volume/effects, config bytes, ROM switch, internal reset (the board never resets the host). Config byte 0 is a per-device enable bitmask. Writing the second config byte triggers `cfg_write`, which persists both bytes to SPI flash (the 0x1F0000 area). `PORTS.md` is the spec; keep it in sync when you change register behavior in `megabuzz.v`.
 - **SD**: `rtl/sd/zc_dicmmc.v` implements both Z-Controller and DivMMC (with the esxDOS ROM and the 128K SRAM on A2+).
+- **SRAM arbiter**: with `MMC_ON_GS_SRAM` (A1 today) the DivMMC RAM lives in the upper 512 KB of the GS SRAM (`rtl/ram/sram_arbiter.v`, test `sram_arbiter_tb.sh`). GS keeps its direct path to the pads because its CPU reads in one 71 ns CE period; a host access freezes GS through CE and takes the pads, and `bus_wait_n` covers fast hosts. GS memory is 1.5 MB while DivMMC is enabled.
 
 ## Conventions
 

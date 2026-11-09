@@ -30,12 +30,7 @@ module audio_fir_decim (
     wire [7:0] raddr = {cnt[7], base - {1'b0, tap}};
     wire [4:0] coef_idx = tap[5] ? ~tap[4:0] : tap[4:0];
 
-`ifdef AUDIO_FIR_LUTRAM
-    // A1 on the XC6SLX16: the 64 KB of DivMMC RAM take every block RAM of the chip
-    (* RAM_STYLE = "distributed" *) reg [15:0] ram [0:255];
-`else
     (* RAM_STYLE = "block" *) reg [15:0] ram [0:255];
-`endif
     reg signed [15:0] ram_q = 0;
 
     always @(posedge clk) begin

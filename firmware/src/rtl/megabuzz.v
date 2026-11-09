@@ -228,7 +228,11 @@ module karabas_megabuzz(
     wire turbosound_en  = cfg_n[3];
     wire midi_en        = cfg_n[3]; // depends on AY port
     wire opl3_en        = cfg_n[4];
+`ifdef RV32
+    wire vs1053_en      = 1; // the neorv32 decoder answers on the VS1053 registers
+`else
     wire vs1053_en      = 0;
+`endif
     wire vu_bar         = 1;
     wire vu_dot         = 0;
     wire vu_reverse     = ~cfg_n[5]; // solder jumper (reversed VU meters)
@@ -594,9 +598,54 @@ module karabas_megabuzz(
     wire [7:0] gs_do_bus;
     wire [14:0] gs_out_l, gs_out_r;
 
+    // SRAM: General Sound, and the RAM of DivMMC too when MMC_ON_GS_SRAM is defined
+    wire [7:0] gs_sram_di, gs_sram_do;
+    wire [20:0] gs_sram_a;
+    wire gs_sram_oe, gs_sram_wr_n, gs_sram_rd_n;
+    wire gs_hold, mmc_wait, mmc_reserve;
+`ifdef MMC_ON_GS_SRAM
+    wire mmc_req, mmc_we;
+    wire [16:13] mmc_page;
+    wire [7:0] mmc_ram_do;
+    assign mmc_reserve = divmmc_en;
+
+    sram_arbiter sram_arbiter_inst(
+        .clk_mem          (clk_mem),
+        .clk_bus          (clk_bus),
+        .reset            (areset),
+        .enable           (divmmc_en & ~loader_act),
+        .host_req         (mmc_req),
+        .host_we          (mmc_we),
+        .host_a           ({4'b1100, mmc_page, bus_a[12:0]}),
+        .host_di          (bus_d),
+        .host_do          (mmc_ram_do),
+        .host_wait        (mmc_wait),
+        .gs_hold          (gs_hold),
+        .gs_a             (gs_sram_a),
+        .gs_do            (gs_sram_do),
+        .gs_oe            (gs_sram_oe),
+        .gs_wr_n          (gs_sram_wr_n),
+        .gs_rd_n          (gs_sram_rd_n),
+        .gs_di            (gs_sram_di),
+        .sram_a           (mem_a),
+        .sram_d           (mem_d),
+        .sram_wr_n        (mem_wr_n),
+        .sram_rd_n        (mem_rd_n)
+    );
+`else
+    assign gs_hold = 1'b0;
+    assign mmc_wait = 1'b0;
+    assign mmc_reserve = 1'b0;
+    assign mem_a = gs_sram_a;
+    assign mem_wr_n = gs_sram_wr_n;
+    assign mem_rd_n = gs_sram_rd_n;
+    assign mem_d = gs_sram_oe ? gs_sram_do : 8'bz;
+    assign gs_sram_di = mem_d;
+`endif
+
     gs_top gs_inst(
         .clk_bus          (clk_bus),
-        .ce              (ce_14m),
+        .ce              (ce_14m & ~gs_hold),
         .reset            (reset),
 
         .a                (bus_a),
@@ -609,11 +658,14 @@ module karabas_megabuzz(
         .oe               (gs_oe),
         .do_bus           (gs_do_bus),
 
-        .sram_d           (mem_d),
-        .sram_a           (mem_a),
-        .sram_wr_n        (mem_wr_n),
-        .sram_rd_n        (mem_rd_n),
+        .sram_di          (gs_sram_di),
+        .sram_do          (gs_sram_do),
+        .sram_oe          (gs_sram_oe),
+        .sram_a           (gs_sram_a),
+        .sram_wr_n        (gs_sram_wr_n),
+        .sram_rd_n        (gs_sram_rd_n),
 
+        .reserve_upper    (mmc_reserve),
         .loader_act       (loader_act),
         .loader_ram_a     (loader_ram_a),
         .loader_ram_do    (loader_ram_do),
@@ -820,6 +872,12 @@ module karabas_megabuzz(
         .bus_nmi_n        (bus_nmi_n),
         .btn_nmi_n        (btn_nmi_n),
 
+`ifdef MMC_ON_GS_SRAM
+        .ram_req          (mmc_req),
+        .ram_we           (mmc_we),
+        .ram_page         (mmc_page),
+        .ram_di           (mmc_ram_do),
+`endif
 `ifdef HW_A2
         .ram_a            (mmc_mem_a),
         .ram_cs_n         (mmc_mem_cs_n),
@@ -969,7 +1027,7 @@ module karabas_megabuzz(
     8'bzzzzzzzz;
 
     // wait (from zc)
-    assign bus_wait_n = (zc_busy & (divmmc_en | zc_en) & !cfg_rom_active) ? 1'b0 : 1'bz;
+    assign bus_wait_n = ((zc_busy & (divmmc_en | zc_en) & !cfg_rom_active) | mmc_wait) ? 1'b0 : 1'bz;
 
     // block zx rom
     assign bus_romcs_n = ((divmmc_en & divmmc_zxrom_block) | (cfg_rom_active & (bus_a[15:14] == 2'b00))) & ~bus_mreq_n ? 1'b0 : 1'b1;
