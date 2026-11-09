@@ -71,6 +71,154 @@ static __inline short ClipToShort(int x, int fracBits)
 	return (short)x;
 }
 
+#ifdef USE_CFU_MAC
+
+/* Same filter on the neorv32 MAC CFU. Accumulators: 0 = sum1L, 1 = sum2L, 2 = sum1R, 3 = sum2R.
+ * CFU_RD does the final shift, clip and reload of the rounding constant.
+ */
+#include "cfu_mac.h"
+
+#if (DEF_NFRACBITS != 6) || (CSHIFT != 12)
+#error "the CFU has the shift and the rounding constant built in"
+#endif
+
+#define RND_VAL	(1 << (DEF_NFRACBITS - 1 + (32 - CSHIFT)))
+
+#define MC0M(x)	{ \
+	c1 = *coef;		coef++;		c2 = *coef;		coef++; \
+	vLo = *(vb1+(x));			vHi = *(vb1+(23-(x))); \
+	CFU_MAC(0, vLo, c1);	CFU_MAC(4, vHi, c2); \
+}
+
+#define MC1M(x)	{ \
+	c1 = *coef;		coef++; \
+	vLo = *(vb1+(x)); \
+	CFU_MAC(0, vLo, c1); \
+}
+
+#define MC2M(x)	{ \
+	c1 = *coef;		coef++;		c2 = *coef;		coef++; \
+	vLo = *(vb1+(x));	vHi = *(vb1+(23-(x))); \
+	CFU_MAC(0, vLo, c1);	CFU_MAC(1, vLo, c2); \
+	CFU_MAC(4, vHi, c2);	CFU_MAC(1, vHi, c1); \
+}
+
+void PolyphaseMono(short *pcm, int *vbuf, const int *coefBase)
+{
+	int i, rnd = RND_VAL;
+	const int *coef;
+	int *vb1;
+	int vLo, vHi, c1, c2;
+
+	CFU_SET(0, rnd);
+	CFU_SET(1, rnd);
+
+	/* special case, output sample 0 */
+	coef = coefBase;
+	vb1 = vbuf;
+
+	MC0M(0) MC0M(1) MC0M(2) MC0M(3) MC0M(4) MC0M(5) MC0M(6) MC0M(7)
+
+	*(pcm + 0) = (short)CFU_RD(0);
+
+	/* special case, output sample 16 */
+	coef = coefBase + 256;
+	vb1 = vbuf + 64*16;
+
+	MC1M(0) MC1M(1) MC1M(2) MC1M(3) MC1M(4) MC1M(5) MC1M(6) MC1M(7)
+
+	*(pcm + 16) = (short)CFU_RD(0);
+
+	/* main convolution loop: sum1L = samples 1, 2, 3, ... 15   sum2L = samples 31, 30, ... 17 */
+	coef = coefBase + 16;
+	vb1 = vbuf + 64;
+	pcm++;
+
+	for (i = 15; i > 0; i--) {
+		MC2M(0) MC2M(1) MC2M(2) MC2M(3) MC2M(4) MC2M(5) MC2M(6) MC2M(7)
+
+		vb1 += 64;
+		*(pcm)       = (short)CFU_RD(0);
+		*(pcm + 2*i) = (short)CFU_RD(1);
+		pcm++;
+	}
+}
+
+#define MC0S(x)	{ \
+	c1 = *coef;		coef++;		c2 = *coef;		coef++; \
+	vLo = *(vb1+(x));		vHi = *(vb1+(23-(x))); \
+	CFU_MAC(0, vLo, c1);	CFU_MAC(4, vHi, c2); \
+	vLo = *(vb1+32+(x));	vHi = *(vb1+32+(23-(x))); \
+	CFU_MAC(2, vLo, c1);	CFU_MAC(6, vHi, c2); \
+}
+
+#define MC1S(x)	{ \
+	c1 = *coef;		coef++; \
+	vLo = *(vb1+(x)); \
+	CFU_MAC(0, vLo, c1); \
+	vLo = *(vb1+32+(x)); \
+	CFU_MAC(2, vLo, c1); \
+}
+
+#define MC2S(x)	{ \
+	c1 = *coef;		coef++;		c2 = *coef;		coef++; \
+	vLo = *(vb1+(x));	vHi = *(vb1+(23-(x))); \
+	CFU_MAC(0, vLo, c1);	CFU_MAC(1, vLo, c2); \
+	CFU_MAC(4, vHi, c2);	CFU_MAC(1, vHi, c1); \
+	vLo = *(vb1+32+(x));	vHi = *(vb1+32+(23-(x))); \
+	CFU_MAC(2, vLo, c1);	CFU_MAC(3, vLo, c2); \
+	CFU_MAC(6, vHi, c2);	CFU_MAC(3, vHi, c1); \
+}
+
+void PolyphaseStereo(short *pcm, int *vbuf, const int *coefBase)
+{
+	int i, rnd = RND_VAL;
+	const int *coef;
+	int *vb1;
+	int vLo, vHi, c1, c2;
+
+	CFU_SET(0, rnd);
+	CFU_SET(1, rnd);
+	CFU_SET(2, rnd);
+	CFU_SET(3, rnd);
+
+	/* special case, output sample 0 */
+	coef = coefBase;
+	vb1 = vbuf;
+
+	MC0S(0) MC0S(1) MC0S(2) MC0S(3) MC0S(4) MC0S(5) MC0S(6) MC0S(7)
+
+	*(pcm + 0) = (short)CFU_RD(0);
+	*(pcm + 1) = (short)CFU_RD(2);
+
+	/* special case, output sample 16 */
+	coef = coefBase + 256;
+	vb1 = vbuf + 64*16;
+
+	MC1S(0) MC1S(1) MC1S(2) MC1S(3) MC1S(4) MC1S(5) MC1S(6) MC1S(7)
+
+	*(pcm + 2*16 + 0) = (short)CFU_RD(0);
+	*(pcm + 2*16 + 1) = (short)CFU_RD(2);
+
+	/* main convolution loop: sum1L = samples 1, 2, 3, ... 15   sum2L = samples 31, 30, ... 17 */
+	coef = coefBase + 16;
+	vb1 = vbuf + 64;
+	pcm += 2;
+
+	for (i = 15; i > 0; i--) {
+		MC2S(0) MC2S(1) MC2S(2) MC2S(3) MC2S(4) MC2S(5) MC2S(6) MC2S(7)
+
+		vb1 += 64;
+		*(pcm + 0)         = (short)CFU_RD(0);
+		*(pcm + 1)         = (short)CFU_RD(2);
+		*(pcm + 2*2*i + 0) = (short)CFU_RD(1);
+		*(pcm + 2*2*i + 1) = (short)CFU_RD(3);
+		pcm += 2;
+	}
+}
+
+#else /* !USE_CFU_MAC */
+
 #define MC0M(x)	{ \
 	c1 = *coef;		coef++;		c2 = *coef;		coef++; \
 	vLo = *(vb1+(x));			vHi = *(vb1+(23-(x))); \
@@ -293,3 +441,5 @@ void PolyphaseStereo(short *pcm, int *vbuf, const int *coefBase)
 		pcm += 2;
 	}
 }
+
+#endif /* USE_CFU_MAC */

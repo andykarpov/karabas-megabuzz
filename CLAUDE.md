@@ -10,7 +10,7 @@ Repo layout: `firmware/src/` (all code), `pcb/revA*`, `pcb/revB` (KiCad), `docs/
 
 ## Hardware revisions drive everything
 
-There are four board revisions: `A`, `A1`, `A2`, `A3`. One top-level module, `firmware/src/rtl/megabuzz.v` (`karabas_megabuzz`), serves all of them through `` `ifdef HW_A / HW_A1 / HW_A2 / HW_A3 `` blocks. The port list and per-revision pin glue live in these blocks, and so do the A2-only and A3-only features (EEPROM config storage, VS1053). Each revision has its own constraints file, `firmware/src/syn/karabas-megabuzz[-aN].ucf`. When you change I/O, update the matching `ifdef` port block **and** the right `.ucf`, and keep the other revisions building.
+There are four board revisions: `A`, `A1`, `A2`, `A3`. One top-level module, `firmware/src/rtl/megabuzz.v` (`karabas_megabuzz`), serves all of them through `` `ifdef HW_A / HW_A1 / HW_A2 / HW_A3 `` blocks. The port list and per-revision pin glue live in these blocks, and so do the A2+ features (config ROM switch, flash-stored config, DivMMC SRAM) and the A3-only VS1053 chip (`vs1053_en = 1` only under `HW_A3`; A2 has no VS1053). On A1–A3 an optional QSPI PSRAM (APS6404L, 8 MB) footprint shares the config flash bus (CONF_CLK/CONF_IO0..3) and has only its own `psram_cs_n`, which is currently tied high. Each revision has its own constraints file, `firmware/src/syn/karabas-megabuzz[-aN].ucf`. When you change I/O, update the matching `ifdef` port block **and** the right `.ucf`, and keep the other revisions building.
 
 ## Building the FPGA bitstream
 
@@ -25,7 +25,7 @@ make clean
 
 Target names follow `all{16,25}_{a,a1,a2,a3}`. The pipeline is: `.prj` → xst → ngdbuild → map → par → bitgen (`-g Binary:Yes`, so a `.bin` is produced too). The `.prj`/`.xst` files are generated in the work dir, and they are only rebuilt when missing.
 
-**Source lists are explicit.** `VERILOG_SOURCES_COMMON` and `VHDL_SOURCES` in `syn/Makefile` are the source of truth. A new RTL file has to be added there, and you have to delete the stale `work*/*.prj` so it gets regenerated. Many files under `rtl/` are not in the build: `rtl/core/` (NEORV32 RISC-V), `rtl/mp3dec/`, `rtl/sound/jtopl/`, `ay_3_8912.v`, `saa1099.v`/`.sv`, and the `.v` twins of VHDL files in `adc/` and `flash/`. Note that `saa1099_new.v` is the one actually synthesized, while its module is still named `saa1099`.
+**Source lists are explicit.** `VERILOG_SOURCES_COMMON` and `VHDL_SOURCES` in `syn/Makefile` are the source of truth. A new RTL file has to be added there, and you have to delete the stale `work*/*.prj` so it gets regenerated. Many files under `rtl/` are not in the build: `rtl/core/` (NEORV32 RISC-V, see below), `rtl/mp3dec/`, `rtl/sound/jtopl/`, `ay_3_8912.v`, `saa1099.v`/`.sv`, and the `.v` twins of VHDL files in `adc/` and `flash/`. Note that `saa1099_new.v` is the one actually synthesized, while its module is still named `saa1099`.
 
 The built `.bit`/`.bin` files in `syn/work16` and `syn/work25` are committed on purpose: README links to them as release downloads.
 
@@ -42,7 +42,16 @@ From `firmware/src/syn/`: `make flash{16,25}[_a1|_a2|_a3]`, plus `flash{16,25}_a
 
 ## Simulation
 
-The only testbench is VS1053. Run it from `firmware/src/rtl/sound/`: `./vs1053_tb.sh` (iverilog `-DSIMULATION` + vvp + gtkwave). There is no other test suite.
+The only RTL testbench is VS1053. Run it from `firmware/src/rtl/sound/`: `./vs1053_tb.sh` (iverilog `-DSIMULATION` + vvp + gtkwave). There is no other test suite.
+
+`firmware/src/sw/bench/run.sh` is an MP3-decode benchmark: it builds Helix for neorv32, runs it in GHDL (`--std=08`, mcode backend, so use `ghdl -r`; it creates no executable) and prints `mcycle` per frame. It takes a few minutes per frame.
+
+## NEORV32 / MP3 emulation (work in progress)
+
+`PLAN.md` holds the plan and measurements for emulating VS1053 on neorv32 for A2/SLX25 (`all25_a2_rv32`). Read it before touching `rtl/core`, `rtl/mp3dec` or `sw/`. Key facts:
+- `rtl/core` is neorv32 v1.13.5.4. XST 14.7 synthesizes it: compile it into library `neorv32` (`vhdl neorv32 <file>`, package first). Use `CPU_FAST_MUL_REGS => 3`, otherwise the DSP cascade limits Fmax to ~54 MHz.
+- RISC-V toolchain: `/opt/xpack-riscv-none-elf-gcc-15.2.0-1/bin` (not in PATH). Firmware: `sw/src/mp3dec` (`make elf|image|bin`, `NEORV32_HOME` points to `firmware/src`). `make install` overwrites `rtl/core/neorv32_imem_image.vhd`.
+- The free BRAM on SLX25 A2 (~45 RAMB16, ~90 KB) is the hard limit for CPU code, data and PCM buffers.
 
 ## Architecture notes
 
