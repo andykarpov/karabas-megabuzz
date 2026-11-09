@@ -11,8 +11,7 @@ module gs(
     output wire        OE,
     input wire         WR_n,
     input wire         RD_n,
-    input wire         IORQ_n,
-    input wire         M1_n,
+    input wire         IOREQ,   // synchronized host I/O cycle
 
     output wire [20:0] MA,
     input wire [7:0]   MDI,
@@ -25,12 +24,25 @@ module gs(
     output wire signed [14:0] OUT_R
 );
 
-    localparam INT = 373; // -- 14MHz / 373 = 0.0375MHz = 37.5kHz samplerate
+    // INT sets the sample rate: exactly 37.5 kHz, 14 MHz / 37.5 kHz = 373.33 = 1120 / 3
+    localparam INT_STEP = 3;
+    localparam INT_MOD = 1120;
 
     // cs from host
-    wire gs_sel = ~IORQ_n & M1_n & (A[7:4] == 4'hB && A[2:0] == 3'h3);
-    wire gs_cs_n = IORQ_n | ~gs_sel;
+    wire gs_sel = IOREQ & (A[7:4] == 4'hB && A[2:0] == 3'h3);
+    wire gs_cs_n = ~gs_sel;
     wire a = A[3];
+
+    // one strobe per host access: the flags must not be held for the whole bus cycle against the GS CPU
+    wire host_wr = gs_sel & ~WR_n;
+    wire host_rd = gs_sel & ~RD_n;
+    reg host_wr_d = 0, host_rd_d = 0;
+    always @(posedge CLK) begin
+        host_wr_d <= host_wr;
+        host_rd_d <= host_rd;
+    end
+    wire host_wr_stb = host_wr & ~host_wr_d;
+    wire host_rd_stb = host_rd & ~host_rd_d;
 
     // чтение со стороны спектрума #BB, #B3
     assign DO = (a) ? {bit7_flag, 6'b111111, bit0_flag} : port_xx03_reg;
@@ -62,15 +74,16 @@ module gs(
     );
 
     // int generator
-    reg [9:0] cnt;
+    reg [10:0] cnt;
+    wire [10:0] cnt_next = cnt + INT_STEP;
     always @(posedge CLK) begin
         if (RESET) begin
             cnt <= 0;
             int_n <= 1;
         end else if (CE) begin
-            cnt <= cnt + 1;
-            if (cnt == INT) begin
-                cnt <= 0;
+            cnt <= cnt_next;
+            if (cnt_next >= INT_MOD) begin
+                cnt <= cnt_next - INT_MOD;
                 int_n <= 0;
             end
         end
@@ -84,23 +97,32 @@ module gs(
     reg [5:0] port_xx00_reg;
     reg signed [6:0] port_xx06_reg, port_xx07_reg, port_xx08_reg, port_xx09_reg;
     reg signed [7:0] ch_a_reg, ch_b_reg, ch_c_reg, ch_d_reg;
-    reg [6:0] mem;
+
+    // the page has to change together with the address: as a register it lagged one CE behind,
+    // on the same edge as the falling /WE
+    wire [6:0] mem = (cpu_a_bus[15:14] == 2'b00) ? 7'b0000000 : // #0000 - #3FFF  -   16Kb
+                     (cpu_a_bus[15:14] == 2'b01) ? 7'b0000010 : // #4000 - #7FFF  -   16Kb
+                     {port_xx00_reg[5:0], cpu_a_bus[14]};       // #8000 - #FFFF  -     32Kb
 
     always @(posedge CLK) begin
-        if (~cpu_iorq_n & cpu_m1_n & CE) begin
-            case(cpu_a_bus[3:0])
-                'h2: bit7_flag <= 0;
-                'h3: bit7_flag <= 1;
-                'h5: bit0_flag <= 0;
-                'hA: bit7_flag <= ~port_xx00_reg[0];
-                'hB: bit0_flag <= port_xx09_reg[5];
-                default: ; // no operation
-            endcase
+        if (RESET) begin
+            bit7_flag <= 0;
+            bit0_flag <= 0;
         end
-        if (~gs_cs_n) begin
-            if (~a & ~RD_n) bit7_flag <= 0;
-            if (~a & ~WR_n) bit7_flag <= 1;
-            if ( a & ~WR_n) bit0_flag <= 1;
+        else begin
+            if (~cpu_iorq_n & cpu_m1_n & CE) begin
+                case(cpu_a_bus[3:0])
+                    'h2: bit7_flag <= 0;
+                    'h3: bit7_flag <= 1;
+                    'h5: bit0_flag <= 0;
+                    'hA: bit7_flag <= ~port_xx00_reg[0];
+                    'hB: bit0_flag <= port_xx09_reg[5];
+                    default: ; // no operation
+                endcase
+            end
+            if (host_rd_stb & ~a) bit7_flag <= 0;
+            if (host_wr_stb & ~a) bit7_flag <= 1;
+            if (host_wr_stb &  a) bit0_flag <= 1;
         end
     end
 
@@ -157,12 +179,6 @@ module gs(
                     default: ; // no operation
                 endcase
             end
-
-            case (cpu_a_bus[15:14])
-                2'b00: mem <= 7'b0000000; // #0000 - #3FFF  -   16Kb 
-                2'b01: mem <= 7'b0000010; // #4000 - #7FFF  -   16Kb   
-                default: mem <= {port_xx00_reg[5:0],  cpu_a_bus[14]}; // #8000 - #FFFF  -     32Kb
-            endcase
         end
     end
 
@@ -178,7 +194,7 @@ module gs(
     assign MWE_n = cpu_wr_n || cpu_mreq_n || ~(mem[6] || mem[5] || mem[4] || mem[3] || mem[2] || mem[1]);
     assign MRD_n = cpu_rd_n || cpu_mreq_n;
     assign MRFSH_n = cpu_rfsh_n;
-    assign OE = (~IORQ_n && ~RD_n && A[7:4] == 4'b1011 && A[2:0] == 3'b011) ? 1'b1 : 1'b0;
+    assign OE = host_rd;
 
     // sound mix
     reg signed [14:0] out_a, out_b, out_c, out_d;

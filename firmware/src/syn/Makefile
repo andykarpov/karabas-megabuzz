@@ -29,7 +29,7 @@ VERILOG_SOURCES_COMMON= ../rtl/megabuzz.v\
                         ../rtl/sound/clk_div_8mhz.v\
                         ../rtl/sound/midi_tx_sensor.v\
                         ../rtl/sound/audio_mute.v\
-                        ../rtl/sound/audio_resample.v\
+                        ../rtl/sound/audio_fir_decim.v\
                         ../rtl/sound/vs1053.v\
                         ../rtl/sound/jt12/jt03.v\
                         ../rtl/sound/jt12/jt12_top.v\
@@ -187,7 +187,7 @@ $(BUILD_DIR16)/$(PROJECT_A1).xst: | $(BUILD_DIR16)
 	@echo "-top karabas_megabuzz" >> $@
 	@echo "-opt_mode Speed" >> $@
 	@echo "-opt_level 1" >> $@
-	@echo "-define {HW_A1}" >> $@
+	@echo "-define {HW_A1 AUDIO_FIR_LUTRAM}" >> $@
 
 $(BUILD_DIR16)/$(PROJECT_A2).xst: | $(BUILD_DIR16)
 	@echo "run" > $@

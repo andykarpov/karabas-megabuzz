@@ -51,8 +51,8 @@ module audio_mixer (
 );
 
     reg signed [11:0] psg_l, psg_r, opn_s;
-    reg signed [11:0] tsfm_l, tsfm_r;
-    reg signed [11:0] covox_l, covox_r;
+    reg signed [12:0] tsfm_l, tsfm_r;   // up to 2552: PSG + FM at their peaks
+    reg signed [12:0] covox_l, covox_r; // up to 2550: two soundrive channels + covox
 
     always @(posedge clk) begin
 
@@ -71,20 +71,20 @@ module audio_mixer (
         covox_r <= $signed({2'b00, covox_c, 2'b00}) + $signed({2'b00, covox_d, 2'b00}) + $signed({3'b000, covox_fb, 1'b0});
     end
 
-    wire signed [18:0] sum_l =  ((turbosound_en) ? $signed({tsfm_l[11:0], 4'b0000}) : $signed({16'b0})) +
+    wire signed [18:0] sum_l =  ((turbosound_en) ? $signed({tsfm_l, 4'b0000}) : $signed({16'b0})) +
                                 ((gs_en) ? $signed({gs_l[14],gs_l[14:0]}) : $signed({16'b0})) +
                                 ((midi_en) ? $signed(adc_l[15:0]) : $signed({16'b0})) +
                                 ((opl3_en) ? $signed(opl3_l[15:0]) : $signed({16'b0})) +
                                 ((saa_en) ? $signed({2'b00, saa_l, 6'b000000}) : $signed({16'b0})) +
-                                ((soundrive_en) ? $signed({covox_l[11:0], 4'b0000}) : $signed({16'b0})) +
+                                ((soundrive_en) ? $signed({covox_l, 4'b0000}) : $signed({16'b0})) +
                                 ((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
 
-    wire signed [18:0] sum_r =  ((turbosound_en) ? $signed({tsfm_r[11:0], 4'b0000}) : $signed({16'b0})) +
+    wire signed [18:0] sum_r =  ((turbosound_en) ? $signed({tsfm_r, 4'b0000}) : $signed({16'b0})) +
                                 ((gs_en) ? $signed({gs_r[14], gs_r[14:0]}) : $signed({16'b0})) +
                                 ((midi_en) ? $signed(adc_r[15:0]) : $signed({16'b0})) +
                                 ((opl3_en) ? $signed(opl3_r[15:0]) : $signed({16'b0})) +
                                 ((saa_en) ? $signed({2'b00, saa_r, 6'b000000}) : $signed({16'b0})) +
-                                ((soundrive_en) ? $signed({covox_r[11:0], 4'b0000}) : $signed({16'b0})) +
+                                ((soundrive_en) ? $signed({covox_r, 4'b0000}) : $signed({16'b0})) +
                                 ((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
 
     // 7 sources may overflow 16 bits: clip instead of wrapping around

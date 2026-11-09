@@ -180,8 +180,14 @@ TIMESPEC "TS_CLK" = PERIOD "clk" 50000 kHz;
 #TIMESPEC "TS_CLK_BUS" = PERIOD "clk_bus" 28000 kHz;
 #TIMESPEC "TS_CLK12" = PERIOD "clk12" 12000 kHz;
 
-NET "opl3_dclk" TNM_NET = "opl3_dclk";
-TIMESPEC "TS_OPL3_DCLK" = PERIOD "opl3_dclk" 4000 kHz;
+# GS SRAM: registers to pins and back; the rest of a read is the 45-55 ns chip within two 71 ns T-states
+INST "mem_a<*>" TNM = "sram_pads";
+INST "mem_d<*>" TNM = "sram_pads";
+INST "mem_wr_n" TNM = "sram_pads";
+INST "mem_rd_n" TNM = "sram_pads";
+TIMESPEC "TS_SRAM_OUT" = FROM "FFS" TO "sram_pads" 25 ns;
+TIMESPEC "TS_SRAM_IN" = FROM "sram_pads" TO "FFS" 25 ns;
 
-NET "bus_mreq_n" CLOCK_DEDICATED_ROUTE = FALSE;
+# combinational paths from the host bus back to the host bus (data, ROM block)
+TIMESPEC "TS_PAD2PAD" = FROM "PADS" TO "PADS" 30 ns;
 

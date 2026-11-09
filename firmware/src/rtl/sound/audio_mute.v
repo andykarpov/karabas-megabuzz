@@ -1,12 +1,12 @@
 module audio_mute(
     input wire clk,
     input wire on,
-    output reg mute
+    output reg mute = 1'b1
 );
 
-    reg [24:0] timeout_cnt;
+    reg [24:0] timeout_cnt = 0;
 
-    always @(posedge clk or posedge on) begin
+    always @(posedge clk) begin
         if (on) begin
             timeout_cnt <= 25'd0;
             mute <= 1'b1;

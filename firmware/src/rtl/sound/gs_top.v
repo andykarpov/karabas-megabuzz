@@ -15,8 +15,7 @@ module gs_top (
     input wire [15:0]     a,
     input wire [7:0]      di,
     input wire            mreq_n,
-    input wire            iorq_n,
-    input wire            m1_n,
+    input wire            ioreq,        // synchronized host I/O cycle
     input wire            rd_n,
     input wire            wr_n,
 
@@ -63,8 +62,7 @@ module gs_top (
         .OE(oe),
         .WR_n(wr_n),
         .RD_n(rd_n),
-        .IORQ_n(iorq_n),
-        .M1_n(m1_n),
+        .IOREQ(ioreq),
 
         .OUT_L(out_l),
         .OUT_R(out_r),
