@@ -331,7 +331,7 @@ module karabas_megabuzz(
     wire loader_reset;
     resetter poweron_resetter(.clk(clk_bus), .areset(divmmc_en & loader_reset), .reset_in(divmmc_en & loader_reset), .reset_out(poweron_reset), .reset_short());
 
-    assign o_reset_n = (poweron_reset) ? 1'b0 : 1'bz;
+    assign o_reset_n = 1'bz; // the board does not reset the host: some of them run their own service on a reset
 
     // clock enable for gs
     reg ce_14m = 0;
