@@ -306,12 +306,13 @@ module karabas_megabuzz(
 `endif
 
     // pll
-    wire clk_bus, clk_mem, clk12, locked, areset;
+    wire clk_bus, clk_mem, clk12, clk_opl3, locked, areset;
     pll pll_inst(
         .CLK_IN1         (clk),
         .CLK_OUT1        (clk_mem), // 140
         .CLK_OUT2        (clk_bus), // 28
         .CLK_OUT3        (clk12), // 12
+        .CLK_OUT4        (clk_opl3), // 14.286, the nominal 14.318 is out of reach of the 700 MHz VCO
         .LOCKED          (locked)
     );
     assign areset = ~locked;
@@ -323,7 +324,7 @@ module karabas_megabuzz(
 
     assign o_reset_n = (poweron_reset) ? 1'b0 : 1'bz;
 
-    // clock enable for gs and opl3
+    // clock enable for gs
     reg ce_14m = 0;
     always @(posedge clk_bus)
     ce_14m <= !ce_14m;
@@ -332,26 +333,38 @@ module karabas_megabuzz(
     wire reset;
     reg soft_reset = 0;
     wire reset_short;
-    resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(~bus_rst_n || ~btn_reset_n || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
+    // external reset sources: two synchronizer stages, then pulses shorter than 3 clocks are ignored
+    reg [4:0] ext_reset_sr = 0;
+    reg [3:0] btn_combo_sr = 0;
+    always @(posedge clk_bus) begin
+        ext_reset_sr <= {ext_reset_sr[3:0], ~bus_rst_n | ~btn_reset_n};
+        btn_combo_sr <= {btn_combo_sr[2:0], ~btn_reset_n & ~btn_nmi_n};
+    end
+    wire ext_reset = &ext_reset_sr[4:2];
+    wire btn_combo = &btn_combo_sr[3:2];
+
+    resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(ext_reset || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
 
     assign midi_reset_n = ~reset;
 
     // bus_iorq_n is useless on zxevo :(
     // so we're detecting bus_iorq_n cycle by bus_rd_n/bus_wr_n signal asserted without bus_m1_n/bus_mreq_n
-    // two-stage synchronizer on the rising clk_mem: clk_mem and clk_bus rise together,
-    // so the consumers in the clk_bus domain get a full clk_mem period (7.1 ns), not a half
-    reg ioreq_r = 0, ioreq = 0;
+    // two-stage synchronizer on clk_mem (ioreq_mem is for the clk_mem logic and the OPL3 chip select),
+    // then one more register so that the clk_bus logic gets its full 28 MHz period
+    reg ioreq_r = 0, ioreq_mem = 0, ioreq = 0;
     always @(posedge clk_mem) begin
         ioreq_r     <= bus_m1_n && bus_mreq_n && (~bus_rd_n || ~bus_wr_n);
-        ioreq       <= ioreq_r;
+        ioreq_mem   <= ioreq_r;
     end
+    always @(posedge clk_bus)
+        ioreq <= ioreq_mem;
     wire ioreq_rd = ioreq && ~bus_rd_n;
     wire ioreq_wr = ioreq && ~bus_wr_n;
 
     // bus_dos_n is useless on zxevo :(
     // so we're just lock some ports access when instruction has been fetched from rom
     reg rom_m1_access;
-    always @(posedge clk_mem or posedge reset) begin
+    always @(posedge clk_bus or posedge reset) begin
         if (reset)
             rom_m1_access <= 0;
         else if (~bus_m1_n)
@@ -417,12 +430,21 @@ module karabas_megabuzz(
 
     // ------- i2s DAC --------------
     wire signed [15:0] audio_mix_l, audio_mix_r;
+    wire signed [15:0] audio_fir_l, audio_fir_r;
+
+    audio_fir_decim audio_fir_inst(
+        .clk              (clk_bus),
+        .in_l             (audio_mix_l),
+        .in_r             (audio_mix_r),
+        .out_l            (audio_fir_l),
+        .out_r            (audio_fir_r)
+    );
 
     kg_pcm5102 #(.DIV_BITS(2)) dac_inst( // 28 MHz / 8 = 3.5 MHz bck, 109 kHz lrck
         .clk              (clk_bus),
         .reset            (reset),
-        .left             (audio_mix_l),
-        .right            (audio_mix_r),
+        .left             (audio_fir_l),
+        .right            (audio_fir_r),
         .din              (dac_dat),
         .bck              (dac_bck),
         .lrck             (dac_ws)
@@ -558,8 +580,7 @@ module karabas_megabuzz(
         .a                (bus_a),
         .di               (bus_d),
         .mreq_n           (bus_mreq_n),
-        .iorq_n           (bus_iorq_n),
-        .m1_n             (bus_m1_n),
+        .ioreq            (ioreq),
         .rd_n             (bus_rd_n),
         .wr_n             (bus_wr_n),
 
@@ -585,7 +606,7 @@ module karabas_megabuzz(
     wire signed [15:0] opl3_l, opl3_r;
     opl3 opl3_inst(
         .clk              (clk_bus),
-        .ce               (ce_14m),
+        .clk_opl3         (clk_opl3),
         .en               (opl3_en),
         .reset            (reset),
 
@@ -594,7 +615,7 @@ module karabas_megabuzz(
         .bus_rd_n         (bus_rd_n),
         .bus_wr_n         (bus_wr_n),
         .bus_mreq_n       (bus_mreq_n),
-        .bus_iorq_n       (bus_iorq_n),
+        .ioreq            (ioreq_mem),
         .bus_m1_n         (bus_m1_n),
 
         .opl3_clk         (opl3_clk),
@@ -716,7 +737,7 @@ module karabas_megabuzz(
 
         .bus_a            (bus_a),
         .bus_d            (bus_d),
-        .bus_iorq_n       (bus_iorq_n),
+        .ioreq            (ioreq_mem),
         .bus_mreq_n       (bus_mreq_n),
         .bus_m1_n         (bus_m1_n),
         .bus_wr_n         (bus_wr_n),
@@ -834,7 +855,7 @@ module karabas_megabuzz(
     always @(posedge clk_bus) begin
         soft_reset <= 0;
         cfg_write <= 0;
-        if (!btn_reset_n & !btn_nmi_n & cfg_rom_en) begin // both reset+nmi buttons presset => replace rom, trigger soft reset
+        if (btn_combo & cfg_rom_en) begin // both reset+nmi buttons presset => replace rom, trigger soft reset
             cfg_rom_active <= 1;
             soft_reset <= 1;
         end
@@ -846,7 +867,7 @@ module karabas_megabuzz(
             soft_reset <= bus_d[0];
         else if (ioreq_wr & port_zxuno_data & reg_mb_cfga) // cfg byte address
             cfg_addr <= bus_d;
-        else if (ioreq_wr & port_zxuno_data & reg_mb_cfg) begin // new cfg applied, trigger write to flash
+        else if (ioreq_wr & port_zxuno_data & reg_mb_cfg & cfg_rom_en) begin // new cfg applied, trigger write to flash (revs without the config rom have no config to save)
             if (cfg_addr == 0)
                 new_cfg_byte[7:0] <= bus_d;
             else begin

@@ -1,6 +1,6 @@
 module opl3(
     input wire clk,
-    input wire ce,
+    input wire clk_opl3, // 14.286 MHz, the chip's master clock
     input wire en,
     input wire reset,
 
@@ -9,7 +9,7 @@ module opl3(
     input wire bus_rd_n,
     input wire bus_wr_n,
     input wire bus_mreq_n,
-    input wire bus_iorq_n,
+    input wire ioreq,       // synchronized host I/O cycle
     input wire bus_m1_n,
 
     output wire opl3_clk,
@@ -29,7 +29,8 @@ module opl3(
     wire port_cs = (bus_a[7:2] == 6'b110001) & en;
 
     // ymf262-m chip select
-    assign opl3_cs_n = ~(bus_m1_n & ~bus_iorq_n & port_cs) | reset;
+    // ioreq, not the raw strobes: /RD or /WR outliving /MREQ would glitch the chip on memory cycles
+    assign opl3_cs_n = ~(ioreq & port_cs) | reset;
 
     // ym address
     assign opl3_a[1:0] = bus_a[1:0];
@@ -64,28 +65,22 @@ module opl3(
     reg [1:0] prev_smp;
     reg [17:0] serial;
     reg [15:0] opl_l, opl_r;
-    reg opl_valid;
     always @(posedge clk) begin
-        opl_valid <= 0;
         if (ym_dclk_strobe) begin
             prev_smp <= opl3_smp_r2;
             serial <= {opl3_data_r2, serial[17:1]};
             if (prev_smp[0] & ~opl3_smp_r2[0]) // latch smp0 on falling edge
                 opl_l <= {~serial[17], serial[16:2]};
-            else if (prev_smp[1] & ~opl3_smp_r2[1]) begin // latch smp1
+            else if (prev_smp[1] & ~opl3_smp_r2[1]) // latch smp1
                 opl_r <= {~serial[17], serial[16:2]};
-                opl_valid <= 1;
-            end
         end
     end
 
-    // assign clock
-    //assign opl3_clk = ce;
-    // ce toggles every clk cycle: sampling it on both edges of clk gives clk / 2 without a gated clock
-    ODDR2 oddr_opl3(.Q(opl3_clk), .C0(clk), .C1(~clk), .CE(1'b1), .D0(ce), .D1(ce), .R(1'b0), .S(1'b0));
+    // forward the chip clock without a gated clock
+    ODDR2 oddr_opl3(.Q(opl3_clk), .C0(clk_opl3), .C1(~clk_opl3), .CE(1'b1), .D0(1'b1), .D1(1'b0), .R(1'b0), .S(1'b0));
 
-    // resample + interpolation
-    audio_resample opl3_resample_l(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_l), .data_out(out_l), .valid_out());
-    audio_resample opl3_resample_r(.clk(clk), .reset(reset), .valid_in(opl_valid), .data_in(opl_r), .data_out(out_r), .valid_out());
+    // the samples are held until the next ones; audio_fir_decim band-limits the whole mix
+    assign out_l = opl_l;
+    assign out_r = opl_r;
 
 endmodule

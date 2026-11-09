@@ -29,16 +29,13 @@ Start:
         INCLUDE "keyboard.asm"
 
 RealStart:
-        CALL Screen.Clear : CALL Screen.ResetAttributes
+        CALL Screen.Clear
         LD DE, LoadingText : LD BC, 0x0504 : CALL Screen.PrintString
-        XOR A : LD (SelectedOption), A : LD (CheckboxState), A : LD (CheckboxState2), A
+        XOR A : LD (SelectedOption), A
         CALL MegaBuzz.WaitFlash
-        CALL Screen.Clear : CALL Screen.ResetAttributes
-        CALL MegaBuzz.WaitFlash
-        CALL MegaBuzz.ReadConfig : LD (CheckboxState), A
-        CALL MegaBuzz.WaitFlash
-        CALL MegaBuzz.ReadConfig2 : LD (CheckboxState2), A
-        CALL MegaBuzz.WaitFlash
+        CALL Screen.Clear
+        CALL MegaBuzz.ReadConfig : LD (CheckboxState), A : LD (OrigState), A
+        CALL MegaBuzz.ReadConfig2 : LD (CheckboxState2), A : LD (OrigState2), A
         CALL DrawStaticInterface
 
 MainLoop:
@@ -74,47 +71,38 @@ MainLoop:
         JR MainLoop
 
 .NotDown:
-        CP Keyboard.KEY_SELECT                 
+        CP Keyboard.KEY_SELECT
         JR NZ, .WaitKey
+
+        ; one press is one action, however long the key is held
+        CALL Keyboard.WaitRelease
 
         LD A, (SelectedOption)
         CP INDEX_APPLY
-        JR Z, ActionApply       
+        JR Z, ActionApply
         CP INDEX_CANCEL
-        JR Z, ActionCancel      
+        JR Z, ActionCancel
 
+        ; toggle the bit of the selected option; the second state byte follows the first in memory
         LD A, (SelectedOption)
+        LD HL, CheckboxState
         CP 8
-        JR NC, .BitInState2
-
-        LD C, A                 
-        LD B, 1                 
-        INC C
-.ShiftLoop1:
-        DEC C
-        JR Z, .ShiftDone1
-        SLA B                   
-        JR .ShiftLoop1
-.ShiftDone1:
-        LD A, (CheckboxState)
-        XOR B                   
-        LD (CheckboxState), A
-        JR .Redraw
-
-.BitInState2:
+        JR C, .BitInState
         SUB 8
-        LD C, A                 
-        LD B, 1                 
+        INC HL
+.BitInState:
+        LD C, A
+        LD B, 1
         INC C
-.ShiftLoop2:
+.ShiftLoop:
         DEC C
-        JR Z, .ShiftDone2
-        SLA B                   
-        JR .ShiftLoop2
-.ShiftDone2:
-        LD A, (CheckboxState2)
-        XOR B                   
-        LD (CheckboxState2), A
+        JR Z, .ShiftDone
+        SLA B
+        JR .ShiftLoop
+.ShiftDone:
+        LD A, (HL)
+        XOR B
+        LD (HL), A
 
 .Redraw:
         LD A, (SelectedOption)
@@ -122,13 +110,28 @@ MainLoop:
         JR MainLoop
 
 ActionApply:
-        CALL Screen.Clear : CALL Screen.ResetAttributes
-        LD DE, SavingText : LD BC, 0x0504 : CALL Screen.PrintString        
+        ; nothing changed: leave the flash alone
+        LD HL, (CheckboxState) : LD DE, (OrigState)
+        OR A : SBC HL, DE
+        JR Z, ActionCancel
+
+        CALL Screen.Clear
+        LD DE, SavingText : LD BC, 0x0504 : CALL Screen.PrintString
         LD A, (CheckboxState) : CALL MegaBuzz.ApplyConfig
         LD A, (CheckboxState2) : CALL MegaBuzz.ApplyConfig2
+        JR C, .Failed
+
+        ; the FPGA has read the bytes back from the flash by now
+        CALL MegaBuzz.ReadConfig : LD HL, CheckboxState : CP (HL) : JR NZ, .Failed
+        CALL MegaBuzz.ReadConfig2 : INC HL : CP (HL) : JR Z, ActionCancel
+
+.Failed:
+        LD DE, FailText : LD BC, 0x0704 : CALL Screen.PrintString
+.WaitAny:
+        CALL Keyboard.Scan : AND A : JR Z, .WaitAny
 
 ActionCancel:
-        CALL Screen.Clear : CALL Screen.ResetAttributes
+        CALL Screen.Clear
         LD DE, DoneText : LD BC, 0x0504 : CALL Screen.PrintString
 
         ;CALL MegaBuzz.Cancel   
@@ -280,29 +283,21 @@ RedrawSingleCheckbox:
         RET
 
 GetCBText:
-        LD A, (CurrentStep) 
+        LD A, (CurrentStep)
+        LD HL, CheckboxState
         CP 8
-        JR NC, .GetFromState2
-
-        LD E, A
-        INC E
-        LD A, (CheckboxState)
-.Loop1:
-        DEC E
-        JR Z, .Done
-        SRL A
-        JR .Loop1
-
-.GetFromState2:
+        JR C, .FromState
         SUB 8
+        INC HL
+.FromState:
         LD E, A
         INC E
-        LD A, (CheckboxState2)
-.Loop2:
+        LD A, (HL)
+.Loop:
         DEC E
         JR Z, .Done
         SRL A
-        JR .Loop2
+        JR .Loop
 
 .Done:
         AND 1
@@ -323,10 +318,11 @@ GetOptionTextAddress:
         RET
 
 ; Text data
-TitleText:       DB "  KARABAS MEGABUZZ CONFIG v1.3  ", 0
+TitleText:       DB "  KARABAS MEGABUZZ CONFIG v1.4  ", 0
 LoadingText:     DB "Loading...", 0
 SavingText:      DB "Saving...", 0
-DoneText:        DB "Done! Safe to reboot", 0
+FailText:        DB "Save failed! Press a key", 0
+DoneText:        DB "Rebooting...", 0
 CB_Unselected:   DB "[ ]", 0
 CB_Selected:     DB "[x]", 0
 Btn_Apply:       DB "  APPLY  ", 0
@@ -365,6 +361,8 @@ CheckboxState:     EQU 0x5C01
 CheckboxState2:    EQU 0x5C02  
 CurrentStep:       EQU 0x5C03
 OldSelectedOption: EQU 0x5C04
+OrigState:         EQU 0x5C05          ; the config as loaded, to skip a save when unchanged
+OrigState2:        EQU 0x5C06
 
 ; Expand ROM to 2KB
         IFDEF EMU_MODE

@@ -62,13 +62,20 @@ REG_ROMBANK      EQU #F8       ; ROM bank w (bit 0 = 0 - zx rom, 1 = cfg rom)
 REG_CTRL         EQU #F9       ; Control register w (bit 0 = 1 - reset trigger), r (bit 0 = 1 - flash busy)
 REG_CFGA         EQU #FA       ; CFG byte address
 
-;; Wait for flash ready
+;; Wait for flash ready; several seconds at most, a sector erase is the longest step
+;; OUT: carry set = timed out
 WaitFlash:
     MB_SetCtrlMode
+    LD HL, 0 : LD D, 8
 .wait_flash:
-    NOP
     MB_Read
-    BIT 0, A : JR NZ, .wait_flash
+    BIT 0, A : JR Z, .ready
+    DEC HL : LD A, H : OR L : JR NZ, .wait_flash
+    DEC D : JR NZ, .wait_flash
+    SCF
+    RET
+.ready:
+    OR A
     RET
 
 ;; Set config byte address

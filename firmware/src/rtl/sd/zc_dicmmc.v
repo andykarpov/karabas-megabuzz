@@ -14,7 +14,7 @@ module zc_divmmc(
 
     input wire [15:0] bus_a,
     input wire [7:0] bus_d,
-    input wire bus_iorq_n,
+    input wire ioreq,       // synchronized host I/O cycle (clk_mem)
     input wire bus_mreq_n,
     input wire bus_m1_n,
     input wire bus_wr_n,
@@ -43,11 +43,11 @@ module zc_divmmc(
 
     // SPI Z-Controller + DivMMC
     wire zc_spi_start = ((((bus_a[7:0] == 8'h57) & (zc_en | divmmc_en)) |
-    ((bus_a[7:0] == 8'hEB) & divmmc_en)) & ~bus_iorq_n & bus_m1_n) ? 1 : 0;
+    ((bus_a[7:0] == 8'hEB) & divmmc_en)) & ioreq) ? 1 : 0;
     wire zc_wr_en = (zc_spi_start & ~bus_wr_n) ? 1 : 0;
     wire zc_rd_en = (zc_spi_start & ~bus_rd_n) ? 1 : 0;
     wire port77_wr = ((((bus_a[7:0] == 8'h77) & (zc_en | divmmc_en)) |
-    ((bus_a[7:0] == 8'hE7) & divmmc_en)) & ~bus_iorq_n & ~bus_wr_n & bus_m1_n) ? 1 : 0;
+    ((bus_a[7:0] == 8'hE7) & divmmc_en)) & ioreq & ~bus_wr_n) ? 1 : 0;
 
     reg zc_cs_n;
     always @(posedge clk_mem or posedge reset) begin
@@ -126,30 +126,53 @@ module zc_divmmc(
         end
     end
 
-    reg mapcond, automap;
-    always @(posedge areset or negedge bus_mreq_n) begin
-        if (areset | ~divmmc_en) begin
+    reg reset_mem = 0;
+    always @(posedge clk_mem)
+        reset_mem <= reset;
+
+    // falling /MREQ in the clk_mem domain, a pulse of a single clock counts as noise
+    reg [3:0] mreq_sync = 4'b1111;
+    always @(posedge clk_mem)
+        mreq_sync <= {mreq_sync[2:0], bus_mreq_n};
+    wire mreq_fall = mreq_sync[3] & ~mreq_sync[2] & ~mreq_sync[1];
+
+    reg mapcond = 0, automap = 0;
+    always @(posedge clk_mem or posedge areset) begin
+        if (areset) begin
             mapcond <= 0;
             automap <= 0;
         end
-        else begin
-            if (~bus_m1_n) begin
-                mapcond <= (mapterm | map3DXX | (mapcond & map1F00)) & divmmc_en;
-                automap <= (mapcond | map3DXX) & divmmc_en;
-            end
+        else if (reset_mem | ~divmmc_en) begin
+            mapcond <= 0;
+            automap <= 0;
+        end
+        else if (mreq_fall & ~bus_m1_n) begin
+            mapcond <= mapterm | map3DXX | (mapcond & map1F00);
+            automap <= mapcond | map3DXX;
         end
     end
 
-    reg [7:0] port_e3_reg;
+    reg [7:0] port_e3_reg = 8'h00;
     wire conmem = port_e3_reg[7];
-    wire divideio = (~bus_iorq_n & ~bus_wr_n & bus_m1_n & (bus_a[7:0] == 8'hE3) & divmmc_en) ? 0 : 1;
-    always @(posedge areset or posedge divideio) begin
-        if (areset) begin // poweron
-            port_e3_reg[5:0] <= 6'b00000000;
-            port_e3_reg[7] <= 0;
-        end else
-            port_e3_reg <= {bus_d[7], port_e3_reg[6] | bus_d[6], bus_d[5:0]};
+    wire port_e3_wr = ioreq & ~bus_wr_n & (bus_a[7:0] == 8'hE3) & divmmc_en;
+    // host reset clears everything but MAPRAM, which only a power cycle clears
+    always @(posedge clk_mem or posedge areset) begin
+        if (areset) begin
+            port_e3_reg[5:0] <= 6'b000000;
+            port_e3_reg[7] <= 1'b0;
+        end
+        else if (reset_mem) begin
+            port_e3_reg[5:0] <= 6'b000000;
+            port_e3_reg[7] <= 1'b0;
+        end
+        else if (port_e3_wr) begin
+            port_e3_reg[5:0] <= bus_d[5:0];
+            port_e3_reg[7] <= bus_d[7];
+        end
     end
+    always @(posedge clk_mem)
+        if (port_e3_wr)
+            port_e3_reg[6] <= port_e3_reg[6] | bus_d[6];
 
     // nmi signal
     assign bus_nmi_n = (~btn_nmi_n & divmmc_en & ~mapcond) ? 1'b0 :
@@ -183,7 +206,7 @@ module zc_divmmc(
     spram #(.ADDRWIDTH(16)) esxdos_ram(.clock(clk_mem), .address({port_e3_reg[2:0], bus_a[12:0]}), .data(bus_d), .wren(is_ram_divmmc & ~bus_wr_n), .q(ram_do));
 
     assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc) ? 1 : 0;
-    assign divmmc_dout = (is_ram_divmmc) ? ram_do : (is_rom_divmmc) ? rom_do : divmmc_dout;
+    assign divmmc_dout = (is_ram_divmmc) ? ram_do : (is_rom_divmmc) ? rom_do : 8'hFF;
     assign divmmc_zxrom_block = divmmc_en & (automap | conmem);
 
 `endif
@@ -234,7 +257,7 @@ module zc_spi
     end
 
     // shift register
-    always @(negedge clk_sys) begin
+    always @(posedge clk_sys) begin
         if(counter[4]) begin
             spi_wait <= 1'b0;
             if(rx_stb | tx_stb) begin

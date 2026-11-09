@@ -9,7 +9,7 @@ module beeper(
 );
 
     wire port_xxfe = (a[7:0] == 8'hFE) && cs;
-    always @(posedge clk or posedge reset) begin
+    always @(posedge clk) begin
         if (reset || ~cs)
             out_beeper <= 0;
         else if (port_xxfe && ioreq_wr)

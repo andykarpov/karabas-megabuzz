@@ -19,7 +19,7 @@ module soundrive(
     output reg [7:0] out_fb
 );
 
-    always @(posedge clk or posedge reset) begin
+    always @(posedge clk) begin
         if (reset || ~cs) begin
             out_a <= 0;
             out_b <= 0;

@@ -10,7 +10,7 @@ ATTR_DEFAULT    EQU %00000111 ; Black paper, white pixels
 ATTR_HIGHLIGHT  EQU %00001111 ; Blue paper, white pixels
 ATTR_BUTTON     EQU %00000000 | (7 << 3) | 0 ; Bright=0, Flash=0, Paper=7 (grey), Ink=0 (black)
 
-;; Clear the screen pixels
+;; Clear the screen pixels and reset the attributes
 Clear:
         ; black border
         XOR A : OUT (0xFE), A
@@ -20,9 +20,7 @@ Clear:
         LD BC, 0x17FF
         LD (HL), 0
         LDIR
-        RET
 
-;; Reset attributes to defaults
 ResetAttributes:
         LD HL, 0x5800
         LD DE, 0x5801
