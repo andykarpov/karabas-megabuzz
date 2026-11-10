@@ -87,7 +87,7 @@ For the XC6SLX16 the command is the same, with the `bscan_spi_xc6slx16.bit` brid
 
 #### neorv32 MP3 decoder (XC6SLX25, revA, revA1, revA2 and revA3)
 
-In the builds for the XC6SLX25 of revA, revA1, revA2 and revA3, MP3 can be decoded by a neorv32 soft processor inside the FPGA. It is controlled from the host the same way as the VS1053 (ports `#F5`/`#F6`/`#FB`, see `PORTS.md`). Only the volume is supported, bass and treble (`#FC`) are accepted and ignored. The stream is MPEG Layer III up to 320 kbps stereo, free format is not supported.
+In the builds for the XC6SLX25 of revA, revA1, revA2 and revA3, MP3 can be decoded by a neorv32 soft processor inside the FPGA. It is controlled from the host the same way as the VS1053 (ports `#F5`/`#F6`/`#FB`, see `PORTS.en.md`). Only the volume is supported, bass and treble (`#FC`) are accepted and ignored. The stream is MPEG Layer III up to 320 kbps stereo, free format is not supported.
 
 There are no separate targets for it: the `make all25` builds of these revisions and the `make flash25`, `make flash25_a1`, `make flash25_a2`, `make flash25_a2_nommc` and `make flash25_a3` targets already include neorv32, and also write its firmware `syn/mp3dec.bin` at 0x180000. The loader reads it from the flash at startup, so the firmware can be updated without resynthesis:
 

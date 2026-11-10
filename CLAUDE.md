@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Karabas-MegaBuzz is an FPGA-based sound card for the ZX Spectrum (NemoBus slot). A Xilinx Spartan-6 (XC6SLX16 or XC6SLX25, ftg256) implements Turbosound FM, General Sound, SAA1099, Soundrive/Covox, Beeper, the bus glue for an external OPL3 (YMF262), MIDI (SAM2695) and VS1053 MP3 decoder chips, plus Z-Controller/DivMMC SD-card support. Audio goes out through a PCM5102 I2S DAC.
 
-Repo layout: `firmware/src/` (all code), `pcb/revA*`, `pcb/revB` (KiCad), `docs/` (schematics PDFs, iBOMs), `README.md` / `README.ru.md` and `HOWTO.en.md` / `HOWTO.md` (flashing and board usage; English and Russian versions, keep both in sync), `PORTS.md` (host-visible control registers, in Russian), `ERRATA.md` (per-revision hardware errata).
+Repo layout: `firmware/src/` (all code), `pcb/revA*`, `pcb/revB` (KiCad), `docs/` (schematics PDFs, iBOMs), `README.md` / `README.ru.md` and `HOWTO.en.md` / `HOWTO.md` (flashing and board usage; English and Russian versions, keep both in sync), `PORTS.en.md` / `PORTS.md` (host-visible control registers), `ERRATA.en.md` / `ERRATA.md` (per-revision hardware errata).
 
 ## Hardware revisions drive everything
 
@@ -60,11 +60,11 @@ The only RTL testbench is VS1053. Run it from `firmware/src/rtl/sound/`: `./vs10
 - **Host bus**: the FPGA decodes the Z80 bus directly (`bus_a`, `bus_d`, `bus_iorq_n`, `bus_m1_n`, …) from the NemoBus slot. Each sound device module gets the decoded bus and an enable bit, and returns audio samples.
 - **Audio path**: device modules (each holds its last sample at its own rate) → `audio_mixer` (19-bit sum, saturated to 16 bits, `audio_mute` silences it on reset) → `audio_fir_decim` (64-tap FIR, 875 kHz → 109.375 kHz; coefficients from `audio_fir_gen.py`, test `audio_fir_tb.py`) → `kg_pcm5102` I2S out (copied from karabas-go-modules, not a submodule). Two `vu_meter` instances drive the LED bars. A PCM1808 ADC is read through `i2s_transceiver` (`adc_l`/`adc_r`) and mixed in.
 - **General Sound** (`gs_top.v`/`gs.v`) runs its own T80 Z80 core (`rtl/T80`, VHDL). At boot, `loader.vhd` + `flash.vhd` copy the GS ROM out of SPI flash.
-- **Config & control** (A2/A3): the ZXUNO-style register ports `#FC3B` (register select) and `#FD3B` (data) expose custom registers `#F5`–`#FC`: VS1053 FIFO and volume/effects, config bytes, ROM switch, internal reset (the board never resets the host). Config byte 0 is a per-device enable bitmask. Writing the second config byte triggers `cfg_write`, which persists both bytes to SPI flash (the 0x1F0000 area). `PORTS.md` is the spec; keep it in sync when you change register behavior in `megabuzz.v`.
+- **Config & control** (A2/A3): the ZXUNO-style register ports `#FC3B` (register select) and `#FD3B` (data) expose custom registers `#F5`–`#FC`: VS1053 FIFO and volume/effects, config bytes, ROM switch, internal reset (the board never resets the host). Config byte 0 is a per-device enable bitmask. Writing the second config byte triggers `cfg_write`, which persists both bytes to SPI flash (the 0x1F0000 area). `PORTS.md` and `PORTS.en.md` are the spec; keep them in sync when you change register behavior in `megabuzz.v`.
 - **SD**: `rtl/sd/zc_dicmmc.v` implements both Z-Controller and DivMMC (with the esxDOS ROM and the 128K SRAM on A2+).
 - **SRAM arbiter**: with `MMC_ON_GS_SRAM` (A1 today) the DivMMC RAM lives in the upper 512 KB of the GS SRAM (`rtl/ram/sram_arbiter.v`, test `sram_arbiter_tb.sh`). GS keeps its direct path to the pads because its CPU reads in one 71 ns CE period; a host access freezes GS through CE and takes the pads, and `bus_wait_n` covers fast hosts. GS memory is 1.5 MB while DivMMC is enabled.
 
 ## Conventions
 
 - Verilog files use `` `default_nettype none ``. VHDL is used for T80 and the flash/loader/i2s modules. ISE's XST compiles both into the `work` library.
-- Docs (PORTS, ERRATA) and some Makefile comments are written in Russian; README and HOWTO exist in both languages. Keep new user-facing docs consistent with that.
+- README, HOWTO, PORTS and ERRATA exist in English and Russian, keep both versions in sync. Some Makefile comments are in Russian. Keep new user-facing docs consistent with that.
