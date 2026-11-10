@@ -42,7 +42,7 @@ From `firmware/src/syn/`: `make flash{16,25}[_a1|_a2|_a3]`, plus `flash{16,25}_a
 
 ## Simulation
 
-The only RTL testbench is VS1053. Run it from `firmware/src/rtl/sound/`: `./vs1053_tb.sh` (iverilog `-DSIMULATION` + vvp + gtkwave). There is no other test suite.
+RTL testbenches in `firmware/src/rtl/sound/`: `./vs1053_tb.sh` (iverilog `-DSIMULATION` + vvp + gtkwave), `python3 audio_fir_tb.py` and `python3 audio_img_tb.py` (bit-exact against the Python model); `rtl/ram/sram_arbiter_tb.sh` for the SRAM arbiter.
 
 `firmware/src/sw/bench/run.sh` is an MP3-decode benchmark: it builds Helix for neorv32, runs it in GHDL (`--std=08`, mcode backend, so use `ghdl -r`; it creates no executable) and prints `mcycle` per frame. It takes a few minutes per frame.
 
@@ -58,7 +58,7 @@ The only RTL testbench is VS1053. Run it from `firmware/src/rtl/sound/`: `./vs10
 ## Architecture notes
 
 - **Host bus**: the FPGA decodes the Z80 bus directly (`bus_a`, `bus_d`, `bus_iorq_n`, `bus_m1_n`, …) from the NemoBus slot. Each sound device module gets the decoded bus and an enable bit, and returns audio samples.
-- **Audio path**: device modules (each holds its last sample at its own rate) → `audio_mixer` (19-bit sum, saturated to 16 bits, `audio_mute` silences it on reset) → `audio_fir_decim` (64-tap FIR, 875 kHz → 109.375 kHz; coefficients from `audio_fir_gen.py`, test `audio_fir_tb.py`) → `kg_pcm5102` I2S out (copied from karabas-go-modules, not a submodule). Two `vu_meter` instances drive the LED bars. A PCM1808 ADC is read through `i2s_transceiver` (`adc_l`/`adc_r`) and mixed in.
+- **Audio path**: device modules (each holds its last sample at its own rate) → `audio_mixer` (19-bit sum, saturated to 16 bits, `audio_mute` silences it on reset; GS and MP3 are summed apart into `img_l/img_r`) → `audio_fir_decim` (64-tap FIR, 875 kHz → 109.375 kHz, 4 channels: the main mix and GS+MP3; coefficients from `audio_fir_gen.py`, test `audio_fir_tb.py`). GS+MP3 first go through `audio_avg` (32-clock average) and after the decimator through `audio_img_lpf` (64-tap image filter at 109.375 kHz, flat to 18 kHz, −60 dB above 24.4 kHz; `audio_img_gen.py`, test `audio_img_tb.py`, run without `python3 -I`), then both are summed and saturated → `kg_pcm5102` I2S out (copied from karabas-go-modules, not a submodule). Two `vu_meter` instances drive the LED bars from the final output. A PCM1808 ADC is read through `i2s_transceiver` (`adc_l`/`adc_r`) and mixed in.
 - **General Sound** (`gs_top.v`/`gs.v`) runs its own T80 Z80 core (`rtl/T80`, VHDL). At boot, `loader.vhd` + `flash.vhd` copy the GS ROM out of SPI flash.
 - **Config & control** (A2/A3): the ZXUNO-style register ports `#FC3B` (register select) and `#FD3B` (data) expose custom registers `#F5`–`#FC`: VS1053 FIFO and volume/effects, config bytes, ROM switch, internal reset (the board never resets the host). Config byte 0 is a per-device enable bitmask. Writing the second config byte triggers `cfg_write`, which persists both bytes to SPI flash (the 0x1F0000 area). `PORTS.md` and `PORTS.en.md` are the spec; keep them in sync when you change register behavior in `megabuzz.v`.
 - **SD**: `rtl/sd/zc_dicmmc.v` implements both Z-Controller and DivMMC (with the esxDOS ROM and the 128K SRAM on A2+).

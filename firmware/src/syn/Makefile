@@ -30,6 +30,8 @@ VERILOG_SOURCES_COMMON= ../rtl/megabuzz.v\
                         ../rtl/sound/midi_tx_sensor.v\
                         ../rtl/sound/audio_mute.v\
                         ../rtl/sound/audio_fir_decim.v\
+                        ../rtl/sound/audio_avg.v\
+                        ../rtl/sound/audio_img_lpf.v\
                         ../rtl/sound/vs1053.v\
                         ../rtl/sound/jt12/jt03.v\
                         ../rtl/sound/jt12/jt12_top.v\

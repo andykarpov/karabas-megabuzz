@@ -62,6 +62,10 @@ def main():
         rows = [ln.split() for ln in f]
     # the delay line is undefined until it has been filled once
     first = max(i for i, r in enumerate(rows[:64]) if 'x' in r[0] or 'x' in r[1]) + 1 if any('x' in ''.join(r) for r in rows[:64]) else 0
+    bad = [i for i, r in enumerate(rows) if i >= first and (r[2] != r[1] or r[3] != r[0])]
+    if bad:
+        print('second channel pair differs at', bad[:10])
+        sys.exit(1)
     yl = [None if i < first else s16(r[0]) for i, r in enumerate(rows)]
     yr = [None if i < first else s16(r[1]) for i, r in enumerate(rows)]
 

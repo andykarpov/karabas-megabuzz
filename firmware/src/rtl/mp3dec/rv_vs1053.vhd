@@ -47,51 +47,6 @@ begin
   end process;
 end architecture;
 
--- The mixer output is taken by the FIR every 32 clocks. A sample changing between two of those would have
--- its edge moved by up to 1.14 us, a large signal dependent noise at high frequencies: average instead,
--- so that the position of the edge within the 32 clocks is kept in the value.
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-
-entity rv_audio_avg is
-  port (
-    clk    : in  std_ulogic;
-    in_l   : in  std_ulogic_vector(15 downto 0);
-    in_r   : in  std_ulogic_vector(15 downto 0);
-    out_l  : out std_ulogic_vector(15 downto 0);
-    out_r  : out std_ulogic_vector(15 downto 0)
-  );
-end entity;
-
-architecture rtl of rv_audio_avg is
-  signal cnt          : unsigned(4 downto 0) := (others => '0');
-  signal acc_l, acc_r : signed(20 downto 0) := (others => '0');
-  signal avg_l, avg_r : signed(15 downto 0) := (others => '0');
-begin
-  process(clk)
-    variable sum_l, sum_r : signed(20 downto 0);
-  begin
-    if rising_edge(clk) then
-      sum_l := acc_l + resize(signed(in_l), 21);
-      sum_r := acc_r + resize(signed(in_r), 21);
-      cnt <= cnt + 1;
-      if (cnt = 31) then
-        avg_l <= resize(shift_right(sum_l, 5), 16);
-        avg_r <= resize(shift_right(sum_r, 5), 16);
-        acc_l <= (others => '0');
-        acc_r <= (others => '0');
-      else
-        acc_l <= sum_l;
-        acc_r <= sum_r;
-      end if;
-    end if;
-  end process;
-
-  out_l <= std_ulogic_vector(avg_l);
-  out_r <= std_ulogic_vector(avg_r);
-end architecture;
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -175,7 +130,6 @@ architecture rtl of rv_vs1053 is
   signal reg_q : std_ulogic_vector(31 downto 0);
 
   signal audio_lr : std_ulogic_vector(31 downto 0) := (others => '0');
-  signal audio_avg_l, audio_avg_r : std_ulogic_vector(15 downto 0);
 
 begin
 
@@ -399,16 +353,7 @@ begin
     end if;
   end process;
 
-  avg_inst: entity work.rv_audio_avg
-  port map (
-    clk   => clk_bus,
-    in_l  => audio_lr(15 downto 0),
-    in_r  => audio_lr(31 downto 16),
-    out_l => audio_avg_l,
-    out_r => audio_avg_r
-  );
-
-  audio_l <= std_logic_vector(audio_avg_l);
-  audio_r <= std_logic_vector(audio_avg_r);
+  audio_l <= std_logic_vector(audio_lr(15 downto 0));
+  audio_r <= std_logic_vector(audio_lr(31 downto 16));
 
 end architecture;
