@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Karabas-MegaBuzz is an FPGA-based sound card for the ZX Spectrum (NemoBus slot). A Xilinx Spartan-6 (XC6SLX16 or XC6SLX25, ftg256) implements Turbosound FM, General Sound, SAA1099, Soundrive/Covox, Beeper, the bus glue for an external OPL3 (YMF262), MIDI (SAM2695) and VS1053 MP3 decoder chips, plus Z-Controller/DivMMC SD-card support. Audio goes out through a PCM5102 I2S DAC.
 
-Repo layout: `firmware/src/` (all code), `pcb/revA*`, `pcb/revB` (KiCad), `docs/` (schematics PDFs, iBOMs), `HOWTO.md` (flashing and board usage, in Russian), `PORTS.md` (host-visible control registers, in Russian), `ERRATA.md` (per-revision hardware errata).
+Repo layout: `firmware/src/` (all code), `pcb/revA*`, `pcb/revB` (KiCad), `docs/` (schematics PDFs, iBOMs), `README.md` / `README.ru.md` and `HOWTO.en.md` / `HOWTO.md` (flashing and board usage; English and Russian versions, keep both in sync), `PORTS.md` (host-visible control registers, in Russian), `ERRATA.md` (per-revision hardware errata).
 
 ## Hardware revisions drive everything
 
@@ -67,4 +67,4 @@ The only RTL testbench is VS1053. Run it from `firmware/src/rtl/sound/`: `./vs10
 ## Conventions
 
 - Verilog files use `` `default_nettype none ``. VHDL is used for T80 and the flash/loader/i2s modules. ISE's XST compiles both into the `work` library.
-- Docs (HOWTO, PORTS, ERRATA) and some Makefile comments are written in Russian. Keep new user-facing docs consistent with that.
+- Docs (PORTS, ERRATA) and some Makefile comments are written in Russian; README and HOWTO exist in both languages. Keep new user-facing docs consistent with that.

@@ -1,5 +1,7 @@
 ## Karabas-MegaBuzz How-to
 
+[English](HOWTO.en.md) | Русский
+
 ### Прозвонка спартана
 
 Запаивание компонентов на плату желательно начать со спартана. 
@@ -68,8 +70,8 @@
 | `make flash16_a3` | XC6SLX16 | revA3 | cfg1 |
 | `make flash25` | XC6SLX25 | revA | cfg1 |
 | `make flash25_a1` | XC6SLX25 | revA1 | cfg1 |
-| `make flash25_a2` | XC6SLX25 | revA2 | cfg1 |
-| `make flash25_a2_nommc` | XC6SLX25 | revA2 | cfg2 |
+| `make flash25_a2` | XC6SLX25 | revA2 | cfg1_a2_rv32 (cfg1 с включённой опцией MP3) |
+| `make flash25_a2_nommc` | XC6SLX25 | revA2 | cfg2_a2_rv32 (cfg2 с включённой опцией MP3) |
 | `make flash25_a3` | XC6SLX25 | revA3 | cfg1 |
 
 Цели берут уже собранный `.bin` из `work16/` или `work25/`. Если его нет, сначала соберите битстрим (`make all16_a3`, `make all25_a2` и т.п.) или используйте готовый из репозитория.
