@@ -22,6 +22,12 @@ module zc_divmmc(
     inout wire bus_nmi_n,
     input wire btn_nmi_n,
 
+`ifdef MMC_ON_GS_SRAM
+    output wire        ram_req,
+    output wire        ram_we,
+    output wire [16:13] ram_page,
+    input wire [7:0]   ram_di,
+`endif
 `ifdef HW_A2_A3
     output wire [16:13] ram_a,
     output wire ram_cs_n,
@@ -187,8 +193,24 @@ module zc_divmmc(
     wire [7:0] rom_do;
     sprom #(.ADDRWIDTH(13), .MEM_INIT_FILE("esxdos.mem")) esxdos_rom(.clock(clk_mem), .address(bus_a[12:0]), .q(rom_do));
 
-    // rev A2,A3 uses its own 128k ram chip
+`ifdef MMC_ON_GS_SRAM
+
+    // the RAM of DivMMC is the upper part of the SRAM of GS, sram_arbiter does the access
+    assign ram_page = port_e3_reg[3:0];
+    assign ram_req = is_ram_divmmc & (~bus_rd_n | ~bus_wr_n);
+    assign ram_we = ~bus_wr_n;
+    assign divmmc_mem = (is_rom_divmmc | is_ram_divmmc) ? 1 : 0;
+    assign divmmc_dout = (is_ram_divmmc) ? ram_di : (is_rom_divmmc) ? rom_do : 8'hFF;
+    assign divmmc_zxrom_block = divmmc_en & (automap | conmem);
 `ifdef HW_A2_A3
+    assign ram_a = 4'd0;
+    assign ram_cs_n = 1'b1;
+    assign ram_rd_n = 1'b1;
+    assign ram_wr_n = 1'b1;
+`endif
+
+    // rev A2,A3 uses its own 128k ram chip
+`elsif HW_A2_A3
 
     assign divmmc_mem = is_rom_divmmc;
     assign divmmc_dout = rom_do;

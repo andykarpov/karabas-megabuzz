@@ -24,11 +24,14 @@ module gs_top (
     output wire [7:0]     do_bus,
 
     // interface to sram
-    inout  wire [7:0]    sram_d,
+    input  wire [7:0]    sram_di,
+    output wire [7:0]    sram_do,
+    output wire          sram_oe,
     output wire [20:0]   sram_a,
     output wire          sram_wr_n,
     output wire          sram_rd_n,
 
+    input wire           reserve_upper,
     input wire 			 loader_act,
     input wire [20:0]    loader_ram_a,
     input wire [7:0]     loader_ram_do,
@@ -76,13 +79,15 @@ module gs_top (
     );
 
     wire is_rom = (gs_mem_addr < 32768);
+    // the upper 512 KB belong to the RAM of DivMMC
+    wire reserved = reserve_upper & (gs_mem_addr[20:19] == 2'b11);
 
     assign sram_a = (loader_act) ? loader_ram_a : gs_mem_addr;
-    assign gs_mem_din = (loader_act) ? 8'hFF : sram_d;
-    assign sram_d = (loader_act) ? loader_ram_do :
-    (~gs_mem_wr_n) ? gs_mem_dout : 8'bz;
+    assign gs_mem_din = (loader_act | reserved) ? 8'hFF : sram_di;
+    assign sram_do = (loader_act) ? loader_ram_do : gs_mem_dout;
+    assign sram_oe = (loader_act) ? 1'b1 : (~gs_mem_wr_n & ~reserved);
     assign sram_wr_n = (loader_act) ? ~loader_ram_wr :
-    (is_rom) ? 1'b1 : gs_mem_wr_n;
-    assign sram_rd_n = (loader_act) ? 1'b1 : gs_mem_rd_n;
+    (is_rom | reserved) ? 1'b1 : gs_mem_wr_n;
+    assign sram_rd_n = (loader_act | reserved) ? 1'b1 : gs_mem_rd_n;
 
 endmodule
