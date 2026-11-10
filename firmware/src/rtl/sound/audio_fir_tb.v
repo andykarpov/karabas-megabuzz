@@ -13,7 +13,10 @@ module audio_fir_tb;
     reg signed [15:0] in_l = 0, in_r = 0;
     wire signed [15:0] out_l, out_r;
 
-    audio_fir_decim dut(.clk(clk), .in_l(in_l), .in_r(in_r), .out_l(out_l), .out_r(out_r));
+    // the second pair of channels gets the same data, swapped: it has to give the same results
+    wire signed [15:0] out2_l, out2_r;
+    audio_fir_decim dut(.clk(clk), .in_l(in_l), .in_r(in_r), .in2_l(in_r), .in2_r(in_l),
+                        .out_l(out_l), .out_r(out_r), .out2_l(out2_l), .out2_r(out2_r));
 
     integer n = 0, c = 0, f;
 
@@ -33,7 +36,7 @@ module audio_fir_tb;
             n <= n + 1;
         end
         if (c % 256 == 200)
-            $fdisplay(f, "%h %h", out_l, out_r);
+            $fdisplay(f, "%h %h %h %h", out_l, out_r, out2_l, out2_r);
         c <= c + 1;
     end
 endmodule

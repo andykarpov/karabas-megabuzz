@@ -51,7 +51,11 @@ module audio_mixer (
     input wire fm_ena,
 
     output wire signed [15:0] audio_l,
-    output wire signed [15:0] audio_r
+    output wire signed [15:0] audio_r,
+
+    // General Sound and MP3 hold their samples at 37.5 / 44.1 kHz: they go through a filter of their own
+    output wire signed [15:0] img_l,
+    output wire signed [15:0] img_r
 );
 
     reg signed [11:0] psg_l, psg_r, opn_s;
@@ -76,35 +80,40 @@ module audio_mixer (
     end
 
     wire signed [18:0] sum_l =  ((turbosound_en) ? $signed({tsfm_l, 4'b0000}) : $signed({16'b0})) +
-                                ((gs_en) ? $signed({gs_l[14],gs_l[14:0]}) : $signed({16'b0})) +
                                 ((midi_en) ? $signed(adc_l[15:0]) : $signed({16'b0})) +
                                 ((opl3_en) ? $signed(opl3_l[15:0]) : $signed({16'b0})) +
-                                ((mp3_en) ? $signed(mp3_l[15:0]) : $signed({16'b0})) +
                                 ((saa_en) ? $signed({2'b00, saa_l, 6'b000000}) : $signed({16'b0})) +
                                 ((soundrive_en) ? $signed({covox_l, 4'b0000}) : $signed({16'b0})) +
                                 ((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
 
     wire signed [18:0] sum_r =  ((turbosound_en) ? $signed({tsfm_r, 4'b0000}) : $signed({16'b0})) +
-                                ((gs_en) ? $signed({gs_r[14], gs_r[14:0]}) : $signed({16'b0})) +
                                 ((midi_en) ? $signed(adc_r[15:0]) : $signed({16'b0})) +
                                 ((opl3_en) ? $signed(opl3_r[15:0]) : $signed({16'b0})) +
-                                ((mp3_en) ? $signed(mp3_r[15:0]) : $signed({16'b0})) +
                                 ((saa_en) ? $signed({2'b00, saa_r, 6'b000000}) : $signed({16'b0})) +
                                 ((soundrive_en) ? $signed({covox_r, 4'b0000}) : $signed({16'b0})) +
                                 ((beeper_en) ? $signed({2'b00, speaker, 7'b0000000, 6'b000000}) : $signed({16'b0}));
+
+    wire signed [18:0] sum_img_l = ((gs_en) ? $signed({gs_l[14], gs_l[14:0]}) : $signed({16'b0})) +
+                                   ((mp3_en) ? $signed(mp3_l[15:0]) : $signed({16'b0}));
+    wire signed [18:0] sum_img_r = ((gs_en) ? $signed({gs_r[14], gs_r[14:0]}) : $signed({16'b0})) +
+                                   ((mp3_en) ? $signed(mp3_r[15:0]) : $signed({16'b0}));
 
     // 7 sources may overflow 16 bits: clip instead of wrapping around
     function signed [15:0] sat16(input signed [18:0] v);
         sat16 = (v > 19'sd32767) ? 16'sh7FFF : (v < -19'sd32768) ? 16'sh8000 : v[15:0];
     endfunction
 
-    reg signed [15:0] out_l = 0, out_r = 0;
+    reg signed [15:0] out_l = 0, out_r = 0, out_img_l = 0, out_img_r = 0;
     always @(posedge clk) begin
         out_l <= mute ? 16'sd0 : sat16(sum_l);
         out_r <= mute ? 16'sd0 : sat16(sum_r);
+        out_img_l <= mute ? 16'sd0 : sat16(sum_img_l);
+        out_img_r <= mute ? 16'sd0 : sat16(sum_img_r);
     end
 
     assign audio_l = out_l;
     assign audio_r = out_r;
+    assign img_l = out_img_l;
+    assign img_r = out_img_r;
 
 endmodule

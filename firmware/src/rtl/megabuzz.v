@@ -458,19 +458,53 @@ module karabas_megabuzz(
     wire signed [15:0] audio_mix_l, audio_mix_r;
     wire signed [15:0] audio_fir_l, audio_fir_r;
 
+    wire signed [15:0] audio_img_l, audio_img_r;
+    wire signed [15:0] audio_img_avg_l, audio_img_avg_r, audio_img_dec_l, audio_img_dec_r;
+    wire signed [15:0] audio_img_flt_l, audio_img_flt_r;
+
+    audio_avg audio_avg_inst(
+        .clk              (clk_bus),
+        .in_l             (audio_img_l),
+        .in_r             (audio_img_r),
+        .out_l            (audio_img_avg_l),
+        .out_r            (audio_img_avg_r)
+    );
+
     audio_fir_decim audio_fir_inst(
         .clk              (clk_bus),
         .in_l             (audio_mix_l),
         .in_r             (audio_mix_r),
+        .in2_l            (audio_img_avg_l),
+        .in2_r            (audio_img_avg_r),
         .out_l            (audio_fir_l),
-        .out_r            (audio_fir_r)
+        .out_r            (audio_fir_r),
+        .out2_l           (audio_img_dec_l),
+        .out2_r           (audio_img_dec_r)
     );
+
+    audio_img_lpf audio_img_lpf_inst(
+        .clk              (clk_bus),
+        .in_l             (audio_img_dec_l),
+        .in_r             (audio_img_dec_r),
+        .out_l            (audio_img_flt_l),
+        .out_r            (audio_img_flt_r)
+    );
+
+    function signed [15:0] sat16dac(input signed [16:0] v);
+        sat16dac = (v > 17'sd32767) ? 16'sh7FFF : (v < -17'sd32768) ? 16'sh8000 : v[15:0];
+    endfunction
+
+    reg signed [15:0] audio_out_l = 0, audio_out_r = 0;
+    always @(posedge clk_bus) begin
+        audio_out_l <= sat16dac(audio_fir_l + audio_img_flt_l);
+        audio_out_r <= sat16dac(audio_fir_r + audio_img_flt_r);
+    end
 
     kg_pcm5102 #(.DIV_BITS(2)) dac_inst( // 28 MHz / 8 = 3.5 MHz bck, 109 kHz lrck
         .clk              (clk_bus),
         .reset            (reset),
-        .left             (audio_fir_l),
-        .right            (audio_fir_r),
+        .left             (audio_out_l),
+        .right            (audio_out_r),
         .din              (dac_dat),
         .bck              (dac_bck),
         .lrck             (dac_ws)
@@ -848,7 +882,9 @@ module karabas_megabuzz(
         .mp3_r            (rv_audio_r),
 
         .audio_l          (audio_mix_l),
-        .audio_r          (audio_mix_r)
+        .audio_r          (audio_mix_r),
+        .img_l            (audio_img_l),
+        .img_r            (audio_img_r)
     );
 
     // divmmc + zc
@@ -910,7 +946,7 @@ module karabas_megabuzz(
         .enable_dot       (vu_dot),
         .reset            (reset),
         .sample_tick      (dac_ws),
-        .audio_sample     (audio_mix_l),
+        .audio_sample     (audio_out_l),
         .leds             (led_meter_l)
     );
 
@@ -921,7 +957,7 @@ module karabas_megabuzz(
         .enable_dot       (vu_dot),
         .reset            (reset),
         .sample_tick      (dac_ws),
-        .audio_sample     (audio_mix_r),
+        .audio_sample     (audio_out_r),
         .leds             (led_meter_r)
     );
 
