@@ -53,7 +53,7 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
 In the NMI browser by Bob Fossil, with the plugin above, select an MP3 file. It can also play a whole directory. `Space` goes to the next track, `Q` leaves.
 
-The software decoder and the chip work the same for players (registers `#F5`, `#F6`, `#FB`, see [PORTS.md](PORTS.md)). The software decoder implements the volume only, bass and treble are ignored, and it does not play free format MP3.
+The software decoder and the chip work the same for players (registers `#F5`, `#F6`, `#FB`, see [PORTS.en.md](PORTS.en.md)). The software decoder implements the volume only, bass and treble are ignored, and it does not play free format MP3.
 
 Which decoder is used:
 
@@ -99,9 +99,9 @@ Use `Q`/`A` or the cursor keys to move, `Space` or `Enter` to change an option o
 | VU reversed | VU meter in the opposite direction |
 | MP3 on RV32 | Rev.A3 on the XC6SLX25: use the software MP3 decoder instead of the VS1053 chip |
 
-The same settings can be changed from a program, see [PORTS.md](PORTS.md).
+The same settings can be changed from a program, see [PORTS.en.md](PORTS.en.md).
 
-### Changelog & current status [ERRATA](ERRATA.md)
+### Changelog & current status [ERRATA](ERRATA.en.md)
 
 * Rev.A - initial release
 

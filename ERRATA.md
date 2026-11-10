@@ -1,3 +1,5 @@
+[English](ERRATA.en.md) | Русский
+
 ### revA:
 ----
 
