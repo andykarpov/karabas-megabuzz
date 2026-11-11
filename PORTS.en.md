@@ -14,6 +14,7 @@ As in the ZXUNO standard, this port selects the register that the data port `#FD
 
 The Megabuzz currently supports these custom registers of the ZXUNO ports:
 
+- `#F4` - Megabuzz board id register (read only)
 - `#F5` - status and control register of the VS1053 FIFO
 - `#F6` - data register of the VS1053 FIFO
 - `#F7` - Megabuzz configuration byte register
@@ -22,6 +23,18 @@ The Megabuzz currently supports these custom registers of the ZXUNO ports:
 - `#FA` - Megabuzz configuration byte address register
 - `#FB` - VS1053 volume register
 - `#FC` - VS1053 effects register
+
+##### 📟 Register `#F4` - Megabuzz board id
+
+Read only. The value is set at synthesis: it describes the board and the firmware the bitstream was built for.
+
+- 2️⃣...0️⃣ bits 2:0 - board revision: `0` = A, `1` = A1, `2` = A2, `3` = A3
+- 3️⃣ bit 3 - XC6SLX25 FPGA (`0` = XC6SLX16)
+- 4️⃣ bit 4 - the firmware has the neorv32 MP3 decoder
+- 5️⃣ bit 5 - the board has a VS1053 chip (A3)
+- 7️⃣...6️⃣ bits 7:6 - reserved, read as `0`
+
+`#F4` is free in ZX-UNO (there `#F4` is the Timex I/O port, not a register) and in the profi and tsconf cores. The register exists from this firmware version on; on older firmware a read returns whatever the host puts on the bus (usually `#FF`).
 
 ##### 📟 Register `#F5` - VS1053 FIFO status and control
 
@@ -63,7 +76,7 @@ Second configuration byte (address = 0x01):
 - 0️⃣ bit 0 - VU meter bar on
 - 1️⃣ bit 1 - VU meter dot on
 - 2️⃣ bit 2 - reverses the direction of the VU meter
-- 3️⃣ bit 3 - MP3 decoder on the builds with neorv32 (revA3 on the XC6SLX25): `0` = the onboard VS1053 chip, `1` = neorv32. The bit is ignored on the other builds; on A2 with neorv32 the decoder is always neorv32
+- 3️⃣ bit 3 - MP3 decoder on the builds with neorv32 (revA3 on the XC6SLX25): `0` = the onboard VS1053 chip, `1` = neorv32. The bit is ignored on the other builds; on A2 with neorv32 the decoder is always neorv32. The configurator shows this option only on the XC6SLX25
 
 ##### 📟 Register `#F8` - Megabuzz ROM
 

@@ -13,6 +13,7 @@
 
 ; UI constants
 NUM_CHECKBOXES  EQU 12                              ; count of checkboxes
+INDEX_RV32      EQU 11                              ; "MP3 on RV32", hidden on the XC6SLX16
 INDEX_APPLY     EQU NUM_CHECKBOXES                  ; Apply button index
 INDEX_CANCEL    EQU NUM_CHECKBOXES + 1              ; Cancel button index
 BUTTONS_ROW     EQU 5 + NUM_CHECKBOXES + 2          ; buttons row
@@ -36,6 +37,7 @@ RealStart:
         CALL Screen.Clear
         CALL MegaBuzz.ReadConfig : LD (CheckboxState), A : LD (OrigState), A
         CALL MegaBuzz.ReadConfig2 : LD (CheckboxState2), A : LD (OrigState2), A
+        CALL MegaBuzz.ReadBoard : AND MegaBuzz.BOARD_SLX25 : LD (ShowRv32), A
         CALL DrawStaticInterface
 
 MainLoop:
@@ -53,6 +55,7 @@ MainLoop:
 
         LD (OldSelectedOption), A        
         DEC A
+        CALL SkipHiddenUp
         LD (SelectedOption), A
         CALL UpdateFocus
         JR MainLoop
@@ -66,6 +69,7 @@ MainLoop:
         
         LD (OldSelectedOption), A         
         INC A
+        CALL SkipHiddenDown
         LD (SelectedOption), A
         CALL UpdateFocus
         JR MainLoop
@@ -152,6 +156,20 @@ RelocatableCode_Start:
         LD SP, 0xFFFF : JP #0000
 RelocatableCode_End:
 
+;; Step the focus over the RV32 option where it is hidden
+;; IN: A = new index; OUT: A = index to use
+SkipHiddenDown:
+        CP INDEX_RV32 : RET NZ
+        LD A, (ShowRv32) : AND A : LD A, INDEX_RV32 : RET NZ
+        INC A
+        RET
+
+SkipHiddenUp:
+        CP INDEX_RV32 : RET NZ
+        LD A, (ShowRv32) : AND A : LD A, INDEX_RV32 : RET NZ
+        DEC A
+        RET
+
 KeyDelay:
         LD BC, 0x3FFF       
 .Loop:
@@ -173,6 +191,10 @@ DrawStaticInterface:
         XOR A : LD (CurrentStep), A
 .LoopCB:
         LD A, (CurrentStep)
+        CP INDEX_RV32 : JR NZ, .ShowCB
+        LD A, (ShowRv32) : AND A : JR Z, .NextCB
+        LD A, (CurrentStep)
+.ShowCB:
         LD C, 4             
         ADD A, 5            
         LD B, A             ; row 5+
@@ -190,6 +212,7 @@ DrawStaticInterface:
         CALL GetOptionTextAddress
         CALL Screen.PrintString
 
+.NextCB:
         LD A, (CurrentStep)
         INC A
         LD (CurrentStep), A
@@ -364,11 +387,13 @@ CurrentStep:       EQU 0x5C03
 OldSelectedOption: EQU 0x5C04
 OrigState:         EQU 0x5C05          ; the config as loaded, to skip a save when unchanged
 OrigState2:        EQU 0x5C06
+ShowRv32:          EQU 0x5C07          ; non-zero = show the RV32 option (XC6SLX25)
 
 ; Expand ROM to 2KB
         IFDEF EMU_MODE
         BLOCK 16384-$, 0
         ELSE
+        ASSERT $ <= 2048        ; the FPGA ROM (sprom) is 2 KB
         BLOCK 2048-$, 0
         ENDIF
 

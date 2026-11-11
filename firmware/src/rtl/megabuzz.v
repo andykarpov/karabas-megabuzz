@@ -1012,7 +1012,35 @@ module karabas_megabuzz(
     2'b00;
 
     // megabuzz cfg (zxuno regs f7,f8,f9,fa)
-    wire reg_mb = (zxuno_reg == 8'hF7 | zxuno_reg == 8'hF8 | zxuno_reg == 8'hF9 | zxuno_reg == 8'hFA);
+    // megabuzz board id (zxuno reg f4, read only): what this bitstream was built for
+`ifdef HW_A
+    localparam [2:0] BOARD_REV = 3'd0;
+`elsif HW_A1
+    localparam [2:0] BOARD_REV = 3'd1;
+`elsif HW_A2
+    localparam [2:0] BOARD_REV = 3'd2;
+`else
+    localparam [2:0] BOARD_REV = 3'd3;
+`endif
+`ifdef SLX25
+    localparam BOARD_SLX25 = 1'b1;
+`else
+    localparam BOARD_SLX25 = 1'b0;
+`endif
+`ifdef RV32
+    localparam BOARD_RV32 = 1'b1;
+`else
+    localparam BOARD_RV32 = 1'b0;
+`endif
+`ifdef HW_A3
+    localparam BOARD_VS_CHIP = 1'b1;
+`else
+    localparam BOARD_VS_CHIP = 1'b0;
+`endif
+    wire [7:0] board_id = {2'b00, BOARD_VS_CHIP, BOARD_RV32, BOARD_SLX25, BOARD_REV};
+    wire reg_mb_id = (zxuno_reg == 8'hF4);
+
+    wire reg_mb = (zxuno_reg == 8'hF4 | zxuno_reg == 8'hF7 | zxuno_reg == 8'hF8 | zxuno_reg == 8'hF9 | zxuno_reg == 8'hFA);
     wire reg_mb_cfg = (zxuno_reg == 8'hF7);
     wire reg_mb_rom = (zxuno_reg == 8'hF8);
     wire reg_mb_ctl = (zxuno_reg == 8'hF9);
@@ -1058,6 +1086,7 @@ module karabas_megabuzz(
     (ioreq_rd & port_zxuno_data & reg_mb_cfg) ? ((cfg_addr == 0) ? cfg_byte[7:0] : cfg_byte[15:8]) : // Megabuzz CFG byte
     (ioreq_rd & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
     (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | reset} : // Megabuzz CTL status (flash busy)
+    (ioreq_rd & port_zxuno_data & reg_mb_id) ? board_id : // Megabuzz board id
     (ioreq_rd & port_fffd & !cfg_rom_active) ? ts_do : // TS
     (ioreq_rd & port_gs & !cfg_rom_active) ? gs_do_bus : // GS
     8'bzzzzzzzz;
