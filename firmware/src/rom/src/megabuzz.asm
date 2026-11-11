@@ -3,137 +3,75 @@
 ; hardware driver (ports)
 ; =============================================================================
 
-    macro MB_SetCfgMode
-    push af
-    push bc
-    ld a, MegaBuzz.REG_CFG : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
-    pop bc
-    pop af
-    endm
-
-    macro MB_SetRomMode
-    push af
-    push bc
-    ld a, MegaBuzz.REG_ROMBANK : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
-    pop bc
-    pop af
-    endm
-
-    macro MB_SetCtrlMode
-    push af
-    push bc
-    ld a, MegaBuzz.REG_CTRL : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
-    pop bc
-    pop af
-    endm
-
-    macro MB_SetCfgAddressMode
-    push af
-    push bc
-    ld a, MegaBuzz.REG_CFGA : ld bc, MegaBuzz.PORT_ZXUNO_REG : out (c), a
-    pop bc
-    pop af
-    endm
-
-    macro MB_Send nn
-    push bc
-    ld a, nn : ld bc, MegaBuzz.PORT_ZXUNO_DATA : out (c), a
-    pop bc
-    endm
-
-    macro MB_SendA
-    push bc
-    ld bc, MegaBuzz.PORT_ZXUNO_DATA : out (c), a
-    pop bc
-    endm
-
-    macro MB_Read
-    push bc
-    ld bc, MegaBuzz.PORT_ZXUNO_DATA : in a, (c)
-    pop bc
-    endm
-
     MODULE MegaBuzz
 
 PORT_ZXUNO_REG   EQU #FC3B     ; ZXUNO control port
 PORT_ZXUNO_DATA  EQU #FD3B     ; ZXUNO data port
+REG_BOARD        EQU #F4       ; Board id r: bits 2:0 revision, bit 3 XC6SLX25, bit 4 neorv32, bit 5 VS1053 chip
 REG_CFG          EQU #F7       ; cfg byte r/w
 REG_ROMBANK      EQU #F8       ; ROM bank w (bit 0 = 0 - zx rom, 1 = cfg rom)
 REG_CTRL         EQU #F9       ; Control register w (bit 0 = 1 - reset trigger), r (bit 0 = 1 - flash busy)
 REG_CFGA         EQU #FA       ; CFG byte address
 
+BOARD_SLX25      EQU #08       ; REG_BOARD bit 3
+
+;; Select a ZXUNO register
+;; IN: A = register; OUT: BC = data port
+SelectReg:
+    LD BC, PORT_ZXUNO_REG : OUT (C), A
+    LD B, high PORT_ZXUNO_DATA
+    RET
+
 ;; Wait for flash ready; several seconds at most, a sector erase is the longest step
 ;; OUT: carry set = timed out
 WaitFlash:
-    MB_SetCtrlMode
+    LD A, REG_CTRL : CALL SelectReg
     LD HL, 0 : LD D, 8
 .wait_flash:
-    MB_Read
-    BIT 0, A : JR Z, .ready
+    IN A, (C)
+    RRA : RET NC                ; bit 0 = 0: ready, carry clear
     DEC HL : LD A, H : OR L : JR NZ, .wait_flash
     DEC D : JR NZ, .wait_flash
     SCF
     RET
-.ready:
-    OR A
-    RET
 
-;; Set config byte address
-;; IN: A = address
-SetConfigAddress:
-    MB_SetCfgAddressMode
-    MB_SendA
-    RET
+;; Select config byte A for REG_CFG
+;; IN: A = address; OUT: BC = data port
+SelectConfig:
+    LD E, A
+    LD A, REG_CFGA : CALL SelectReg
+    OUT (C), E
+    LD A, REG_CFG : JR SelectReg
 
-;; Read current config byte 1
+;; Read current config byte 1 / 2
 ;; OUT: A = cfg byte
 ReadConfig:
-    MB_SetCfgAddressMode
-    MB_Send 0
-    MB_SetCfgMode
-    MB_Read
+    XOR A
+.read:
+    CALL SelectConfig
+    IN A, (C)
     RET
 
-;; Read current config byte 2
-;; OUT: A = cfg byte
 ReadConfig2:
-    MB_SetCfgAddressMode
-    MB_Send 1
-    MB_SetCfgMode
-    MB_Read
-    RET
+    LD A, 1 : JR ReadConfig.read
 
-;; Write config and switch to main ROM
-;; IN: A = cfg byte
+;; Write config byte 1 / 2 (byte 2 starts the save to flash), wait for the flash
+;; IN: A = cfg byte; OUT: carry set = timed out
 ApplyConfig:
-    push af
-    MB_SetCfgAddressMode
-    MB_Send 0
-    MB_SetCfgMode
-    pop af
-    MB_SendA
-    CALL MegaBuzz.WaitFlash
-    RET
+    LD D, A : XOR A
+.write:
+    CALL SelectConfig
+    OUT (C), D
+    JR WaitFlash
 
 ApplyConfig2:
-    push af
-    MB_SetCfgAddressMode
-    MB_Send 1
-    MB_SetCfgMode
-    pop af
-    MB_SendA
-    CALL MegaBuzz.WaitFlash
-    RET
+    LD D, A : LD A, 1 : JR ApplyConfig.write
 
-;; Cancel - switch back a normal ROM + soft reset trigger
-Cancel:
-    MB_SetRomMode
-    MB_Send 0 ; switch to zx rom
-    ;MB_SetCtrlMode
-    ;MB_Send 1 ; send a reset trigger pulse
-    ;NOP : NOP : NOP
-    ;MB_Send 0
+;; Read the board id
+;; OUT: A = REG_BOARD value
+ReadBoard:
+    LD A, REG_BOARD : CALL SelectReg
+    IN A, (C)
     RET
 
     ENDMODULE
-

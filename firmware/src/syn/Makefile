@@ -319,7 +319,7 @@ $$(BUILD_DIR25)/karabas_megabuzz$(1).xst: | $$(BUILD_DIR25)
 	@echo "-top karabas_megabuzz" >> $$@
 	@echo "-opt_mode Speed" >> $$@
 	@echo "-opt_level 1" >> $$@
-	@echo "-define {$(2) RV32}" >> $$@
+	@echo "-define {$(2) RV32 SLX25}" >> $$@
 
 $$(BUILD_DIR25)/karabas_megabuzz$(1).ngc: $$(BUILD_DIR25)/karabas_megabuzz$(1).prj $$(BUILD_DIR25)/karabas_megabuzz$(1).xst $$(VERILOG_SOURCES_COMMON) $$(VHDL_SOURCES) $$(NEORV32_SRC) $$(RV_VHDL)
 	cd $$(BUILD_DIR25) && $$(ISE_ENV) xst -ifn karabas_megabuzz$(1).xst -ofn karabas_megabuzz$(1).syr
