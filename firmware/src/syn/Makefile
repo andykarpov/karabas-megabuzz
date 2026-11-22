@@ -389,3 +389,34 @@ flash25_a3: $(BUILD_DIR25)/$(PROJECT_A3).bin
 	$(OPENOCD_BIN) -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program $(BUILD_DIR25)/$(PROJECT_A3).bin 0; jtagspi_program $(GS_ROM) 0x100000; jtagspi_program $(RV_FW) 0x180000; jtagspi_program $(CFG1_ROM) 0x1F0000; xc6s_program xc6s.tap; exit"
 
 
+
+# Полные raw-образы SPI-флешки для внешнего программатора (CH341A, T48 и т.п.).
+# Раскладка та же, что у целей flash*, пустое место заполнено 0xFF.
+# По умолчанию образ 2 МБ (25Q16); на 25Q128 он шьется так же, с адреса 0.
+# Для программ, которым нужен образ размером с чип (flashrom):
+#   make images IMG_SIZE=0x1000000
+IMG_SIZE ?= 0x200000
+MKIMAGE   = python3 mkimage.py
+
+# $(1) = имя цели, $(2) = рабочий каталог, $(3) = проект, $(4) = суффикс имени,
+# $(5) = конфиг-ПЗУ, $(6) = прошивка neorv32 (пусто для SLX16)
+define FLASH_IMAGE
+.PHONY: $(1)
+$(1): $(2)/$(3).bin $$(GS_ROM) $(5) $(6)
+	$$(MKIMAGE) -s $$(IMG_SIZE) -o $(2)/$(3)$(4)_full.bin 0x0:$(2)/$(3).bin 0x100000:$$(GS_ROM) $(if $(6),0x180000:$(6)) 0x1F0000:$(5)
+IMAGES += $(1)
+endef
+
+$(eval $(call FLASH_IMAGE,image16,$(BUILD_DIR16),$(PROJECT_A),,$(CFG1_ROM),))
+$(eval $(call FLASH_IMAGE,image16_a1,$(BUILD_DIR16),$(PROJECT_A1),,$(CFG1_ROM),))
+$(eval $(call FLASH_IMAGE,image16_a2,$(BUILD_DIR16),$(PROJECT_A2),,$(CFG1_ROM),))
+$(eval $(call FLASH_IMAGE,image16_a2_nommc,$(BUILD_DIR16),$(PROJECT_A2),_nommc,$(CFG2_ROM),))
+$(eval $(call FLASH_IMAGE,image16_a3,$(BUILD_DIR16),$(PROJECT_A3),,$(CFG1_ROM),))
+$(eval $(call FLASH_IMAGE,image25,$(BUILD_DIR25),$(PROJECT_A),,$(CFG1_ROM),$(RV_FW)))
+$(eval $(call FLASH_IMAGE,image25_a1,$(BUILD_DIR25),$(PROJECT_A1),,$(CFG1_ROM),$(RV_FW)))
+$(eval $(call FLASH_IMAGE,image25_a2,$(BUILD_DIR25),$(PROJECT_A2),,$(CFG1_A2_RV32_ROM),$(RV_FW)))
+$(eval $(call FLASH_IMAGE,image25_a2_nommc,$(BUILD_DIR25),$(PROJECT_A2),_nommc,$(CFG2_A2_RV32_ROM),$(RV_FW)))
+$(eval $(call FLASH_IMAGE,image25_a3,$(BUILD_DIR25),$(PROJECT_A3),,$(CFG1_ROM),$(RV_FW)))
+
+.PHONY: images
+images: $(IMAGES)

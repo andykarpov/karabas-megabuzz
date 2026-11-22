@@ -27,6 +27,16 @@ The SPI flash can be written in several ways:
 5) The same with urJTAG.
 
 The first two need no explanation.
+
+#### Full flash image for a programmer
+
+For option 1 the Makefile builds a ready raw image of the whole flash with the same layout as the `make flash*` targets (bitstream at 0, GS ROM at 0x100000, neorv32 firmware at 0x180000 on the XC6SLX25, configuration at 0x1F0000); the empty space is filled with 0xFF. From `firmware/src/syn`:
+
+`make image16_a3` → `work16/karabas_megabuzz_a3_full.bin`
+
+The targets are named like the flashing targets: `image{16,25}`, `image{16,25}_a1`, `image{16,25}_a2`, `image{16,25}_a2_nommc`, `image{16,25}_a3`; `make images` builds them all. The bitstream `.bin` must already be built.
+
+The image is 2 MB (the size of a 25Q16) and fits both the 25Q16 and the 25Q128: on the bigger chip it is written the same way, from address 0. Tools like NeoProgrammer/AsProgrammer or XGecu write a file smaller than the chip without complaint. flashrom wants an image of the chip size, so build a 16 MB one for it: `make images IMG_SIZE=0x1000000`.
 The sections below cover openFPGALoader (for now only for the xc6slx16: on the xc6slx25 it does not see the flash through the JTAG-SPI bridge) and openOCD.
 
 #### Flashing with openFPGALoader
