@@ -179,7 +179,7 @@ module gs(
     // the GS ROM (pages 0-1) stands in for it and writes are ignored.
     wire flash_win = ~norom & (cpu_a_bus[15] | ~cpu_a_bus[14]);
     wire [6:0] mem = (cpu_a_bus[15:14] == 2'b00) ? 7'd0 :                     // #0000 - #3FFF
-                     (cpu_a_bus[15:14] == 2'b01) ? 7'd2 :                     // #4000 - #7FFF
+                     (cpu_a_bus[15:14] == 2'b01) ? 7'd3 :                     // #4000 - #7FFF: page 3, the upper half of MPAG 1, as on GS and NeoGS
                      (cpu_a_bus[15:14] == 2'b10) ? (norom ? pg2 : {6'd0, pg2[0]}) : // #8000 - #BFFF
                                                    (norom ? pg3 : {6'd0, pg3[0]});  // #C000 - #FFFF
 

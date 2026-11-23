@@ -345,7 +345,7 @@ module ngs_tb;
         gs_inst.z80_unit.mem_rd(16'hC000, q); check(ma[20:14] == 7'h24, "EXPAG: MPAGEX #12 = page #24");
         gs_out(8'h0F, 8'h2A);                  // NOROM = 0, EXPAG: windows 0, 2, 3 = ROM copy
         gs_inst.z80_unit.mem_rd(16'hC000, q); check(ma[20:14] == 7'd0, "NOROM=0: #C000 reads the ROM copy");
-        gs_inst.z80_unit.mem_rd(16'h4000, q); check(ma[20:14] == 7'd2, "NOROM=0: #4000 stays RAM");
+        gs_inst.z80_unit.mem_rd(16'h4000, q); check(ma[20:14] == 7'd3, "NOROM=0: #4000 stays RAM (page 3)");
         gs_out(8'h0F, 8'h23);
         gs_out(8'h00, 8'h00);
 
