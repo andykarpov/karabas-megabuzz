@@ -390,20 +390,31 @@ ui_prog:
     ld bc,5
     ld a,CLR_TIME
     call prn
-    ; bar = (ppos >> 10) * W_BAR / (alen >> 10)
+    ; bar = ppos * W_BAR / alen; both are shifted right together
+    ; until alen fits in 16 bits (files of any size up to 4 GB)
+    ld hl,(ppos) : ld (m32),hl
+    ld hl,(ppos+2) : ld (m32+2),hl
     ld hl,(alen)
     ld de,(alen+2)
-    call shr10
+.norm:
+    ld a,d : or e
+    jr z,.normd
+    srl d : rr e : rr h : rr l
+    ld a,(m32+3) : srl a : ld (m32+3),a
+    ld a,(m32+2) : rra : ld (m32+2),a
+    ld a,(m32+1) : rra : ld (m32+1),a
+    ld a,(m32) : rra : ld (m32),a
+    jr .norm
+.normd:
     ld a,h : or l
     ld a,0
     jr z,.bar
+    ; position far past the end (m32 * W_BAR would overflow): full bar
+    ld a,(m32+3)
+    or a
+    ld a,W_BAR
+    jr nz,.bar
     push hl
-    ld hl,(ppos)
-    ld de,(ppos+2)
-    call shr10
-    ld (m32),hl
-    ld hl,0
-    ld (m32+2),hl
     ld bc,W_BAR
     call mul32_16
     call st_dvd

@@ -3,7 +3,7 @@
 ;;
 ;; Build: sjasmplus src/main.asm  ->  MEGABUZZ.WMF
 
-    DEFINE VERSION "0.3"
+    DEFINE VERSION "0.3.1"
 
 CPU_CLOCK       equ 2           ; TURBOPL: 0 = 3.5, 1 = 7, 2 = 14 MHz
 SEEK_SEC        equ 10          ; seconds per <- / ->

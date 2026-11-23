@@ -133,5 +133,16 @@ t("header +204 viewer text", WMF[204:228] == b"Play on Megabuzz".ljust(24), WMF[
 t("header format #10", WMF[32] == 0x10, WMF[32])
 
 t("config bytes never written", not any(l[0] == "cfg write!" for l in s.log))
+
+# progress bar on a file over 64 MB (alen >> 10 used to overflow 16 bits):
+# ~83 MB at 128 kbps = ~87 min, 74 seeks of 10 s = ~12:20 -> ~14% of 46 cells
+big = cbr * (83_000_000 // len(cbr) + 1)
+keys = {50 + 4 * i: "right" for i in range(74)}
+keys[600] = "esc"
+s = Sim(WMF, big, drain_bps=16000, keys=keys)
+s.run(snap_at=(500,))
+line = row(s.snapshots[500], "87:")
+cells = line.count("█")
+t("bar on an 83 MB file ~14%", 4 <= cells <= 9, (cells, line))
 print("fails:", fails)
 sys.exit(1 if fails else 0)

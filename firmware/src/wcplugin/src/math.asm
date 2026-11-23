@@ -66,13 +66,6 @@ div16_8:
     djnz .loop
     ret
 
-;; DEHL -> HL = DEHL >> 10 (low 16 bits)
-shr10:
-    ld l,h : ld h,e : ld a,d
-    srl a : rr h : rr l
-    srl a : rr h : rr l
-    ret
-
 ;; HL = unsigned value -> decimal at (DE), no leading zeros. OUT: DE past the text
 utoa16:
     xor a
