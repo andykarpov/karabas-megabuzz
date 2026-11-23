@@ -98,10 +98,22 @@ def diag(name, expect, code, **kw):
 
 diag("no decoder", "no MP3 decoder", 1, board_id=0x02)
 diag("no board", "No answer", 1, no_board=True)
-diag("firmware without #F4 (bus reads #FF)", "#F4): #FF", 1, board_id=0xFF)
+diag("firmware without #F4 (bus reads #FF)", "#F4): 14 MHz #FF", 1, board_id=0xFF)
 diag("odd id", "Not a Megabuzz id", 1, board_id=0x55)
-diag("id right at 3.5 MHz only", "at 3.5 MHz: #2B", 1, board_id=0xFF, slow_id=0x2B)
-diag("id right at 3.5 MHz only", "bus timing", 1, board_id=0xFF, slow_id=0x2B)
+diag("all clocks read #FF", "14 MHz #FF, 7 MHz #FF, 3.5 MHz #FF", 1, board_id=0xFF)
+txt = diag("F10, board right at 7 MHz only", "7 MHz #2B", 0, board_id=0x2B, call_type=3,
+           clock_ids={2: 0xFF})
+t("F10, 7 MHz only -> says so", "runs at 7 MHz" in txt and "#F4): 14 MHz #FF, 7 MHz #2B" in txt, txt)
+txt = diag("F10, board right at 3.5 MHz only", "3.5 MHz #2B", 0, board_id=0x2B, call_type=3,
+           clock_ids={2: 0xFF, 1: 0xFF})
+t("F10, 3.5 MHz only -> says so", "runs at 3.5 MHz" in txt, txt)
+
+# Enter, board right at 7 MHz only: plays at 7 MHz, no window
+s = Sim(WMF, cbr, board_id=0x2B, clock_ids={2: 0xFF}, keys={60: "esc"})
+r = s.run(snap_at=(30,))
+t("7 MHz only: plays", r == 0 and "Decoder:" in s.snapshots[30], r)
+t("7 MHz only: runs at 7 MHz", s.clock == 1, s.clock)
+
 diag("F10 with VS1053", "VS1053 chip", 0, board_id=0x2B, call_type=3)
 diag("F10 with neorv32", "neorv32", 0, board_id=0x1A, call_type=3)
 diag("F10 without a board", "No answer", 0, no_board=True, call_type=3)

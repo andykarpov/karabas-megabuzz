@@ -17,7 +17,7 @@ SECTOR_COST = 3000      # T-states per 512-byte sector read (set per test)
 class Sim:
     def __init__(self, wmf, data, name=b"test.mp3", index=1, count=3,
                  board_id=0x2B, cfg1=0x00, drain_bps=16000, keys=None,
-                 hei=25, no_loadnone=False, no_board=False, call_type=0, slow_id=None):
+                 hei=25, no_loadnone=False, no_board=False, call_type=0, clock_ids=None):
         self.m = z80.Z80Machine()
         self.data = data
         self.keys = keys or {}          # frame -> key name or char
@@ -49,7 +49,7 @@ class Sim:
         self.under_frames = []
         self.no_board = no_board
         self.call_type = call_type
-        self.slow_id = slow_id          # board id read at 3.5 MHz, if it differs
+        self.clock_ids = clock_ids or {}  # TURBOPL clock -> board id, if it differs
         self.clock = 2
         self.cur_key = None
         self.snapshots = {}
@@ -112,8 +112,8 @@ class Sim:
         if port == 0xFD3B and not self.no_board:
             r = self.zreg
             if r == 0xF4:
-                if self.clock == 0 and self.slow_id is not None:
-                    return self.slow_id
+                if self.clock in self.clock_ids:
+                    return self.clock_ids[self.clock]
                 return self.board_id
             if r in (0xF5, 0xF6):
                 full = 0x80 if self.fifo >= 4096 else 0
@@ -266,10 +266,13 @@ class Sim:
         if self.frame in self.snap_at:
             self.snapshots[self.frame] = self.text()
 
+    def frame_t(self):
+        return FRAME >> (2 - self.clock)     # T-states per frame at this clock
+
     def run(self, max_frames=100000, snap_at=()):
         self.snap_at = set(snap_at)
         m = self.m
-        budget = FRAME
+        budget = self.frame_t()
         while self.frame < max_frames:
             m.ticks_to_stop = budget
             ev = m.run()
@@ -281,11 +284,11 @@ class Sim:
                 left -= cost
                 while left <= 0:
                     self.new_frame()
-                    left += FRAME
+                    left += self.frame_t()
                 budget = left
                 continue
             self.new_frame()
-            budget = FRAME
+            budget = self.frame_t()
         raise RuntimeError("no exit after %d frames" % max_frames)
 
     def line(self, txt, y):

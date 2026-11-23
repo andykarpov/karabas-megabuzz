@@ -5,7 +5,7 @@ English | [Русский](README.md)
 A Wild Commander (WC) plugin for TSConf (ZX Evolution, Karabas Mini and others) that plays MP3 through the Karabas-MegaBuzz decoder: the VS1053 chip or the neorv32 software decoder. It uses the registers `#F4`, `#F5`, `#F6`, `#FB`, `#FC` (see [PORTS.en.md](../../../PORTS.en.md)).
 
 ```
-+------------------ Megabuzz MP3 Player v0.2 ------------------+
++------------------ Megabuzz MP3 Player v0.3 ------------------+
 | File:   01-kino-gruppa_krovi.mp3                             |
 |--------------------------------------------------------------|
 | Title:  Группа крови                                         |
@@ -70,6 +70,7 @@ When a track ends the plugin moves on to the next file of the panel, after the l
 - ID3v1 (at the end of the file) is not read: WC gives no way to reach the end of the file before playback starts.
 - Minutes on screen stop at 99:59, seeking works for files up to 32 MB.
 - MP3 only for now. The VS1053 chip also plays AAC, WAV, OGG and more, they can come later.
+- The plugin looks for the board at 14 MHz, then at 7 and 3.5 MHz, and plays at the clock the board answered at: TSConf slows slot I/O down only for AY and the WD1793, other ports (`#FC3B`/`#FD3B` too) are read at the full clock. At 7 and 3.5 MHz, 320 kbps needs an SD card read through WC at ~80 KB/s or faster (~58 KB/s is enough at 14 MHz). The plugin's F10 item shows the board answer at each clock.
 - No L/R peaks yet (the window keeps room for them), see item 6 in [BACKLOG.md](../../../BACKLOG.md).
 
 ## Building and tests

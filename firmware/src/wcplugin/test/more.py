@@ -61,6 +61,12 @@ for cost in (60000, 80000, 100000, 120000):
     s.run()
     t("320 kbps with SD at %.0f KB/s: no underrun" % (14e6 / cost / 2),
       s.underruns == 0, s.under_frames)
+# board right at 7 MHz only: the player runs at 7 MHz
+s = Sim(WMF, c320, drain_bps=40000, keys={600: "esc"}, board_id=0x1A, clock_ids={2: 0xFF})
+s.sector_cost = 45000
+s.run()
+t("320 kbps at 7 MHz with SD at 78 KB/s: no underrun", s.underruns == 0 and s.clock == 1,
+  (s.underruns, s.clock))
 # colours of the parts of the window
 s = Sim(WMF, tag + noise, keys={60: "esc"})
 s.run(snap_at=(40,))
