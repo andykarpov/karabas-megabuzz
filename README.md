@@ -12,7 +12,7 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 ### Tech specs
 
 * Turbosound FM
-* General Sound 2 MB (1.5 MB on Rev.A1 while DivMMC is enabled)
+* General Sound 2 MB (1.5 MB on Rev.A1 while DivMMC is enabled), with the NeoGS ports for MP3 and the SD card
 * OPL3 sound by YMF-262-M
 * MIDI by Dream SAM2695
 * SAA1099
@@ -83,6 +83,10 @@ Which decoder is used:
 * Rev.A3 on the XC6SLX25: chosen by the `MP3 on RV32` option of the configurator, the VS1053 chip when it is off.
 * Rev.A3 on the XC6SLX16: the VS1053 chip.
 * The other boards on the XC6SLX16: no MP3, there is no room for the decoder.
+
+#### NeoGS
+
+The General Sound also has the MP3 and SD card ports of NeoGS on its CPU side, so NeoGS players (Neo Player Light and others) work too. They play through the same decoder, and the SD card is shared with Z-Controller/DivMMC. Details in [PORTS.en.md](PORTS.en.md#-neogs-ports).
 
 ### Settings
 
