@@ -178,7 +178,10 @@
 
 ### Воспроизведение MP3
 
-На плате ревизии A3 имеется аппаратный mp3 декодер (микросхема vs1053 / vs1063).
+MP3 декодирует микросхема VS1053 / VS1063 на ревизии A3 или программный декодер neorv32 в сборках для XC6SLX25 (см. [выше](#декодер-mp3-на-neorv32-xc6slx25-reva-reva1-reva2-и-reva3)). Для плееров они работают одинаково.
+
+#### esxDOS: NMI browser
+
 Для NMI browser от Bob Fossil имеется плагин mp3, который нужно положить в bin/bplugins/ на SD-карте.
 Умеет воспроизводить MP3 файлы, в том числе подряд в директории.
 
@@ -187,6 +190,36 @@
     - Space - следующий трек
     - Q - выход
 
-Для Wild Commander на TSConf есть плагин `MEGABUZZ.WMF` (`firmware/src/wcplugin/`). Его нужно положить в каталог `WC` и добавить в секцию `[PLUGINS]` файла `wc.ini` перед `GSPLAYER.WMF`. На TSConf выключите Z-Controller и DivMMC Megabuzz (в конфигураторе на A2/A3, DIP-переключателями на A1). Подробности и клавиши — в [README плагина](firmware/src/wcplugin/README.md).
+#### TSConf: Wild Commander
+
+Для Wild Commander на хостах с TSConf (ZX Evolution, Karabas Mini и другие) есть плагин [MEGABUZZ.WMF](firmware/src/wcplugin/MEGABUZZ.WMF) (исходники в `firmware/src/wcplugin/`). Он показывает теги ID3v2, формат потока, прогрессбар со временем и заполнение FIFO, а когда трек кончается, переходит к следующему файлу панели.
+
+1. Положите `MEGABUZZ.WMF` в папку `WC` загрузочного устройства.
+2. Добавьте его в секцию `[PLUGINS]` файла `WC/wc.ini` перед `GSPLAYER.WMF`, который тоже открывает MP3:
+
+   ```ini
+   [PLUGINS]
+   MEGABUZZ.WMF
+   GSPLAYER.WMF -midi_chip=2
+   ```
+
+   Если Megabuzz нет или на нём нет MP3-декодера, плагин отдаёт файл GS Player.
+3. Выключите Z-Controller и DivMMC на Megabuzz (в конфигураторе на A2/A3, DIP-переключателями на A1): у TSConf свой Z-Controller на тех же портах, и они будут мешать SD-карте хоста.
+
+Нужны WC 1.09 или новее и битстрим с MP3-декодером (revA3 или любая ревизия на XC6SLX25).
+
+Управление:
+
+| Клавиша | Действие |
+|---|---|
+| `Space`, `Enter` | следующий трек |
+| `P`, `Backspace` | предыдущий трек |
+| `←` / `→` | перемотка на 10 с назад / вперёд |
+| `S` | пауза |
+| `+` / `-`, `↑` / `↓` | громкость, шаг 2 дБ |
+| `B` / `T` | бас / треб, 0..7 (только чип VS1053) |
+| `Esc` | назад в WC |
+
+[MEGABUZZ_EMU.WMF](firmware/src/wcplugin/MEGABUZZ_EMU.WMF) — сборка, которая не трогает порты Megabuzz и не издаёт звука: поставьте её в `wc.ini` вместо `MEGABUZZ.WMF`, чтобы посмотреть интерфейс на любом хосте с TSConf. Ограничения и сборка — в [README плагина](firmware/src/wcplugin/README.md).
 
 

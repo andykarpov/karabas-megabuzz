@@ -177,7 +177,10 @@ As a bonus, besides the sound devices, you can also set the type of the LED indi
 
 ### Playing MP3
 
-Revision A3 has a hardware MP3 decoder (the vs1053 / vs1063 chip).
+MP3 is decoded by the VS1053 / VS1063 chip on revision A3, or by the neorv32 software decoder in the XC6SLX25 builds (see [above](#neorv32-mp3-decoder-xc6slx25-reva-reva1-reva2-and-reva3)). For players both work the same.
+
+#### esxDOS: NMI browser
+
 There is an mp3 plugin for the NMI browser by Bob Fossil, to be put in bin/bplugins/ on the SD card.
 It can play MP3 files, including a whole directory in a row.
 
@@ -186,4 +189,34 @@ Controls:
     - Space - next track
     - Q - exit
 
-For Wild Commander on TSConf there is the `MEGABUZZ.WMF` plugin (`firmware/src/wcplugin/`). Put it into the `WC` folder and add it to the `[PLUGINS]` section of `wc.ini` before `GSPLAYER.WMF`. On TSConf, turn the Megabuzz Z-Controller and DivMMC off (in the configurator on A2/A3, with the DIP switches on A1). Details and keys are in [the plugin README](firmware/src/wcplugin/README.en.md).
+#### TSConf: Wild Commander
+
+For Wild Commander on TSConf hosts (ZX Evolution, Karabas Mini and others) there is the [MEGABUZZ.WMF](firmware/src/wcplugin/MEGABUZZ.WMF) plugin (sources in `firmware/src/wcplugin/`). It shows the ID3v2 tags, the stream format, a progress bar with the time and the FIFO fill, and goes on to the next file of the panel when a track ends.
+
+1. Put `MEGABUZZ.WMF` into the `WC` folder of the boot device.
+2. Add it to the `[PLUGINS]` section of `WC/wc.ini` before `GSPLAYER.WMF`, which opens MP3 files too:
+
+   ```ini
+   [PLUGINS]
+   MEGABUZZ.WMF
+   GSPLAYER.WMF -midi_chip=2
+   ```
+
+   If there is no Megabuzz or no MP3 decoder on it, the plugin hands the file over to GS Player.
+3. Turn the Megabuzz Z-Controller and DivMMC off (in the configurator on A2/A3, with the DIP switches on A1): TSConf has its own Z-Controller on the same ports, and they would get in the way of the host SD card.
+
+It needs WC 1.09 or newer and a bitstream with an MP3 decoder (revA3, or any revision on the XC6SLX25).
+
+Controls:
+
+| Key | Action |
+|---|---|
+| `Space`, `Enter` | next track |
+| `P`, `Backspace` | previous track |
+| `←` / `→` | seek 10 s back / forward |
+| `S` | pause |
+| `+` / `-`, `↑` / `↓` | volume, 2 dB steps |
+| `B` / `T` | bass / treble, 0..7 (VS1053 chip only) |
+| `Esc` | back to WC |
+
+[MEGABUZZ_EMU.WMF](firmware/src/wcplugin/MEGABUZZ_EMU.WMF) is a build that does not touch the Megabuzz ports and plays no sound: put it into `wc.ini` instead of `MEGABUZZ.WMF` to look at the UI on any TSConf host. Limitations and building are in [the plugin README](firmware/src/wcplugin/README.en.md).
