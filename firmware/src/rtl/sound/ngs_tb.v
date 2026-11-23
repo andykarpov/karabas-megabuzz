@@ -7,8 +7,10 @@
 // ----------------------------------------------------------------------------
 
 // Bus model of T80s (T2Write = 1, IOWait = 1) as seen on its pins: the strobes
-// go low on the CE edge that ends T1 and go high on the first later CE edge
-// with WAIT_n = 1, where DI is sampled.
+// go low on a CE edge and go high on the first later CE edge with WAIT_n = 1,
+// where DI is sampled. Checked against the real T80s in GHDL: there the strobes
+// also stay low while WAIT_n = 0 and DI is taken on the edge where they go
+// high; without a wait the real cycle is one CE longer, so this model is stricter.
 module t80s #(parameter Mode = 0, parameter T2Write = 1, parameter IOWait = 1) (
     input  wire        RESET_n,
     input  wire        CLK,
@@ -402,6 +404,44 @@ module ngs_tb;
         host_cs_n <= 1;
         repeat (200) @(posedge clk_mem);
         check(sd_bytes - sd_before == 2 && sd_log[(sd_before + 1) % 256] == 8'h61, "GS byte after the timeout");
+
+        // -------- SD: a GS reset (#33) gives the card back to the host at once
+        gs_out(8'h11, 8'h01);                  // the GS takes the card and leaves its CS low
+        gs_out(8'h13, 8'h71);
+        gs_in(8'h13, q);
+        check(sd_arb.owner_gs == 1'b1, "the GS owns the card");
+        host_cs_n <= 0;
+        fork
+            begin
+                k = $time;
+                host_xfer(8'hD1);              // waits: the GS CS is low
+                k = $time - k;
+            end
+            begin
+                repeat (200) @(posedge clk_bus);
+                gs_reset_in = 1;
+                repeat (64) @(posedge clk_bus);
+                gs_reset_in = 0;
+            end
+        join
+        host_cs_n <= 1;
+        check(k < 20000, "the host got the card right after the GS reset, not after the timeout");
+        check(sd_log[(sd_bytes - 1) % 256] == 8'hD1 && sd_log_gs[(sd_bytes - 1) % 256] == 1'b0, "the host byte went through");
+        check(gs_inst.sd_busy == 1'b0, "no SD exchange pending after the GS reset");
+        // a GS request left pending by the reset is dropped
+        host_cs_n <= 0;
+        host_xfer(8'hD2);                      // the host owns the card, CS low
+        gs_out(8'h11, 8'h01);
+        gs_out(8'h13, 8'h72);                  // pending: the host CS is low
+        gs_reset_in = 1;
+        repeat (64) @(posedge clk_bus);
+        gs_reset_in = 0;
+        repeat (20) @(posedge clk_bus);
+        check(gs_inst.sd_busy == 1'b0, "the pending GS byte is dropped by the reset");
+        host_cs_n <= 1;
+        repeat (40000) @(posedge clk_mem);
+        check(sd_log[(sd_bytes - 1) % 256] == 8'hD2, "the dropped GS byte never reached the card");
+        gs_in(8'h11, q);  check(q == 8'h0B, "SCTRL back to #0B after the GS reset");
 
         // -------- MP3
 `ifndef RV32

@@ -124,7 +124,7 @@ The values of the registers can be read through this port too.
 
 ## 🔌 NeoGS ports
 
-The General Sound of the Megabuzz understands the [NeoGS](http://www.nedopc.com/gs/ngs.php) ports of the GS CPU side: MP3 and the SD card for programs written for NeoGS (for example Neo Player Light). The ports follow the description of the standard NeoGS FPGA firmware (`GS_info` v0.4.2.2). MP3 through the NeoGS ports goes to the same decoder as through the registers `#F5`/`#F6`/`#FB`: the VS1053 chip on Rev.A3 or the software decoder on the XC6SLX25. The ports work while General Sound is on.
+The General Sound of the Megabuzz understands the [NeoGS](http://www.nedopc.com/gs/ngs.php) ports of the GS CPU side: MP3 and the SD card for programs written for NeoGS (for example Neo Player Light). The ports follow the description of the standard NeoGS FPGA firmware (`GS_info` v0.4.2.2). MP3 through the NeoGS ports goes to the same decoder as through the registers `#F5`/`#F6`/`#FB`: the VS1053 chip on Rev.A3 or the software decoder on the XC6SLX25. The ports work while General Sound is on. Rev.A, A1, A2 on the XC6SLX16 have no MP3 decoder: a NeoGS program sees MP3 (`_MPDRQ` is always `1`), but the data is dropped and there is no sound.
 
 ### 🔌 Port `#33` (Spectrum side, write only)
 
@@ -168,4 +168,8 @@ Programs for NeoGS are written for a VS1001/VS1011, so the SCI frames do not go 
 
 #### SD card
 
-One SD card serves the host (Z-Controller / DivMMC) and the GS. One of them owns it at a time, the host by default. The owner changes when the other one wants to exchange a byte and the owner is idle: its CS is high, or it is low with no exchange for ~50 ms. While the card is busy, the host waits on `/WAIT`, the GS on its own `WAIT`. A GS reset gives the card back to the host. On a host without `/WAIT` support, do not use a NeoGS player with the SD card together with DivMMC/ZC: turn DivMMC and Z-Controller off in the configurator.
+One SD card serves the host (Z-Controller / DivMMC) and the GS. One of them owns it at a time, the host by default. The owner changes when the other one wants to exchange a byte and the owner is idle: its CS is high, or it is low with no exchange for ~50 ms. While the card is busy, the host waits on `/WAIT`, the GS on its own `WAIT`. A GS reset gives the card back to the host.
+
+A NeoGS player keeps its CS low while it reads a sector and hands it to the MP3 decoder at the stream rate (on `_MPDRQ`). A host that turns to the card meanwhile may wait on `/WAIT` until the sector ends: ~13 ms at 320 kbps, ~32 ms at 128 kbps, ~64 ms at 64 kbps. The 50 ms timeout does not fire here: exchanges go on.
+
+On a host without `/WAIT` support, do not use a NeoGS player with the SD card together with DivMMC/ZC: turn DivMMC and Z-Controller off in the configurator.
