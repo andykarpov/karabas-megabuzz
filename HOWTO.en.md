@@ -185,3 +185,5 @@ Controls:
 
     - Space - next track
     - Q - exit
+
+For Wild Commander on TSConf there is the `MEGABUZZ.WMF` plugin (`firmware/src/wcplugin/`). Put it into the `WC` folder and add it to the `[PLUGINS]` section of `wc.ini` before `GSPLAYER.WMF`. On TSConf, turn the Megabuzz Z-Controller and DivMMC off (in the configurator on A2/A3, with the DIP switches on A1). Details and keys are in [the plugin README](firmware/src/wcplugin/README.en.md).

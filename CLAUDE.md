@@ -38,6 +38,7 @@ From `firmware/src/syn/`: `make flash{16,25}[_a1|_a2|_a3]`, plus `flash{16,25}_a
 - `firmware/src/rom/`: the Megabuzz configurator ROM, which the FPGA maps in place of the host ROM. Run `make` there to produce `megabuzz.rom`, `debug.rom` (`-DEMU_MODE=1 -DDEBUG_MODE=1`) and `megabuzz.mem`. The `.mem` hexdump gets baked into the bitstream through `sprom ... MEM_INIT_FILE("../rom/megabuzz.mem")` in `megabuzz.v`, so **rebuild the ROM before resynthesizing** whenever you change ROM code. The esxDOS ROM goes in the same way (`rtl/sd/esxdos.mem`).
 - `firmware/src/plugin/`: esxDOS `mp3` plugin. Build with `make`.
 - `firmware/src/playmp3/`: `.playmp3` esxDOS dot command. Build with `make`.
+- `firmware/src/wcplugin/`: `MEGABUZZ.WMF`, the Wild Commander (TSConf) MP3 player plugin. `make` builds it and `MEGABUZZ_EMU.WMF` (`-DEMU_MODE`: no port access, software FIFO, for UI checks on a host without Megabuzz) (one 16 KB page at `#8000`, vars at `#A800`, file buffer at `#B000`; code and data stay loaded between NEXT/PREV runs, so every variable is set up at run time). `make test PYTHON=<venv python>` runs it in `test/wcsim.py`: the `z80` package plus an emulation of the WC API and the Megabuzz ports, test streams from `test/gen.sh` (ffmpeg), tags via `mutagen`. WC API reference: the zx-evo WC sources and the docs of demyanenko-d/VGMPLAY.WMF.
 - `firmware/src/test/`: MP3 test assets and a test `.sna`.
 
 ## Simulation
