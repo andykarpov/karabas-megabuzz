@@ -86,10 +86,36 @@ s = Sim(WMF, cbr, board_id=0x3B, cfg1=0x08, keys={30: "esc"})
 s.run(snap_at=(20,))
 t("A3 cfg bit 3 -> neorv32", "neorv32" in row(s.snapshots[20], "Decoder:"))
 
-# no decoder (SLX16 A2): not mine
-t("no decoder -> exit 1", Sim(WMF, cbr, board_id=0x02).run() == 1)
-t("no board -> exit 1", Sim(WMF, cbr, no_board=True).run() == 1)
-t("firmware without #F4 (bus reads #FF) -> exit 1", Sim(WMF, cbr, board_id=0xFF).run() == 1)
+# no decoder (SLX16 A2): say why, wait for a key, then not mine
+def diag(name, expect, code, **kw):
+    s = Sim(WMF, cbr, keys={10: "esc"}, **kw)
+    r = s.run(snap_at=(5,))
+    txt = s.snapshots[5]
+    t(name + " -> exit %d" % code, r == code, r)
+    t(name + " -> " + expect, expect in txt, txt)
+    t(name + " -> waits for a key", s.frame >= 10, s.frame)
+    return txt
+
+diag("no decoder", "no MP3 decoder", 1, board_id=0x02)
+diag("no board", "No answer", 1, no_board=True)
+diag("firmware without #F4 (bus reads #FF)", "#F4): #FF", 1, board_id=0xFF)
+diag("odd id", "Not a Megabuzz id", 1, board_id=0x55)
+diag("id right at 3.5 MHz only", "at 3.5 MHz: #2B", 1, board_id=0xFF, slow_id=0x2B)
+diag("id right at 3.5 MHz only", "bus timing", 1, board_id=0xFF, slow_id=0x2B)
+diag("F10 with VS1053", "VS1053 chip", 0, board_id=0x2B, call_type=3)
+diag("F10 with neorv32", "neorv32", 0, board_id=0x1A, call_type=3)
+diag("F10 without a board", "No answer", 0, no_board=True, call_type=3)
+diag("Shift+F3 without a board", "No answer", 0, no_board=True, call_type=4)
+
+# Shift+F3 menu: plays like Enter
+s = Sim(WMF, cbr, call_type=4, keys={40: "esc"})
+r = s.run(snap_at=(30,))
+t("Shift+F3 plays the file", r == 0 and "Decoder:" in s.snapshots[30] and s.resets >= 1, r)
+
+# header: F10 + Shift+F3, menu text
+t("header +197 = #05", WMF[197] == 0x05, WMF[197])
+t("header +204 viewer text", WMF[204:228] == b"Play on Megabuzz".ljust(24), WMF[204:228])
+t("header format #10", WMF[32] == 0x10, WMF[32])
 
 t("config bytes never written", not any(l[0] == "cfg write!" for l in s.log))
 print("fails:", fails)

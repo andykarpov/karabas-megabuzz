@@ -68,7 +68,7 @@
    GSPLAYER.WMF -midi_chip=2
    ```
 
-   Если MP3-декодера Megabuzz нет, плагин отдаёт файл GS Player.
+   Если MP3-декодера Megabuzz нет, плагин пишет почему, а WC затем открывает меню Shift+Enter. GS Player файл при этом не получает.
 3. Выключите Z-Controller и DivMMC на Megabuzz (в конфигураторе на A2/A3, DIP-переключателями на A1): у TSConf свой Z-Controller на тех же портах.
 
 Нужны WC 1.09 или новее и битстрим с MP3-декодером (Rev.A3 или любая ревизия на XC6SLX25). Клавиши: `Space`/`P` — следующий/предыдущий трек, `←`/`→` — перемотка на 10 с, `S` — пауза, `+`/`-` — громкость, `B`/`T` — бас/треб (только чип VS1053), `Esc` — назад в WC. [MEGABUZZ_EMU.WMF](firmware/src/wcplugin/MEGABUZZ_EMU.WMF) — беззвучная сборка, которая работает без Megabuzz, чтобы посмотреть интерфейс. Подробности — в [README плагина](firmware/src/wcplugin/README.md).
