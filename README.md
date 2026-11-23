@@ -53,6 +53,8 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
 In the NMI browser by Bob Fossil, with the plugin above, select an MP3 file. It can also play a whole directory. `Space` goes to the next track, `Q` leaves.
 
+On TSConf hosts (ZX Evolution, Karabas Mini) there is the `MEGABUZZ.WMF` plugin for Wild Commander, `firmware/src/wcplugin/`: it shows the ID3 tags, the stream format, a progress bar with the time, and has seeking, pause and volume. See [its README](firmware/src/wcplugin/README.en.md) for installing it.
+
 The software decoder and the chip work the same for players (registers `#F5`, `#F6`, `#FB`, see [PORTS.en.md](PORTS.en.md)). The software decoder implements the volume only, bass and treble are ignored, and it does not play free format MP3.
 
 Which decoder is used:

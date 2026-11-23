@@ -187,4 +187,6 @@
     - Space - следующий трек
     - Q - выход
 
+Для Wild Commander на TSConf есть плагин `MEGABUZZ.WMF` (`firmware/src/wcplugin/`). Его нужно положить в каталог `WC` и добавить в секцию `[PLUGINS]` файла `wc.ini` перед `GSPLAYER.WMF`. На TSConf выключите Z-Controller и DivMMC Megabuzz (в конфигураторе на A2/A3, DIP-переключателями на A1). Подробности и клавиши — в [README плагина](firmware/src/wcplugin/README.md).
+
 
