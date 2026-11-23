@@ -251,9 +251,12 @@ module ngs_tb;
             end
         end
     end
+    // MISO comes SD_TODLY after the falling edge: the card's output delay plus the
+    // FPGA pads and the board (sampling at the rising edge of a 14 MHz SCK failed on hw)
+    localparam SD_TODLY = 40;
     always @(negedge sd_sclk or negedge sd_cs_n) begin
         if (!sd_cs_n) begin
-            sd_miso <= sd_tx_sh[7 - sd_bits];
+            sd_miso <= #(SD_TODLY) sd_tx_sh[7 - sd_bits];
         end
     end
     always @(posedge sd_cs_n) sd_bits = 0;
