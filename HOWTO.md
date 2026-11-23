@@ -20,7 +20,7 @@
 
 Соответственно, шить SPI флешку можно несколькими путями:
 
-1) засунуть в программатор и прошить BIN-файл прошивки, ПЗУ для GS и конфигурационную ПЗУ (битстрим с 0 адреса, ПЗУ для GS с адреса 0x100000, конфиг с адреса 0x1F0000)
+1) засунуть в программатор и прошить BIN-файл прошивки, ПЗУ для GS и конфигурационную ПЗУ (битстрим с 0 адреса, ПЗУ для GS с адреса 0x100000, конфиг с адреса 0x1F0000), или готовый полный образ флешки (см. ниже)
 2) подключить Xilinx Platform USB Cable программатор и прошить с помощью iMPACT (битстрим с 0 адреса, ПЗУ для GS с адреса 0x100000, конфиг с адреса 0x1F0000)
 3) взять сторонний опен-сорсный проект openFPGALoader и прошить любым JTAG-совместимым программатором, включая Altera USB Blaster
 4) то же самое, но через openOCD
@@ -30,7 +30,19 @@
 
 #### Полный образ флешки для программатора
 
-Для пункта 1 Makefile собирает готовый raw-образ всей флешки с той же раскладкой, что и цели `make flash*` (битстрим с 0, ПЗУ GS с 0x100000, прошивка neorv32 с 0x180000 для XC6SLX25, конфиг с 0x1F0000), пустое место заполнено 0xFF. Из каталога `firmware/src/syn`:
+Для пункта 1 Makefile собирает готовый raw-образ всей флешки с той же раскладкой, что и цели `make flash*` (битстрим с 0, ПЗУ GS с 0x100000, прошивка neorv32 с 0x180000 для XC6SLX25, конфиг с 0x1F0000), пустое место заполнено 0xFF.
+
+Готовые образы для всех ревизий лежат в репозитории, ссылки на них есть и в таблице в [README](README.ru.md#прошивки-и-пзу-для-spi-флешки):
+
+| Ревизия | XC6SLX16 | XC6SLX25 |
+| :--- | :--- | :--- |
+| revA | [karabas_megabuzz_full.bin](firmware/src/syn/work16/karabas_megabuzz_full.bin) | [karabas_megabuzz_full.bin](firmware/src/syn/work25/karabas_megabuzz_full.bin) |
+| revA1 | [karabas_megabuzz_a1_full.bin](firmware/src/syn/work16/karabas_megabuzz_a1_full.bin) | [karabas_megabuzz_a1_full.bin](firmware/src/syn/work25/karabas_megabuzz_a1_full.bin) |
+| revA2 | [karabas_megabuzz_a2_full.bin](firmware/src/syn/work16/karabas_megabuzz_a2_full.bin) | [karabas_megabuzz_a2_full.bin](firmware/src/syn/work25/karabas_megabuzz_a2_full.bin) |
+| revA2, без DivMMC | [karabas_megabuzz_a2_nommc_full.bin](firmware/src/syn/work16/karabas_megabuzz_a2_nommc_full.bin) | [karabas_megabuzz_a2_nommc_full.bin](firmware/src/syn/work25/karabas_megabuzz_a2_nommc_full.bin) |
+| revA3 | [karabas_megabuzz_a3_full.bin](firmware/src/syn/work16/karabas_megabuzz_a3_full.bin) | [karabas_megabuzz_a3_full.bin](firmware/src/syn/work25/karabas_megabuzz_a3_full.bin) |
+
+Собрать их самому можно из каталога `firmware/src/syn`:
 
 `make image16_a3` → `work16/karabas_megabuzz_a3_full.bin`
 
