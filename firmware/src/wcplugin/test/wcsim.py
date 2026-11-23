@@ -17,7 +17,7 @@ SECTOR_COST = 3000      # T-states per 512-byte sector read (set per test)
 class Sim:
     def __init__(self, wmf, data, name=b"test.mp3", index=1, count=3,
                  board_id=0x2B, cfg1=0x00, drain_bps=16000, keys=None,
-                 hei=25, no_loadnone=False, no_board=False):
+                 hei=25, no_loadnone=False, no_board=False, call_type=0, slow_id=None):
         self.m = z80.Z80Machine()
         self.data = data
         self.keys = keys or {}          # frame -> key name or char
@@ -48,6 +48,9 @@ class Sim:
         self.underruns = 0
         self.under_frames = []
         self.no_board = no_board
+        self.call_type = call_type
+        self.slow_id = slow_id          # board id read at 3.5 MHz, if it differs
+        self.clock = 2
         self.cur_key = None
         self.snapshots = {}
 
@@ -78,7 +81,7 @@ class Sim:
         m.sp = 0x7F00
         self.push(EXIT_PC)
         m.pc = 0x8000
-        m.a = 0
+        m.a = self.call_type
         m.hl = size & 0xFFFF
         m.de = size >> 16
         m.bc = 0x7000
@@ -109,6 +112,8 @@ class Sim:
         if port == 0xFD3B and not self.no_board:
             r = self.zreg
             if r == 0xF4:
+                if self.clock == 0 and self.slow_id is not None:
+                    return self.slow_id
                 return self.board_id
             if r in (0xF5, 0xF6):
                 full = 0x80 if self.fifo >= 4096 else 0
@@ -191,7 +196,10 @@ class Sim:
             for i in range(n):
                 if xx + i < 90:
                     self.attr[yy][xx + i] = self.m.alt_a
-        elif fn in (0x0E, 0x0F):
+        elif fn == 0x0E:                    # TURBOPL
+            if m.b == 0:
+                self.clock = m.c
+        elif fn == 0x0F:
             pass
         elif 0x10 <= fn <= 0x29:            # key tests
             names = {0x10: 'space', 0x11: 'up', 0x12: 'down', 0x13: 'left',

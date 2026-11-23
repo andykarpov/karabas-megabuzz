@@ -183,3 +183,24 @@ strlen:
 .done:
     pop hl
     ret
+;; A -> "#XY" at (DE). OUT: DE past it
+hex8:
+    push af
+    ld a,'#'
+    ld (de),a
+    inc de
+    pop af
+    push af
+    rrca : rrca : rrca : rrca
+    call .nib
+    pop af
+.nib:
+    and #0F
+    add a,'0'
+    cp '9'+1
+    jr c,.put
+    add a,7
+.put:
+    ld (de),a
+    inc de
+    ret

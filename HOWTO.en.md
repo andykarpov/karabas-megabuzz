@@ -214,7 +214,7 @@ For Wild Commander on TSConf hosts (ZX Evolution, Karabas Mini and others) there
    GSPLAYER.WMF -midi_chip=2
    ```
 
-   If there is no Megabuzz or no MP3 decoder on it, the plugin hands the file over to GS Player.
+   If there is no Megabuzz or no MP3 decoder on it, the plugin shows a window with what the board answered and why, and WC then opens its Shift+Enter menu. GS Player does not get the file: WC hands a file only to the first plugin with its extension. The plugin's item in the F10 menu shows the board answer without a file.
 3. Turn the Megabuzz Z-Controller and DivMMC off (in the configurator on A2/A3, with the DIP switches on A1): TSConf has its own Z-Controller on the same ports, and they would get in the way of the host SD card.
 
 It needs WC 1.09 or newer and a bitstream with an MP3 decoder (revA3, or any revision on the XC6SLX25).

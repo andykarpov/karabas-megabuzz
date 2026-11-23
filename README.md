@@ -68,7 +68,7 @@ On TSConf hosts (ZX Evolution, Karabas Mini and others) MP3 files play from Wild
    GSPLAYER.WMF -midi_chip=2
    ```
 
-   Without a Megabuzz MP3 decoder the plugin hands the file over to GS Player.
+   Without a Megabuzz MP3 decoder the plugin says why, and WC then opens its Shift+Enter menu. WC does not hand the file on to GS Player.
 3. Turn the Megabuzz Z-Controller and DivMMC off (configurator on A2/A3, DIP switches on A1): TSConf has its own Z-Controller on the same ports.
 
 It needs WC 1.09 or newer and a bitstream with an MP3 decoder (Rev.A3, or any revision on the XC6SLX25). Keys: `Space`/`P` next/previous track, `←`/`→` seek by 10 s, `S` pause, `+`/`-` volume, `B`/`T` bass/treble (VS1053 chip only), `Esc` back to WC. [MEGABUZZ_EMU.WMF](firmware/src/wcplugin/MEGABUZZ_EMU.WMF) is a silent build that runs without Megabuzz, for a look at the UI. More details in [the plugin README](firmware/src/wcplugin/README.en.md).

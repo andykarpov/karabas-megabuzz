@@ -5,7 +5,7 @@ English | [Русский](README.md)
 A Wild Commander (WC) plugin for TSConf (ZX Evolution, Karabas Mini and others) that plays MP3 through the Karabas-MegaBuzz decoder: the VS1053 chip or the neorv32 software decoder. It uses the registers `#F4`, `#F5`, `#F6`, `#FB`, `#FC` (see [PORTS.en.md](../../../PORTS.en.md)).
 
 ```
-+------------------ Megabuzz MP3 Player v0.1 ------------------+
++------------------ Megabuzz MP3 Player v0.2 ------------------+
 | File:   01-kino-gruppa_krovi.mp3                             |
 |--------------------------------------------------------------|
 | Title:  Группа крови                                         |
@@ -36,7 +36,7 @@ A Wild Commander (WC) plugin for TSConf (ZX Evolution, Karabas Mini and others) 
    GSPLAYER.WMF -midi_chip=2
    ```
 
-   If there is no Megabuzz or no MP3 decoder on it, the plugin hands the file to the next plugin, that is GS Player.
+   WC hands the file to the first plugin in the list that has its extension. If there is no Megabuzz or no MP3 decoder on it, the plugin shows a window with what the board answered (register `#F4`, and on a failure the same read at 3.5 MHz) and why, and after a key WC opens its Shift+Enter menu. WC does not offer the file to the other plugins with the MP3 extension: GS Player (Sound Player) is not in the Shift+Enter menu, so while `MEGABUZZ.WMF` comes first in the list MP3 files cannot be played through GS. The plugin's F10 menu item shows the same board information. In the Shift+Enter menu the plugin is called "Play on Megabuzz".
 3. Turn the Megabuzz Z-Controller and DivMMC off (in the configurator on A2/A3, with the DIP switches on A1): TSConf has its own Z-Controller on the same ports, and they would get in the way of the host SD card.
 
 It needs a Megabuzz bitstream with an MP3 decoder (Rev.A3, or any revision on the XC6SLX25) and the `#F4` board id register, and WC 1.09 or newer (plugin system `#10`).

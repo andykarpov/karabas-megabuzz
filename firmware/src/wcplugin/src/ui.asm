@@ -599,6 +599,135 @@ build_fmt:
     ld (de),a
     ret
 
+;; ---------------------------------------------------------------------------
+;; Diagnostic window: what the board answered, then wait for a key.
+;; IN: CF from mb_detect (1 = no decoder)
+;; ---------------------------------------------------------------------------
+INF_W           equ 58
+INF_H           equ 8
+
+diag:
+    push af
+    ld hl,inf_tpl
+    ld de,wnd
+    ld bc,WND_SIZE
+    ldir
+    ld a,(WC_HEI)
+    ld b,a
+    sub INF_H
+    srl a
+    ld (wnd+3),a
+    ld c,(80 - INF_W) / 2
+    ld a,b
+    cp 36
+    jr nz,.wx
+    ld c,(90 - INF_W) / 2
+.wx:
+    ld a,c
+    ld (wnd+2),a
+    WCALL WCF_GEDPL             ; any screen may be on at entry
+    ld ix,wnd
+    WCALL WCF_PRWOW
+    ld hl,s_head
+    ld de,0*256 + (INF_W - S_HEAD_LEN) / 2
+    ld bc,S_HEAD_LEN
+    ld a,CLR_HEAD
+    call prn
+    ; "Board id (reg #F4): #xx", and on a failure the same read at 3.5 MHz
+    ld de,linebuf
+    ld hl,s_d_id
+    call sapp
+    ld a,(mb_id)
+    call hex8
+    pop af
+    push af
+    jr nc,.id
+    push de
+    ld b,0
+    ld c,0
+    WCALL WCF_TURBOPL
+    ld a,MB_REG_ID
+    call mb_rd
+    ld (tmpb),a
+    call set_clock
+    pop de
+    ld hl,s_d_35
+    call sapp
+    ld a,(tmpb)
+    call hex8
+.id:
+    xor a
+    ld (de),a
+    ld hl,linebuf
+    ld de,2*256 + 2
+    ld a,CLR_VALUE
+    call prn_z
+    ; what it means
+    pop af
+    push af
+    jr c,.bad
+    ld hl,s_d_vs
+    ld a,(dec_type)
+    or a
+    jr z,.why
+    ld hl,s_d_rv
+    jr .why
+.bad:
+    ld hl,s_d_slow
+    ld a,(tmpb)
+    and #C0
+    jr nz,.b1
+    ld a,(tmpb)
+    and #30
+    jr nz,.why                  ; a decoder shows up at 3.5 MHz only
+.b1:
+    ld a,(mb_id)
+    ld hl,s_d_ff
+    cp #FF
+    jr z,.why
+    ld hl,s_d_odd
+    and #C0
+    jr nz,.why
+    ld hl,s_d_nodec
+.why:
+    ld de,3*256 + 2
+    ld a,CLR_VALUE
+    call prn_z
+    pop af
+    ld hl,s_d_notf
+    jr c,.msg
+    ld hl,s_d_use
+.msg:
+    ld de,4*256 + 2
+    ld a,CLR_LABEL
+    call prn_z
+    ld hl,s_d_key
+    ld de,6*256 + 2
+    ld a,CLR_KEYS
+    call prn_z
+    call wait_key
+    WCALL WCF_USPO              ; or WC gets the key too
+    ld ix,wnd
+    WCALL WCF_RRESB
+    ret
+
+inf_tpl:
+    db 0, 0, 0, 0, INF_W, INF_H, CLR_WIN, 0
+    dw 0
+    db 0, 0, 1, 0, 0, 0
+
+s_d_id:     db "Board id (reg #F4): ",0
+s_d_35:     db ", at 3.5 MHz: ",0
+s_d_vs:     db "MP3 decoder: VS1053 chip",0
+s_d_rv:     db "MP3 decoder: neorv32",0
+s_d_ff:     db "No answer: no Megabuzz, or its firmware has no #F4",0
+s_d_odd:    db "Not a Megabuzz id: another device on the bus?",0
+s_d_nodec:  db "This firmware has no MP3 decoder (XC6SLX16?)",0
+s_d_slow:   db "Reads right at 3.5 MHz only: bus timing at 14 MHz",0
+s_d_notf:   db "MP3 decoder not found, the file is not played",0
+s_d_use:    db "Press Enter on an .mp3 file to play it",0
+s_d_key:    db "Press any key",0
+
 ;; Window: type 0, frame, no cursor. Copied to wnd before every run.
 wnd_tpl:
     db 0, 0, WIN_X, 0, WIN_W, WIN_H, CLR_WIN, 0

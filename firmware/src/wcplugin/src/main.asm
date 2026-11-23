@@ -3,7 +3,7 @@
 ;;
 ;; Build: sjasmplus src/main.asm  ->  MEGABUZZ.WMF
 
-    DEFINE VERSION "0.1"
+    DEFINE VERSION "0.2"
 
 CPU_CLOCK       equ 2           ; TURBOPL: 0 = 3.5, 1 = 7, 2 = 14 MHz
 SEEK_SEC        equ 10          ; seconds per <- / ->
@@ -44,7 +44,11 @@ name_start:
     db "Megabuzz MP3 Player v", VERSION     ; +165 name, 32 chars
     ENDIF
     ds 32 - ($ - name_start), ' '
-    db 0                                    ; +197 by extension only
+    db #05                                  ; +197 also from F10 and Shift+F3
+    ds 6                                    ; +198 F2 / F4 text (unused)
+viewer_start:
+    db "Play on Megabuzz"                   ; +204 Shift+F3 menu, 24 chars
+    ds 24 - ($ - viewer_start), ' '
     ds 512 - ($ - header)
     ASSERT $ == 512
 
@@ -65,9 +69,16 @@ entry:
     ld (wc_count),de
     ld (wc_index),hl
     exx
+    ld (call_type),a
     or a
     jr z,.byext
-    xor a                       ; WCX_ESC: we only run on .MP3 files
+    cp 4
+    jr z,.byext                 ; chosen in the Shift+F3 menu
+    ; from the F10 menu: show what the board answers
+    call set_clock
+    call mb_detect
+    call diag
+    xor a                       ; WCX_ESC
     ret
 .byext:
     ; copy the name before any WC call can move it
@@ -88,9 +99,15 @@ entry:
     xor a
     ld (de),a
 .named:
+    call set_clock              ; read the board at the clock we play at
     call mb_detect
     jr nc,.found
-    ld a,WCX_NOTMINE            ; no Megabuzz decoder: let another plugin try
+    call diag                   ; say why
+    ld a,(call_type)
+    or a
+    ld a,WCX_NOTMINE            ; Enter: WC opens its Shift+F3 menu
+    ret z
+    xor a                       ; WCX_ESC
     ret
 .found:
     ; code and data stay loaded between runs: set everything up again
@@ -118,10 +135,6 @@ entry:
 .wx:
     ld a,c
     ld (wnd+2),a
-
-    ld b,0
-    ld c,CPU_CLOCK
-    WCALL WCF_TURBOPL
 
     call mb_reset
     ld a,MB_REG_VOL : call mb_rd : ld (vol),a
@@ -254,6 +267,24 @@ feed:
     call mb_send
     or a
     ret
+
+;; CPU clock for the plugin
+set_clock:
+    ld b,0
+    ld c,CPU_CLOCK
+    WCALL WCF_TURBOPL
+    ret
+
+;; Wait for Esc, Enter, Space or a letter
+wait_key:
+    WCALL WCF_USPO
+.loop:
+    ei
+    call key_esc   : ret nz
+    call key_enter : ret nz
+    call key_space : ret nz
+    call key_char  : ret nz
+    jr .loop
 
 ;; ---------------------------------------------------------------------------
 ;; Keys, polled once per frame
@@ -497,6 +528,7 @@ code_end:
     ASSERT code_end <= $
 vars:
 entry_sp    ds 2
+call_type   ds 1
 panel_ix    ds 2
 name_ptr    ds 2
 wc_count    ds 2
