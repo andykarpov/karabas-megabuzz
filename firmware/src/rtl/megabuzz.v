@@ -1040,7 +1040,47 @@ module karabas_megabuzz(
     wire [7:0] board_id = {2'b00, BOARD_VS_CHIP, BOARD_RV32, BOARD_SLX25, BOARD_REV};
     wire reg_mb_id = (zxuno_reg == 8'hF4);
 
-    wire reg_mb = (zxuno_reg == 8'hF4 | zxuno_reg == 8'hF7 | zxuno_reg == 8'hF8 | zxuno_reg == 8'hF9 | zxuno_reg == 8'hFA);
+    // Firmware id, ZX-UNO COREID style: selecting #FF rewinds it, every read of
+    // #FD3B gives the next character, then 0. E.g. "A2 25 RV 2026-11-23 1a2b3c4+":
+    // board revision, FPGA, neorv32, build date, git hash ("+" = uncommitted changes).
+    // build_id.vh is written by syn/Makefile into the build dir before xst.
+`include "build_id.vh"
+`ifdef HW_A
+    localparam ID_REV = "A";  localparam ID_REV_LEN = 1;
+`elsif HW_A1
+    localparam ID_REV = "A1"; localparam ID_REV_LEN = 2;
+`elsif HW_A2
+    localparam ID_REV = "A2"; localparam ID_REV_LEN = 2;
+`else
+    localparam ID_REV = "A3"; localparam ID_REV_LEN = 2;
+`endif
+`ifdef SLX25
+    localparam ID_CHIP = " 25";
+`else
+    localparam ID_CHIP = " 16";
+`endif
+`ifdef RV32
+    localparam ID_RV = " RV "; localparam ID_RV_LEN = 4;
+`else
+    localparam ID_RV = " ";    localparam ID_RV_LEN = 1;
+`endif
+    localparam ID_LEN = ID_REV_LEN + 3 + ID_RV_LEN + `BUILD_ID_LEN;
+    localparam [8*ID_LEN-1:0] ID_STR = {ID_REV, ID_CHIP, ID_RV, `BUILD_ID};
+
+    wire reg_mb_coreid = (zxuno_reg == 8'hFF);
+    wire coreid_rd = ioreq_rd & port_zxuno_data & reg_mb_coreid;
+    reg [5:0] coreid_idx = 6'd0;
+    reg coreid_rd_r = 1'b0;
+    always @(posedge clk_bus) begin
+        coreid_rd_r <= coreid_rd;
+        if (port_zxuno_reg & ioreq_wr)
+            coreid_idx <= 6'd0;
+        else if (coreid_rd_r & ~coreid_rd & (coreid_idx != ID_LEN))  // next char once the read ends
+            coreid_idx <= coreid_idx + 6'd1;
+    end
+    wire [7:0] coreid_char = (coreid_idx < ID_LEN) ? ID_STR[8*(ID_LEN-1-coreid_idx) +: 8] : 8'h00;
+
+    wire reg_mb = (zxuno_reg == 8'hFF | zxuno_reg == 8'hF4 | zxuno_reg == 8'hF7 | zxuno_reg == 8'hF8 | zxuno_reg == 8'hF9 | zxuno_reg == 8'hFA);
     wire reg_mb_cfg = (zxuno_reg == 8'hF7);
     wire reg_mb_rom = (zxuno_reg == 8'hF8);
     wire reg_mb_ctl = (zxuno_reg == 8'hF9);
@@ -1087,6 +1127,7 @@ module karabas_megabuzz(
     (ioreq_rd & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
     (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | reset} : // Megabuzz CTL status (flash busy)
     (ioreq_rd & port_zxuno_data & reg_mb_id) ? board_id : // Megabuzz board id
+    (ioreq_rd & port_zxuno_data & reg_mb_coreid) ? coreid_char : // Megabuzz firmware id
     (ioreq_rd & port_fffd & !cfg_rom_active) ? ts_do : // TS
     (ioreq_rd & port_gs & !cfg_rom_active) ? gs_do_bus : // GS
     8'bzzzzzzzz;

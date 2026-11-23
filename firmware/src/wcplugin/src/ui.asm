@@ -604,7 +604,7 @@ build_fmt:
 ;; IN: CF from probe (1 = no decoder)
 ;; ---------------------------------------------------------------------------
 INF_W           equ 58
-INF_H           equ 8
+INF_H           equ 9
 
 diag:
     push af
@@ -720,8 +720,29 @@ diag:
     ld de,4*256 + 2
     ld a,CLR_LABEL
     call prn_z
+    ; "Firmware: A2 25 RV 2026-11-24 1a2b3c4"
+    ld de,linebuf
+    ld hl,s_d_fw
+    call sapp
+    push de
+    ld b,INF_W - 4 - 10
+    call mb_coreid
+    pop hl
+    ld a,(hl)
+    or a
+    jr nz,.fw
+    ex de,hl
+    ld hl,s_d_nofw
+    call sapp
+    xor a
+    ld (de),a
+.fw:
+    ld hl,linebuf
+    ld de,5*256 + 2
+    ld a,CLR_VALUE
+    call prn_z
     ld hl,s_d_key
-    ld de,6*256 + 2
+    ld de,7*256 + 2
     ld a,CLR_KEYS
     call prn_z
     call wait_key
@@ -750,6 +771,11 @@ s_d_slow35: db "Bad reads at 7-14 MHz: the player runs at 3.5 MHz",0
 s_d_notf:   db "MP3 decoder not found, the file is not played",0
 s_d_use:    db "Press Enter on an .mp3 file to play it",0
 s_d_key:    db "Press any key",0
+s_d_fw:     db "Firmware: ",0
+s_d_nofw:   db "no id (reg #FF), older firmware",0
+    IFDEF EMU_MODE
+s_emu_id:   db "EMU",0
+    ENDIF
 
 ;; Window: type 0, frame, no cursor. Copied to wnd before every run.
 wnd_tpl:

@@ -23,6 +23,7 @@ The Megabuzz currently supports these custom registers of the ZXUNO ports:
 - `#FA` - Megabuzz configuration byte address register
 - `#FB` - VS1053 volume register
 - `#FC` - VS1053 effects register
+- `#FF` - Megabuzz firmware id (read only)
 
 ##### 📟 Register `#F4` - Megabuzz board id
 
@@ -104,6 +105,17 @@ By default, the board resets with volume `0x08` (about `-5 dB` below the maximum
 - 2️⃣...0️⃣ bits 2:0 - bass boost (`000` - off, `111` - max + 14dB) at 60Hz
 
 By default, the effects register holds `0x00`.
+
+##### 📟 Register `#FF` - Megabuzz firmware id
+
+Read only, as `COREID` in ZX-UNO. Selecting `#FF` through `#FC3B` rewinds the string; each read of `#FD3B` returns its next ASCII character, and after the last one it returns `0`. Example: `A2 25 RV 2026-11-24 1a2b3c4`:
+
+- board revision: `A`, `A1`, `A2`, `A3`
+- FPGA: `16` = XC6SLX16, `25` = XC6SLX25
+- `RV` - the firmware has the neorv32 MP3 decoder (missing otherwise)
+- build date and the short git hash of the sources; `+` after the hash means the build had uncommitted changes. The committed bitstreams are built before their commit, so the hash points to the commit before them, and the date identifies the build best.
+
+The configurator ROM shows the string at the bottom of its screen, the Wild Commander plugin shows it in its F10 window. Firmware older than this register has no id: the read returns whatever the host puts on the bus (usually `#FF`).
 
 ### 🔌 ZXUNO data port - `#FD3B`
 

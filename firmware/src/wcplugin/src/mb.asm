@@ -14,6 +14,7 @@ MB_REG_DATA     equ #F6     ; w: byte into the decoder FIFO
 MB_REG_CFG      equ #F7     ; config byte at the address in #FA
 MB_REG_CFGA     equ #FA     ; config byte address
 MB_REG_VOL      equ #FB     ; volume, 0 = max, #FE = silence (0.5 dB steps)
+MB_REG_COREID   equ #FF     ; firmware id: ASCII, next char per read, then 0
 MB_REG_FX       equ #FC     ; 7:6 ear speaker, 5:3 treble, 2:0 bass (VS1053 chip only)
 
 DEC_VS1053      equ 0
@@ -248,4 +249,34 @@ mb_detect:
     ret
 .none:
     scf
+    ret
+
+;; Firmware id (reg #FF) into DE, 0-terminated, at most B chars.
+;; Empty on firmware without it. OUT: DE at the terminating 0
+mb_coreid:
+    IFDEF EMU_MODE
+    ld hl,s_emu_id
+    call sapp
+    ELSE
+    push de
+    push bc
+    ld a,MB_REG_COREID
+    call mb_sel                 ; selecting it rewinds the string
+    pop hl                      ; H = room
+    pop de
+    ld bc,MB_PORT_DATA
+.next:
+    in a,(c)
+    cp 32
+    jr c,.end                   ; 0 at the end
+    cp 128
+    jr nc,.end                  ; #FF: no such register
+    ld (de),a
+    inc de
+    dec h
+    jr nz,.next
+.end:
+    ENDIF
+    xor a
+    ld (de),a
     ret

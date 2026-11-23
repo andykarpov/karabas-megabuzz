@@ -95,6 +95,19 @@ VHDL_SOURCES    =       ../rtl/T80/T80.vhd\
                         ../rtl/loader/loader.vhd\
                         ../rtl/flash/spi_master.vhd
 
+# Firmware id for ZXUNO register #FF (COREID style): the board part comes from
+# the defines in megabuzz.v, the date and the git hash from here. "+" marks a tree
+# with uncommitted changes outside the build output.
+BUILD_DATE   := $(shell date +%Y-%m-%d)
+BUILD_HASH   := $(shell git rev-parse --short=7 HEAD 2>/dev/null || echo nogit)
+BUILD_DIRTY  := $(shell git status --porcelain --untracked-files=no -- .. ':!work16' ':!work25' 2>/dev/null | grep -q . && echo +)
+BUILD_ID     := $(BUILD_DATE) $(BUILD_HASH)$(BUILD_DIRTY)
+
+# $(1) = build dir: writes build_id.vh there, megabuzz.v includes it (xst runs in that dir)
+define gen_build_id
+	@printf '`define BUILD_ID "%s"\n`define BUILD_ID_LEN %d\n' "$(BUILD_ID)" $$(printf '%s' "$(BUILD_ID)" | wc -c) > $(1)/build_id.vh
+endef
+
 XILINX_DIR   = /opt/Xilinx/14.7/ISE_DS
 XILINX       = $(XILINX_DIR)/ISE
 ISE_BIN      = $(XILINX)/bin/lin64
@@ -196,6 +209,7 @@ $(BUILD_DIR16)/$(PROJECT_A3).xst: | $(BUILD_DIR16)
 # 2. XST
 $(BUILD_DIR16)/$(PROJECT_A).ngc: $(BUILD_DIR16)/$(PROJECT_A).prj $(BUILD_DIR16)/$(PROJECT_A).xst $(VERILOG_SOURCES_A) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
+	$(call gen_build_id,$(BUILD_DIR16))
 	cd $(BUILD_DIR16) && $(ISE_ENV) xst -ifn $(PROJECT_A).xst -ofn $(PROJECT_A).syr
 	@rm -f $(BUILD_DIR16)/netlist.lst
 	@rm -f $(BUILD_DIR16)/xsc_report.xml
@@ -203,6 +217,7 @@ $(BUILD_DIR16)/$(PROJECT_A).ngc: $(BUILD_DIR16)/$(PROJECT_A).prj $(BUILD_DIR16)/
 
 $(BUILD_DIR16)/$(PROJECT_A1).ngc: $(BUILD_DIR16)/$(PROJECT_A1).prj $(BUILD_DIR16)/$(PROJECT_A1).xst $(VERILOG_SOURCES_A1) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
+	$(call gen_build_id,$(BUILD_DIR16))
 	cd $(BUILD_DIR16) && $(ISE_ENV) xst -ifn $(PROJECT_A1).xst -ofn $(PROJECT_A1).syr
 	@rm -f $(BUILD_DIR16)/netlist.lst
 	@rm -f $(BUILD_DIR16)/xsc_report.xml
@@ -210,6 +225,7 @@ $(BUILD_DIR16)/$(PROJECT_A1).ngc: $(BUILD_DIR16)/$(PROJECT_A1).prj $(BUILD_DIR16
 
 $(BUILD_DIR16)/$(PROJECT_A2).ngc: $(BUILD_DIR16)/$(PROJECT_A2).prj $(BUILD_DIR16)/$(PROJECT_A2).xst $(VERILOG_SOURCES_A2) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
+	$(call gen_build_id,$(BUILD_DIR16))
 	cd $(BUILD_DIR16) && $(ISE_ENV) xst -ifn $(PROJECT_A2).xst -ofn $(PROJECT_A2).syr
 	@rm -f $(BUILD_DIR16)/netlist.lst
 	@rm -f $(BUILD_DIR16)/xsc_report.xml
@@ -217,6 +233,7 @@ $(BUILD_DIR16)/$(PROJECT_A2).ngc: $(BUILD_DIR16)/$(PROJECT_A2).prj $(BUILD_DIR16
 
 $(BUILD_DIR16)/$(PROJECT_A3).ngc: $(BUILD_DIR16)/$(PROJECT_A3).prj $(BUILD_DIR16)/$(PROJECT_A3).xst $(VERILOG_SOURCES_A3) $(VHDL_SOURCES)
 	@echo "=== RUNNING XST ==="
+	$(call gen_build_id,$(BUILD_DIR16))
 	cd $(BUILD_DIR16) && $(ISE_ENV) xst -ifn $(PROJECT_A3).xst -ofn $(PROJECT_A3).syr
 	@rm -f $(BUILD_DIR16)/netlist.lst
 	@rm -f $(BUILD_DIR16)/xsc_report.xml
@@ -322,6 +339,7 @@ $$(BUILD_DIR25)/karabas_megabuzz$(1).xst: | $$(BUILD_DIR25)
 	@echo "-define {$(2) RV32 SLX25}" >> $$@
 
 $$(BUILD_DIR25)/karabas_megabuzz$(1).ngc: $$(BUILD_DIR25)/karabas_megabuzz$(1).prj $$(BUILD_DIR25)/karabas_megabuzz$(1).xst $$(VERILOG_SOURCES_COMMON) $$(VHDL_SOURCES) $$(NEORV32_SRC) $$(RV_VHDL)
+	$$(call gen_build_id,$$(BUILD_DIR25))
 	cd $$(BUILD_DIR25) && $$(ISE_ENV) xst -ifn karabas_megabuzz$(1).xst -ofn karabas_megabuzz$(1).syr
 
 $$(BUILD_DIR25)/karabas_megabuzz$(1).ngd: $$(BUILD_DIR25)/karabas_megabuzz$(1).ngc $(3)

@@ -117,6 +117,9 @@ t("7 MHz only: runs at 7 MHz", s.clock == 1, s.clock)
 diag("F10 with VS1053", "VS1053 chip", 0, board_id=0x2B, call_type=3)
 diag("F10 with neorv32", "neorv32", 0, board_id=0x1A, call_type=3)
 diag("F10 without a board", "No answer", 0, no_board=True, call_type=3)
+txt = diag("F10 shows the firmware id", "Firmware: A2 25 RV 2026-11-24 1a2b3c4", 0, board_id=0x1A,
+           call_type=3, coreid=b"A2 25 RV 2026-11-24 1a2b3c4")
+diag("F10 on firmware without the id", "Firmware: no id (reg #FF)", 0, board_id=0x1A, call_type=3)
 diag("Shift+F3 without a board", "No answer", 0, no_board=True, call_type=4)
 
 # Shift+F3 menu: plays like Enter

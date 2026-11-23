@@ -17,7 +17,7 @@ SECTOR_COST = 3000      # T-states per 512-byte sector read (set per test)
 class Sim:
     def __init__(self, wmf, data, name=b"test.mp3", index=1, count=3,
                  board_id=0x2B, cfg1=0x00, drain_bps=16000, keys=None,
-                 hei=25, no_loadnone=False, no_board=False, call_type=0, clock_ids=None):
+                 hei=25, no_loadnone=False, no_board=False, call_type=0, clock_ids=None, coreid=None):
         self.m = z80.Z80Machine()
         self.data = data
         self.keys = keys or {}          # frame -> key name or char
@@ -49,6 +49,8 @@ class Sim:
         self.under_frames = []
         self.no_board = no_board
         self.call_type = call_type
+        self.coreid = coreid            # firmware id (reg #FF), None = old firmware
+        self.coreid_pos = 0
         self.clock_ids = clock_ids or {}  # TURBOPL clock -> board id, if it differs
         self.clock = 2
         self.cur_key = None
@@ -111,6 +113,10 @@ class Sim:
     def port_in(self, port):
         if port == 0xFD3B and not self.no_board:
             r = self.zreg
+            if r == 0xFF and self.coreid is not None:
+                c = (self.coreid + b"\0")[min(self.coreid_pos, len(self.coreid))]
+                self.coreid_pos += 1
+                return c
             if r == 0xF4:
                 if self.clock in self.clock_ids:
                     return self.clock_ids[self.clock]
@@ -131,6 +137,7 @@ class Sim:
     def port_out(self, port, value):
         if port == 0xFC3B:
             self.zreg = value
+            self.coreid_pos = 0
         elif port == 0xFD3B:
             r = self.zreg
             if r == 0xF5:
