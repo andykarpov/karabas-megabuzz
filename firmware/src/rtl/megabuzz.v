@@ -1204,14 +1204,24 @@ module karabas_megabuzz(
 
     wire reg_mb_coreid = (zxuno_reg == 8'hFF);
     wire coreid_rd = ioreq_rd & port_zxuno_data & reg_mb_coreid;
+    // Next char once the read ends. coreid_rd holds the raw /RD and address, so an edge detector
+    // on it could see the end of the read in one flip-flop and not in the other, skip the step
+    // and repeat a char ("2026--11-23"). Instead remember the read and step when the
+    // synchronized ioreq drops: with ioreq low coreid_rd is 0 whatever /RD does.
     reg [5:0] coreid_idx = 6'd0;
-    reg coreid_rd_r = 1'b0;
+    reg coreid_rd_seen = 1'b0;
     always @(posedge clk_bus) begin
-        coreid_rd_r <= coreid_rd;
-        if (port_zxuno_reg & ioreq_wr)
+        if (port_zxuno_reg & ioreq_wr) begin
             coreid_idx <= 6'd0;
-        else if (coreid_rd_r & ~coreid_rd & (coreid_idx != ID_LEN))  // next char once the read ends
-            coreid_idx <= coreid_idx + 6'd1;
+            coreid_rd_seen <= 1'b0;
+        end
+        else if (coreid_rd)
+            coreid_rd_seen <= 1'b1;
+        else if (~ioreq & coreid_rd_seen) begin
+            coreid_rd_seen <= 1'b0;
+            if (coreid_idx != ID_LEN)
+                coreid_idx <= coreid_idx + 6'd1;
+        end
     end
     wire [7:0] coreid_char = (coreid_idx < ID_LEN) ? ID_STR[8*(ID_LEN-1-coreid_idx) +: 8] : 8'h00;
 
