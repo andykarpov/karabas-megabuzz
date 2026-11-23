@@ -185,6 +185,8 @@ DrawStaticInterface:
         IFDEF EMU_MODE
         LD DE, Str_Help1 : LD BC, 0x1600 : CALL Screen.PrintString
         LD DE, Str_Help2 : LD BC, 0x1700 : CALL Screen.PrintString
+        ELSE
+        LD BC, 0x1702 : CALL MegaBuzz.PrintId
         ENDIF
 
         ; Checkboxes (rows 5 и далее)
@@ -341,7 +343,7 @@ GetOptionTextAddress:
         RET
 
 ; Text data
-TitleText:       DB "  KARABAS MEGABUZZ CONFIG v1.4  ", 0
+TitleText:       DB "  KARABAS MEGABUZZ CONFIG v1.5  ", 0
 LoadingText:     DB "Loading...", 0
 SavingText:      DB "Saving...", 0
 FailText:        DB "Save failed!", 0

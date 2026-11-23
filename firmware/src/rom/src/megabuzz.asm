@@ -12,6 +12,7 @@ REG_CFG          EQU #F7       ; cfg byte r/w
 REG_ROMBANK      EQU #F8       ; ROM bank w (bit 0 = 0 - zx rom, 1 = cfg rom)
 REG_CTRL         EQU #F9       ; Control register w (bit 0 = 1 - reset trigger), r (bit 0 = 1 - flash busy)
 REG_CFGA         EQU #FA       ; CFG byte address
+REG_COREID       EQU #FF       ; firmware id r: ASCII, next char per read, then 0; selecting it rewinds
 
 BOARD_SLX25      EQU #08       ; REG_BOARD bit 3
 
@@ -72,6 +73,21 @@ ApplyConfig2:
 ReadBoard:
     LD A, REG_BOARD : CALL SelectReg
     IN A, (C)
+    RET
+
+;; Print the firmware id (REG_COREID) at row B, column C; nothing on old firmware
+PrintId:
+    PUSH BC
+    LD A, REG_COREID : CALL SelectReg
+    POP HL                      ; H = row, L = column
+.next:
+    LD BC, PORT_ZXUNO_DATA : IN A, (C)
+    CP 32 : RET C               ; 0 at the end
+    CP 128 : RET NC             ; #FF: no such register
+    LD B, H : LD C, L
+    PUSH HL : CALL Screen.PrintChar : POP HL
+    INC L
+    BIT 5, L : JR Z, .next      ; 32 columns at most
     RET
 
     ENDMODULE
