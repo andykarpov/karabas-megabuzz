@@ -792,6 +792,8 @@ module karabas_megabuzz(
     wire [7:0] vs_bus_di, vs_bus_do;
 
     wire signed [15:0] rv_audio_l, rv_audio_r;
+    wire [31:0] rv_hdat;        // header of the last frame decoded by neorv32 (SCI HDAT1:HDAT0)
+    wire [15:0] rv_decode_time; // seconds decoded by neorv32 (SCI DECODE_TIME)
 `ifdef RV32
     // A3 has both decoders, config bit 11 selects one (0 = the chip); A2 only has neorv32
 `ifdef HW_A3
@@ -820,7 +822,9 @@ module karabas_megabuzz(
         .hard_reset_cmd   (rv_hard_reset),
         .reg_volume       (rv_volume),
         .audio_l          (rv_audio_l),
-        .audio_r          (rv_audio_r)
+        .audio_r          (rv_audio_r),
+        .hdat             (rv_hdat),
+        .decode_time      (rv_decode_time)
     );
 `else
     wire vs_use_chip = 1'b1;
@@ -828,6 +832,8 @@ module karabas_megabuzz(
     wire vs_adc_en = vs1053_en;
     assign rv_audio_l = 16'd0;
     assign rv_audio_r = 16'd0;
+    assign rv_hdat = 32'd0;
+    assign rv_decode_time = 16'd0;
 `endif
 
     // NeoGS MP3 ports of the GS -> the same FIFO and decoder as the ZXUNO registers
@@ -870,7 +876,9 @@ module karabas_megabuzz(
         .sci_addr         (sci_addr),
         .sci_wdata        (sci_wdata),
         .sci_busy         (sci_busy),
-        .sci_rdata        (sci_rdata)
+        .sci_rdata        (sci_rdata),
+        .dec_hdat         (rv_hdat),
+        .dec_time         (rv_decode_time)
     );
 
     vs1053 vs1053(

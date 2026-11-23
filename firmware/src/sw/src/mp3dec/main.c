@@ -16,6 +16,8 @@
 #define REG_VOLUME      (*(volatile uint32_t *)0x20000004u)  // r: bits 7:0 = #FB
 #define REG_PCM_PTR     (*(volatile uint32_t *)0x20000008u)  // r: play pointer, w: end of the committed data
 #define REG_NCO         (*(volatile uint32_t *)0x2000000Cu)  // w: phase increment per CPU clock
+#define REG_HDAT        (*(volatile uint32_t *)0x20000010u)  // w: last frame header (SCI HDAT1:HDAT0)
+#define REG_DTIME       (*(volatile uint32_t *)0x20000014u)  // w: seconds decoded (SCI DECODE_TIME)
 
 #define PCM_WORDS       2048
 #define PTR_MASK        0xFFFu              // pointers are one bit wider than the ring
@@ -104,6 +106,8 @@ static void pcm_finish(uint32_t wp, const MP3FrameInfo *fi) {
 int main(void) {
   static MP3FrameInfo fi;
   uint32_t wp = 0;
+  uint32_t seconds = 0;                     // DECODE_TIME: the CPU restarts on every decoder reset
+  uint32_t samples = 0;                     // samples decoded within the current second
 
   HMP3Decoder decoder = MP3InitDecoder();
   in_left = 0;
@@ -163,6 +167,12 @@ int main(void) {
       }
     } else if (err == ERR_MP3_NONE) {
       MP3GetLastFrameInfo(decoder, &fi);
+      REG_HDAT = ((uint32_t)start[0] << 24) | ((uint32_t)start[1] << 16) | ((uint32_t)start[2] << 8) | start[3];
+      samples += fi.outputSamps / fi.nChans;
+      if (samples >= (uint32_t)fi.samprate) {
+        samples -= (uint32_t)fi.samprate;
+        REG_DTIME = ++seconds;
+      }
       pcm_finish(wp, &fi);
       REG_NCO = (uint32_t)fi.samprate * NCO_PER_KHZ / 1000u;
       wp = (wp + fi.outputSamps / fi.nChans) & PTR_MASK;

@@ -14,7 +14,8 @@
 //     VOL                 -> reg_volume (the louder of the two channels), the
 //                            same register as ZXUNO #FB
 //     others              -> the chip as they are (patches, real-time MIDI)
-//   Reads go to the chip; with neorv32 they are answered from shadow values.
+//   Reads go to the chip; with neorv32 they are answered from shadow values,
+//   HDAT0/HDAT1 and DECODE_TIME from the decoder (a write to DECODE_TIME sets it).
 // - MPXRS 0 -> 1 written by GS: hard reset of the decoder.
 // The GS CPU waits (WAIT_n) on md_busy, mc_busy and mc_rd_wait.
 // ----------------------------------------------------------------------------
@@ -54,13 +55,20 @@ module ngs_mp3 (
     output reg  [7:0]  sci_addr,
     output reg  [15:0] sci_wdata,
     input  wire        sci_busy,
-    input  wire [15:0] sci_rdata
+    input  wire [15:0] sci_rdata,
+
+    // neorv32 status: the last frame header and the seconds decoded since its reset
+    input  wire [31:0] dec_hdat,
+    input  wire [15:0] dec_time
 );
 
     localparam SCI_MODE   = 8'h00;
     localparam SCI_STATUS = 8'h01;
     localparam SCI_BASS   = 8'h02;
     localparam SCI_CLOCKF = 8'h03;
+    localparam SCI_DTIME  = 8'h04;
+    localparam SCI_HDAT0  = 8'h08;
+    localparam SCI_HDAT1  = 8'h09;
     localparam SCI_VOL    = 8'h0B;
 
     // ------------------------------------------------------------- data
@@ -76,6 +84,7 @@ module ngs_mp3 (
     reg        chip_seen;    // ... and the controller took it
     reg        chip_rd;      // ... it is a read
     reg [15:0] mode_sh, bass_sh, clockf_sh;
+    reg [15:0] dtime_ofs;    // DECODE_TIME = dec_time + dtime_ofs (players write 0 to it per track)
     reg        mcncs_d, mpxrs_d;
 
     assign mc_busy = chip_busy & ~((op == 8'h03) & (idx >= 3'd2));
@@ -98,6 +107,9 @@ module ngs_mp3 (
             SCI_BASS:   shadow_read = bass_sh;
             SCI_CLOCKF: shadow_read = clockf_sh;
             SCI_VOL:    shadow_read = {cur_volume, cur_volume};
+            SCI_DTIME:  shadow_read = dec_time + dtime_ofs;
+            SCI_HDAT0:  shadow_read = dec_hdat[15:0];
+            SCI_HDAT1:  shadow_read = dec_hdat[31:16];
             default:    shadow_read = 16'h0000;
         endcase
     endfunction
@@ -128,6 +140,7 @@ module ngs_mp3 (
             mode_sh   <= 16'h0800;
             bass_sh   <= 16'h0000;
             clockf_sh <= 16'h0000;
+            dtime_ofs <= 16'h0000;
             ext_vol   <= 8'h00;
         end else begin
             // data byte -> FIFO (held until the FIFO takes it)
@@ -185,6 +198,7 @@ module ngs_mp3 (
                                     mode_sh <= mc_word & ~16'h0004;
                                     if (mc_byte[2]) begin
                                         if (present) ext_soft_reset <= 1;
+                                        dtime_ofs <= 16'h0000;  // neorv32 restarts from 0
                                     end else if (present & use_chip) begin
                                         chip_busy <= 1;
                                         chip_rd   <= 0;
@@ -195,6 +209,17 @@ module ngs_mp3 (
                                     end
                                 end
                                 SCI_CLOCKF: clockf_sh <= mc_word;
+                                SCI_DTIME: begin
+                                    dtime_ofs <= mc_word - dec_time;
+                                    if (present & use_chip) begin
+                                        chip_busy <= 1;
+                                        chip_rd   <= 0;
+                                        sci_req   <= 1;
+                                        sci_rnw   <= 0;
+                                        sci_addr  <= addr;
+                                        sci_wdata <= mc_word;
+                                    end
+                                end
                                 SCI_VOL: begin
                                     ext_vol_wr <= 1;
                                     ext_vol    <= vol_byte;
@@ -220,6 +245,7 @@ module ngs_mp3 (
             // MPXRS 0 -> 1: hard reset of the decoder (the FIFO is flushed too)
             if (mpxrs & ~mpxrs_d) begin
                 if (present) ext_hard_reset <= 1;
+                dtime_ofs <= 16'h0000;
                 ext_fifo_wr <= 0;
             end
         end
