@@ -677,10 +677,37 @@ module karabas_megabuzz(
     assign gs_sram_di = mem_d;
 `endif
 
+    // NeoGS #33 from the host (write only): d7..d5 = 100 resets the GS, 010 sends it an NMI, 001 (LED) is ignored
+    wire port_gs33_wr = ioreq_wr & (bus_a[7:0] == 8'h33) & gs_en & ~loader_act;
+    reg port_gs33_wr_d = 0;
+    reg [5:0] gs33_rst_cnt = 0, gs33_nmi_cnt = 0;
+    always @(posedge clk_bus) begin
+        port_gs33_wr_d <= port_gs33_wr;
+        if (port_gs33_wr & ~port_gs33_wr_d & (bus_d[7:5] == 3'b100))
+            gs33_rst_cnt <= 6'd63;
+        else if (gs33_rst_cnt != 0)
+            gs33_rst_cnt <= gs33_rst_cnt - 6'd1;
+        if (port_gs33_wr & ~port_gs33_wr_d & (bus_d[7:5] == 3'b010))
+            gs33_nmi_cnt <= 6'd63;
+        else if (gs33_nmi_cnt != 0)
+            gs33_nmi_cnt <= gs33_nmi_cnt - 6'd1;
+    end
+
+    // NeoGS SD (sd_arbiter) and MP3 (ngs_mp3) signals of the GS side
+    wire gs_reset_out;
+    wire gs_sd_cs_n, gs_sd_req_t, gs_sd_ack_t;
+    wire [7:0] gs_sd_tx, gs_sd_rx;
+    wire ngs_mc_ncs, ngs_mp_xrs, ngs_mc_wr, ngs_md_wr;
+    wire [7:0] ngs_io_do, ngs_mc_read;
+    wire ngs_mc_busy, ngs_mc_rd_wait, ngs_mc_ready, ngs_md_busy, ngs_md_dreq;
+
     gs_top gs_inst(
         .clk_bus          (clk_bus),
         .ce              (ce_14m & ~gs_hold),
         .reset            (reset),
+        .host_reset       (gs33_rst_cnt != 0),
+        .host_nmi         (gs33_nmi_cnt != 0),
+        .gs_reset_out     (gs_reset_out),
 
         .a                (bus_a),
         .di               (bus_d),
@@ -704,6 +731,25 @@ module karabas_megabuzz(
         .loader_ram_a     (loader_ram_a),
         .loader_ram_do    (loader_ram_do),
         .loader_ram_wr    (loader_ram_wr),
+
+        .sd_cs_n          (gs_sd_cs_n),
+        .sd_req_t         (gs_sd_req_t),
+        .sd_tx            (gs_sd_tx),
+        .sd_ack_t         (gs_sd_ack_t),
+        .sd_rx            (gs_sd_rx),
+        .sd_det_n         (sd_det_n),
+
+        .mc_ncs           (ngs_mc_ncs),
+        .mp_xrs           (ngs_mp_xrs),
+        .mc_wr            (ngs_mc_wr),
+        .md_wr            (ngs_md_wr),
+        .io_do            (ngs_io_do),
+        .mc_read          (ngs_mc_read),
+        .mc_busy          (ngs_mc_busy),
+        .mc_rd_wait       (ngs_mc_rd_wait),
+        .mc_ready         (ngs_mc_ready),
+        .md_busy          (ngs_md_busy),
+        .md_dreq          (ngs_md_dreq),
 
         .out_l            (gs_out_l),
         .out_r            (gs_out_r)
@@ -784,6 +830,49 @@ module karabas_megabuzz(
     assign rv_audio_r = 16'd0;
 `endif
 
+    // NeoGS MP3 ports of the GS -> the same FIFO and decoder as the ZXUNO registers
+    wire ext_fifo_wr, ext_fifo_ack, ext_fifo_room, ext_soft_reset, ext_hard_reset, ext_vol_wr;
+    wire [7:0] ext_fifo_din, ext_vol, vs_cur_volume;
+    wire sci_req, sci_rnw, sci_busy;
+    wire [7:0] sci_addr;
+    wire [15:0] sci_wdata, sci_rdata;
+
+    ngs_mp3 ngs_mp3_inst(
+        .clk              (clk_bus),
+        .reset            (gs_reset_out),
+        .present          (vs1053_en),
+        .use_chip         (vs_use_chip),
+
+        .mcncs            (ngs_mc_ncs),
+        .mpxrs            (ngs_mp_xrs),
+        .mc_wr            (ngs_mc_wr),
+        .mc_byte          (ngs_io_do),
+        .mc_read          (ngs_mc_read),
+        .mc_busy          (ngs_mc_busy),
+        .mc_rd_wait       (ngs_mc_rd_wait),
+        .mc_ready         (ngs_mc_ready),
+        .md_wr            (ngs_md_wr),
+        .md_byte          (ngs_io_do),
+        .md_busy          (ngs_md_busy),
+        .md_dreq          (ngs_md_dreq),
+
+        .ext_fifo_wr      (ext_fifo_wr),
+        .ext_fifo_din     (ext_fifo_din),
+        .ext_fifo_ack     (ext_fifo_ack),
+        .ext_fifo_room    (ext_fifo_room),
+        .ext_soft_reset   (ext_soft_reset),
+        .ext_hard_reset   (ext_hard_reset),
+        .ext_vol_wr       (ext_vol_wr),
+        .ext_vol          (ext_vol),
+        .cur_volume       (vs_cur_volume),
+        .sci_req          (sci_req),
+        .sci_rnw          (sci_rnw),
+        .sci_addr         (sci_addr),
+        .sci_wdata        (sci_wdata),
+        .sci_busy         (sci_busy),
+        .sci_rdata        (sci_rdata)
+    );
+
     vs1053 vs1053(
 `ifdef RV32
         .use_chip         (vs_use_chip),
@@ -810,7 +899,23 @@ module karabas_megabuzz(
         .bus_rd_n         (vs_bus_rd_n),
         .bus_a            (vs_bus_addr),
         .bus_di           (vs_bus_di),
-        .bus_do           (vs_bus_do)
+        .bus_do           (vs_bus_do),
+
+        .ext_fifo_wr      (ext_fifo_wr),
+        .ext_fifo_din     (ext_fifo_din),
+        .ext_fifo_ack     (ext_fifo_ack),
+        .ext_fifo_room    (ext_fifo_room),
+        .ext_soft_reset   (ext_soft_reset),
+        .ext_hard_reset   (ext_hard_reset),
+        .ext_vol_wr       (ext_vol_wr),
+        .ext_vol          (ext_vol),
+        .cur_volume       (vs_cur_volume),
+        .sci_req          (sci_req),
+        .sci_rnw          (sci_rnw),
+        .sci_addr         (sci_addr),
+        .sci_wdata        (sci_wdata),
+        .sci_busy         (sci_busy),
+        .sci_rdata        (sci_rdata)
     );
 
     // midi activity detector
@@ -888,6 +993,7 @@ module karabas_megabuzz(
     );
 
     // divmmc + zc
+    wire host_sd_clk, host_sd_mosi, host_sd_cs_n, host_sd_grant, host_sd_req, host_sd_active;
     wire [7:0] zc_do_bus, divmmc_dout;
     wire zc_busy, divmmc_mem, divmmc_zxrom_block;
     zc_divmmc zc_divmmc(
@@ -926,16 +1032,45 @@ module karabas_megabuzz(
         .ram_wr_n         (mmc_mem_wr_n),
 `endif
 
-        .sd_clk           (sd_clk),
+        .sd_clk           (host_sd_clk),
         .sd_do            (sd_do),
-        .sd_di            (sd_di),
-        .sd_cs_n          (sd_cs_n),
+        .sd_di            (host_sd_mosi),
+        .sd_cs_n          (host_sd_cs_n),
+        .spi_grant        (host_sd_grant),
+        .spi_req          (host_sd_req),
+        .spi_active       (host_sd_active),
 
         .dout             (zc_do_bus),
         .divmmc_mem       (divmmc_mem),
         .divmmc_dout      (divmmc_dout),
         .divmmc_zxrom_block(divmmc_zxrom_block),
         .busy             (zc_busy)
+    );
+
+    // one SD card for the host (ZC / DivMMC) and the GS (NeoGS ports)
+    sd_arbiter sd_arbiter_inst(
+        .clk              (clk_mem),
+        .reset            (areset),
+        .host_en          (divmmc_en | zc_en),
+
+        .host_cs_n        (host_sd_cs_n),
+        .host_sclk        (host_sd_clk),
+        .host_mosi        (host_sd_mosi),
+        .host_req         (host_sd_req),
+        .host_active      (host_sd_active),
+        .host_grant       (host_sd_grant),
+
+        .gs_reset         (gs_reset_out),
+        .gs_cs_n          (gs_sd_cs_n),
+        .gs_req_t         (gs_sd_req_t),
+        .gs_tx            (gs_sd_tx),
+        .gs_ack_t         (gs_sd_ack_t),
+        .gs_rx            (gs_sd_rx),
+
+        .sd_cs_n          (sd_cs_n),
+        .sd_sclk          (sd_clk),
+        .sd_mosi          (sd_di),
+        .sd_miso          (sd_do)
     );
 
     // vu meter

@@ -12,7 +12,7 @@
 ### Характеристики
 
 * Turbosound FM
-* General Sound 2 МБ (1.5 МБ на Rev.A1 при включённом DivMMC)
+* General Sound 2 МБ (1.5 МБ на Rev.A1 при включённом DivMMC), с портами NeoGS для MP3 и SD-карты
 * OPL3 на YMF-262-M
 * MIDI на Dream SAM2695
 * SAA1099
@@ -83,6 +83,10 @@
 * Rev.A3 на XC6SLX25: выбирается опцией `MP3 on RV32` в конфигураторе, если она выключена — чип VS1053.
 * Rev.A3 на XC6SLX16: чип VS1053.
 * Остальные платы на XC6SLX16: MP3 нет, декодер там не помещается.
+
+#### NeoGS
+
+У General Sound есть и порты NeoGS для MP3 и SD-карты на стороне его процессора, поэтому работают и NeoGS-плееры (Neo Player Light и другие). Они играют через тот же декодер, SD-карта общая с Z-Controller/DivMMC. Подробности в [PORTS.md](PORTS.md#-порты-neogs).
 
 ### Настройки
 

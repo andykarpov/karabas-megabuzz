@@ -33,6 +33,7 @@ VERILOG_SOURCES_COMMON= ../rtl/megabuzz.v\
                         ../rtl/sound/audio_avg.v\
                         ../rtl/sound/audio_img_lpf.v\
                         ../rtl/sound/vs1053.v\
+                        ../rtl/sound/ngs_mp3.v\
                         ../rtl/sound/jt12/jt03.v\
                         ../rtl/sound/jt12/jt12_top.v\
                         ../rtl/sound/jt12/jt12_rst.v\
@@ -73,6 +74,7 @@ VERILOG_SOURCES_COMMON= ../rtl/megabuzz.v\
                         ../rtl/vu/vu_meter.v\
                         ../rtl/resetter.v\
                         ../rtl/sd/zc_dicmmc.v\
+                        ../rtl/sd/sd_arbiter.v\
                         ../rtl/ram/sprom.v\
                         ../rtl/ram/sram_arbiter.v\
                         ../rtl/ram/spram.v\
