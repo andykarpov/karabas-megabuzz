@@ -601,7 +601,7 @@ build_fmt:
 
 ;; ---------------------------------------------------------------------------
 ;; Diagnostic window: what the board answered, then wait for a key.
-;; IN: CF from mb_detect (1 = no decoder)
+;; IN: CF from probe (1 = no decoder)
 ;; ---------------------------------------------------------------------------
 INF_W           equ 58
 INF_H           equ 8
@@ -633,29 +633,49 @@ diag:
     ld bc,S_HEAD_LEN
     ld a,CLR_HEAD
     call prn
-    ; "Board id (reg #F4): #xx", and on a failure the same read at 3.5 MHz
+    ; "Board id (#F4): 14 MHz #xx, 7 MHz #xx, 3.5 MHz #xx", the clocks tried
     ld de,linebuf
     ld hl,s_d_id
     call sapp
-    ld a,(mb_id)
-    call hex8
-    pop af
-    push af
-    jr nc,.id
+    ld b,CPU_CLOCK
+.idl:
+    push bc
+    ld a,b
+    add a,a
+    ld l,a
+    ld h,0
     push de
-    ld b,0
-    ld c,0
-    WCALL WCF_TURBOPL
-    ld a,MB_REG_ID
-    call mb_rd
-    ld (tmpb),a
-    call set_clock
+    ld de,clk_names
+    add hl,de
+    ld a,(hl)
+    inc hl
+    ld h,(hl)
+    ld l,a
     pop de
-    ld hl,s_d_35
     call sapp
-    ld a,(tmpb)
+    pop bc
+    push bc
+    ld l,b
+    ld h,0
+    push de
+    ld de,ids
+    add hl,de
+    pop de
+    ld a,(hl)
     call hex8
-.id:
+    pop bc
+    ld a,(clk_lo)
+    cp b
+    jr z,.ide
+    ld a,','
+    ld (de),a
+    inc de
+    ld a,' '
+    ld (de),a
+    inc de
+    dec b
+    jr .idl
+.ide:
     xor a
     ld (de),a
     ld hl,linebuf
@@ -673,15 +693,7 @@ diag:
     ld hl,s_d_rv
     jr .why
 .bad:
-    ld hl,s_d_slow
-    ld a,(tmpb)
-    and #C0
-    jr nz,.b1
-    ld a,(tmpb)
-    and #30
-    jr nz,.why                  ; a decoder shows up at 3.5 MHz only
-.b1:
-    ld a,(mb_id)
+    ld a,(ids+CPU_CLOCK)        ; what the board said at full speed
     ld hl,s_d_ff
     cp #FF
     jr z,.why
@@ -697,6 +709,13 @@ diag:
     ld hl,s_d_notf
     jr c,.msg
     ld hl,s_d_use
+    ld a,(clk_sel)
+    cp CPU_CLOCK
+    jr z,.msg
+    ld hl,s_d_slow7
+    dec a
+    jr z,.msg
+    ld hl,s_d_slow35
 .msg:
     ld de,4*256 + 2
     ld a,CLR_LABEL
@@ -716,14 +735,18 @@ inf_tpl:
     dw 0
     db 0, 0, 1, 0, 0, 0
 
-s_d_id:     db "Board id (reg #F4): ",0
-s_d_35:     db ", at 3.5 MHz: ",0
+s_d_id:     db "Board id (#F4): ",0
+clk_names:  dw s_c35, s_c7, s_c14
+s_c35:      db "3.5 MHz ",0
+s_c7:       db "7 MHz ",0
+s_c14:      db "14 MHz ",0
 s_d_vs:     db "MP3 decoder: VS1053 chip",0
 s_d_rv:     db "MP3 decoder: neorv32",0
 s_d_ff:     db "No answer: no Megabuzz, or its firmware has no #F4",0
 s_d_odd:    db "Not a Megabuzz id: another device on the bus?",0
 s_d_nodec:  db "This firmware has no MP3 decoder (XC6SLX16?)",0
-s_d_slow:   db "Reads right at 3.5 MHz only: bus timing at 14 MHz",0
+s_d_slow7:  db "Bad reads at 14 MHz: the player runs at 7 MHz",0
+s_d_slow35: db "Bad reads at 7-14 MHz: the player runs at 3.5 MHz",0
 s_d_notf:   db "MP3 decoder not found, the file is not played",0
 s_d_use:    db "Press Enter on an .mp3 file to play it",0
 s_d_key:    db "Press any key",0

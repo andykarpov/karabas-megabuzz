@@ -3,7 +3,7 @@
 ;;
 ;; Build: sjasmplus src/main.asm  ->  MEGABUZZ.WMF
 
-    DEFINE VERSION "0.2"
+    DEFINE VERSION "0.3"
 
 CPU_CLOCK       equ 2           ; TURBOPL: 0 = 3.5, 1 = 7, 2 = 14 MHz
 SEEK_SEC        equ 10          ; seconds per <- / ->
@@ -75,8 +75,7 @@ entry:
     cp 4
     jr z,.byext                 ; chosen in the Shift+F3 menu
     ; from the F10 menu: show what the board answers
-    call set_clock
-    call mb_detect
+    call probe
     call diag
     xor a                       ; WCX_ESC
     ret
@@ -99,8 +98,7 @@ entry:
     xor a
     ld (de),a
 .named:
-    call set_clock              ; read the board at the clock we play at
-    call mb_detect
+    call probe
     jr nc,.found
     call diag                   ; say why
     ld a,(call_type)
@@ -268,11 +266,46 @@ feed:
     or a
     ret
 
-;; CPU clock for the plugin
+;; CPU clock for the plugin: the one probe found the board at
 set_clock:
+    ld a,(clk_sel)
+    ld c,a
     ld b,0
-    ld c,CPU_CLOCK
     WCALL WCF_TURBOPL
+    ret
+
+;; Find the board at 14, 7, then 3.5 MHz: TSConf runs I/O to the slot at
+;; the full clock (it slows down only for AY and the WD1793), and the
+;; board may not answer that fast. The id read at each clock tried goes
+;; to ids[clock], the lowest clock tried to clk_lo.
+;; OUT: CF = 1 if no clock gives a decoder; the clock is set
+probe:
+    ld a,CPU_CLOCK
+.loop:
+    ld (clk_sel),a
+    ld (clk_lo),a
+    call set_clock
+    call mb_detect
+    push af
+    ld a,(clk_sel)
+    ld e,a
+    ld d,0
+    ld hl,ids
+    add hl,de
+    ld a,(mb_id)
+    ld (hl),a
+    pop af
+    ret nc
+    ld a,(clk_sel)
+    or a
+    jr z,.none
+    dec a
+    jr .loop
+.none:
+    ld a,CPU_CLOCK
+    ld (clk_sel),a
+    call set_clock
+    scf
     ret
 
 ;; Wait for Esc, Enter, Space or a letter
@@ -529,6 +562,9 @@ code_end:
 vars:
 entry_sp    ds 2
 call_type   ds 1
+clk_sel     ds 1
+clk_lo      ds 1
+ids         ds 3
 panel_ix    ds 2
 name_ptr    ds 2
 wc_count    ds 2
