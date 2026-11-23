@@ -51,9 +51,29 @@
 
 ### Воспроизведение MP3
 
+#### esxDOS
+
 В NMI-браузере от Bob Fossil с плагином из списка выше выберите MP3-файл. Можно проигрывать и всю директорию подряд. `Space` — следующий трек, `Q` — выход.
 
-На хостах с TSConf (ZX Evolution, Karabas Mini) есть плагин `MEGABUZZ.WMF` для Wild Commander, `firmware/src/wcplugin/`: показывает теги ID3, формат потока, прогрессбар со временем, умеет перемотку, паузу и громкость. Как его установить — в [его README](firmware/src/wcplugin/README.md).
+#### Wild Commander (TSConf)
+
+На хостах с TSConf (ZX Evolution, Karabas Mini и другие) MP3 играется прямо из Wild Commander плагином [MEGABUZZ.WMF](firmware/src/wcplugin/MEGABUZZ.WMF) (исходники в `firmware/src/wcplugin/`). Он показывает имя файла, теги ID3v2 (в том числе кириллицу), формат потока, прогрессбар с прошедшим и полным временем и заполнение FIFO, умеет перемотку, паузу, громкость, бас и треб. Когда трек кончается, переходит к следующему файлу панели.
+
+1. Положите `MEGABUZZ.WMF` в папку `WC` загрузочного устройства.
+2. Добавьте его в секцию `[PLUGINS]` файла `WC/wc.ini` перед `GSPLAYER.WMF`:
+
+   ```ini
+   [PLUGINS]
+   MEGABUZZ.WMF
+   GSPLAYER.WMF -midi_chip=2
+   ```
+
+   Если MP3-декодера Megabuzz нет, плагин отдаёт файл GS Player.
+3. Выключите Z-Controller и DivMMC на Megabuzz (в конфигураторе на A2/A3, DIP-переключателями на A1): у TSConf свой Z-Controller на тех же портах.
+
+Нужны WC 1.09 или новее и битстрим с MP3-декодером (Rev.A3 или любая ревизия на XC6SLX25). Клавиши: `Space`/`P` — следующий/предыдущий трек, `←`/`→` — перемотка на 10 с, `S` — пауза, `+`/`-` — громкость, `B`/`T` — бас/треб (только чип VS1053), `Esc` — назад в WC. [MEGABUZZ_EMU.WMF](firmware/src/wcplugin/MEGABUZZ_EMU.WMF) — беззвучная сборка, которая работает без Megabuzz, чтобы посмотреть интерфейс. Подробности — в [README плагина](firmware/src/wcplugin/README.md).
+
+#### Декодеры
 
 Для плееров программный декодер и чип работают одинаково (регистры `#F5`, `#F6`, `#FB`, см. [PORTS.md](PORTS.md)). Программный декодер поддерживает только громкость, бас и треб игнорируются, режим free format не воспроизводится.
 

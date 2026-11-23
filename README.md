@@ -51,9 +51,29 @@ Inspired by a ZX-Multisound and karabas-opl3 soundcards :)
 
 ### Playing MP3
 
+#### esxDOS
+
 In the NMI browser by Bob Fossil, with the plugin above, select an MP3 file. It can also play a whole directory. `Space` goes to the next track, `Q` leaves.
 
-On TSConf hosts (ZX Evolution, Karabas Mini) there is the `MEGABUZZ.WMF` plugin for Wild Commander, `firmware/src/wcplugin/`: it shows the ID3 tags, the stream format, a progress bar with the time, and has seeking, pause and volume. See [its README](firmware/src/wcplugin/README.en.md) for installing it.
+#### Wild Commander (TSConf)
+
+On TSConf hosts (ZX Evolution, Karabas Mini and others) MP3 files play from Wild Commander with the [MEGABUZZ.WMF](firmware/src/wcplugin/MEGABUZZ.WMF) plugin (sources in `firmware/src/wcplugin/`). It shows the file name, the ID3v2 tags (Cyrillic included), the stream format, a progress bar with the elapsed and total time and the FIFO fill, and it can seek, pause, change the volume, bass and treble. When a track ends it goes on to the next file of the panel.
+
+1. Put `MEGABUZZ.WMF` into the `WC` folder of the boot device.
+2. Add it to the `[PLUGINS]` section of `WC/wc.ini` before `GSPLAYER.WMF`:
+
+   ```ini
+   [PLUGINS]
+   MEGABUZZ.WMF
+   GSPLAYER.WMF -midi_chip=2
+   ```
+
+   Without a Megabuzz MP3 decoder the plugin hands the file over to GS Player.
+3. Turn the Megabuzz Z-Controller and DivMMC off (configurator on A2/A3, DIP switches on A1): TSConf has its own Z-Controller on the same ports.
+
+It needs WC 1.09 or newer and a bitstream with an MP3 decoder (Rev.A3, or any revision on the XC6SLX25). Keys: `Space`/`P` next/previous track, `←`/`→` seek by 10 s, `S` pause, `+`/`-` volume, `B`/`T` bass/treble (VS1053 chip only), `Esc` back to WC. [MEGABUZZ_EMU.WMF](firmware/src/wcplugin/MEGABUZZ_EMU.WMF) is a silent build that runs without Megabuzz, for a look at the UI. More details in [the plugin README](firmware/src/wcplugin/README.en.md).
+
+#### Decoders
 
 The software decoder and the chip work the same for players (registers `#F5`, `#F6`, `#FB`, see [PORTS.en.md](PORTS.en.md)). The software decoder implements the volume only, bass and treble are ignored, and it does not play free format MP3.
 
