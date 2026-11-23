@@ -20,7 +20,7 @@ To keep the design cheap, the JTAG header on the board is laid out for an Altera
 
 The SPI flash can be written in several ways:
 
-1) Put it in a programmer and write the bitstream BIN file, the GS ROM and the configuration ROM (bitstream at address 0, GS ROM at 0x100000, configuration at 0x1F0000).
+1) Put it in a programmer and write the bitstream BIN file, the GS ROM and the configuration ROM (bitstream at address 0, GS ROM at 0x100000, configuration at 0x1F0000), or a ready full flash image (see below).
 2) Connect a Xilinx Platform USB Cable and flash with iMPACT (same addresses).
 3) Use the open source openFPGALoader with any JTAG programmer, including the Altera USB Blaster.
 4) The same with openOCD.
@@ -30,7 +30,19 @@ The first two need no explanation.
 
 #### Full flash image for a programmer
 
-For option 1 the Makefile builds a ready raw image of the whole flash with the same layout as the `make flash*` targets (bitstream at 0, GS ROM at 0x100000, neorv32 firmware at 0x180000 on the XC6SLX25, configuration at 0x1F0000); the empty space is filled with 0xFF. From `firmware/src/syn`:
+For option 1 the Makefile builds a ready raw image of the whole flash with the same layout as the `make flash*` targets (bitstream at 0, GS ROM at 0x100000, neorv32 firmware at 0x180000 on the XC6SLX25, configuration at 0x1F0000); the empty space is filled with 0xFF.
+
+Ready images for all revisions are in the repository and linked from the table in the [README](README.md#bitstreams--roms-to-flash-into-the-spi-flash-chip):
+
+| Revision | XC6SLX16 | XC6SLX25 |
+| :--- | :--- | :--- |
+| revA | [karabas_megabuzz_full.bin](firmware/src/syn/work16/karabas_megabuzz_full.bin) | [karabas_megabuzz_full.bin](firmware/src/syn/work25/karabas_megabuzz_full.bin) |
+| revA1 | [karabas_megabuzz_a1_full.bin](firmware/src/syn/work16/karabas_megabuzz_a1_full.bin) | [karabas_megabuzz_a1_full.bin](firmware/src/syn/work25/karabas_megabuzz_a1_full.bin) |
+| revA2 | [karabas_megabuzz_a2_full.bin](firmware/src/syn/work16/karabas_megabuzz_a2_full.bin) | [karabas_megabuzz_a2_full.bin](firmware/src/syn/work25/karabas_megabuzz_a2_full.bin) |
+| revA2, no DivMMC | [karabas_megabuzz_a2_nommc_full.bin](firmware/src/syn/work16/karabas_megabuzz_a2_nommc_full.bin) | [karabas_megabuzz_a2_nommc_full.bin](firmware/src/syn/work25/karabas_megabuzz_a2_nommc_full.bin) |
+| revA3 | [karabas_megabuzz_a3_full.bin](firmware/src/syn/work16/karabas_megabuzz_a3_full.bin) | [karabas_megabuzz_a3_full.bin](firmware/src/syn/work25/karabas_megabuzz_a3_full.bin) |
+
+To build them yourself, from `firmware/src/syn`:
 
 `make image16_a3` → `work16/karabas_megabuzz_a3_full.bin`
 
