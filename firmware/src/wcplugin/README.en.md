@@ -5,7 +5,7 @@ English | [Русский](README.md)
 A Wild Commander (WC) plugin for TSConf (ZX Evolution, Karabas Mini and others) that plays MP3 through the Karabas-MegaBuzz decoder: the VS1053 chip or the neorv32 software decoder. It uses the registers `#F4`, `#F5`, `#F6`, `#FB`, `#FC` (see [PORTS.en.md](../../../PORTS.en.md)).
 
 ```
-+------------------ Megabuzz MP3 Player v0.3 ------------------+
++----------------- Megabuzz MP3 Player v0.3.1 -----------------+
 | File:   01-kino-gruppa_krovi.mp3                             |
 |--------------------------------------------------------------|
 | Title:  Группа крови                                         |
