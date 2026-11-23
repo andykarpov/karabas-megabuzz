@@ -10,6 +10,9 @@ module gs_top (
     input wire            clk_bus,
     input wire            ce,
     input wire            reset,
+    input wire            host_reset,   // GS reset from the host (#33)
+    input wire            host_nmi,     // NMI from the host (#33)
+    output wire           gs_reset_out, // the GS is in reset
 
     // cpu input signals
     input wire [15:0]     a,
@@ -37,6 +40,27 @@ module gs_top (
     input wire [7:0]     loader_ram_do,
     input wire           loader_ram_wr,
 
+    // NeoGS SD card (sd_arbiter)
+    output wire          sd_cs_n,
+    output wire          sd_req_t,
+    output wire [7:0]    sd_tx,
+    input  wire          sd_ack_t,
+    input  wire [7:0]    sd_rx,
+    input  wire          sd_det_n,
+
+    // NeoGS MP3 (ngs_mp3)
+    output wire          mc_ncs,
+    output wire          mp_xrs,
+    output wire          mc_wr,
+    output wire          md_wr,
+    output wire [7:0]    io_do,
+    input  wire [7:0]    mc_read,
+    input  wire          mc_busy,
+    input  wire          mc_rd_wait,
+    input  wire          mc_ready,
+    input  wire          md_busy,
+    input  wire          md_dreq,
+
     // sound output
     output wire signed [14:0] out_l,
     output wire signed [14:0] out_r
@@ -51,13 +75,15 @@ module gs_top (
     wire        gs_mem_rd_n;
     wire        gs_mem_wr_n;
 
-    wire gs_reset = reset | loader_act;
+    wire gs_reset = reset | loader_act | host_reset;
+    assign gs_reset_out = gs_reset;
 
     gs gs
     (
         .RESET(gs_reset),
         .CLK(clk_bus),
         .CE(ce),
+        .NMI(host_nmi),
 
         .A(a),
         .DI(di),
@@ -75,7 +101,26 @@ module gs_top (
         .MDO(gs_mem_dout),
         .MRFSH_n(),
         .MWE_n(gs_mem_wr_n),
-        .MRD_n(gs_mem_rd_n)
+        .MRD_n(gs_mem_rd_n),
+
+        .SD_CS_n(sd_cs_n),
+        .SD_REQ_T(sd_req_t),
+        .SD_TX(sd_tx),
+        .SD_ACK_T(sd_ack_t),
+        .SD_RX(sd_rx),
+        .SD_DET_n(sd_det_n),
+
+        .MC_NCS(mc_ncs),
+        .MP_XRS(mp_xrs),
+        .MC_WR(mc_wr),
+        .MD_WR(md_wr),
+        .IO_DO(io_do),
+        .MC_READ(mc_read),
+        .MC_BUSY(mc_busy),
+        .MC_RD_WAIT(mc_rd_wait),
+        .MC_READY(mc_ready),
+        .MD_BUSY(md_busy),
+        .MD_DREQ(md_dreq)
     );
 
     wire is_rom = (gs_mem_addr < 32768);
