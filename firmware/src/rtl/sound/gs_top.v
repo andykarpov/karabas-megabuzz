@@ -39,6 +39,8 @@ module gs_top (
     input wire [20:0]    loader_ram_a,
     input wire [7:0]     loader_ram_do,
     input wire           loader_ram_wr,
+    output wire          rom_reload,    // the GS ROM in pages 0-1 was written to and the GS is reset: load it again
+    input wire           reload_act,    // the loader copies the GS ROM again
 
     // NeoGS SD card (sd_arbiter)
     output wire          sd_cs_n,
@@ -76,11 +78,30 @@ module gs_top (
     wire        gs_mem_wr_n;
 
     wire gs_reset = reset | loader_act | host_reset;
-    assign gs_reset_out = gs_reset;
+
+    // NeoGS software may clear RAMRO and change the GS ROM in pages 0-1 (the NeoGS BIOS of NeoTracker
+    // and ngsplay is put at #0000, the NeoGS SD driver of the Evo ROM patches the command table).
+    // A real NeoGS copies its ROM from flash again on every reset; here the loader does it on the
+    // first reset after such a write. Until it is done the CPU stays in reset, the host side runs.
+    reg rom_dirty = 1'b0, reload_pend = 1'b0;
+    always @(posedge clk_bus) begin
+        if ((loader_act & loader_ram_wr) | reload_act)
+            rom_dirty <= 1'b0;
+        else if (~gs_mem_wr_n & (gs_mem_addr[20:15] == 6'd0))
+            rom_dirty <= 1'b1;
+        if (reload_act)
+            reload_pend <= 1'b0;
+        else if (gs_reset & rom_dirty)
+            reload_pend <= 1'b1;
+    end
+    assign rom_reload = reload_pend;
+    wire cpu_hold = reload_pend | reload_act;
+    assign gs_reset_out = gs_reset | cpu_hold;
 
     gs gs
     (
         .RESET(gs_reset),
+        .HOLD(cpu_hold),
         .CLK(clk_bus),
         .CE(ce),
         .NMI(host_nmi),
@@ -123,16 +144,17 @@ module gs_top (
         .MD_DREQ(md_dreq)
     );
 
-    wire is_rom = (gs_mem_addr < 32768);
     // the upper 512 KB belong to the RAM of DivMMC
     wire reserved = reserve_upper & (gs_mem_addr[20:19] == 2'b11);
 
-    assign sram_a = (loader_act) ? loader_ram_a : gs_mem_addr;
-    assign gs_mem_din = (loader_act | reserved) ? 8'hFF : sram_di;
-    assign sram_do = (loader_act) ? loader_ram_do : gs_mem_dout;
-    assign sram_oe = (loader_act) ? 1'b1 : (~gs_mem_wr_n & ~reserved);
-    assign sram_wr_n = (loader_act) ? ~loader_ram_wr :
-    (is_rom | reserved) ? 1'b1 : gs_mem_wr_n;
-    assign sram_rd_n = (loader_act | reserved) ? 1'b1 : gs_mem_rd_n;
+    // the write protection of the GS ROM (RAMRO) is done in gs
+    wire ld = loader_act | reload_act;
+    assign sram_a = ld ? loader_ram_a : gs_mem_addr;
+    assign gs_mem_din = (ld | reserved) ? 8'hFF : sram_di;
+    assign sram_do = ld ? loader_ram_do : gs_mem_dout;
+    assign sram_oe = ld ? 1'b1 : (~gs_mem_wr_n & ~reserved);
+    assign sram_wr_n = ld ? ~loader_ram_wr :
+                       reserved ? 1'b1 : gs_mem_wr_n;
+    assign sram_rd_n = (ld | reserved) ? 1'b1 : gs_mem_rd_n;
 
 endmodule

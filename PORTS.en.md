@@ -134,13 +134,15 @@ Bits 7..5 are compared exactly:
 - `010` (`#40`) - NMI to the GS CPU
 - `001` (`#20`) - the NeoGS LED, ignored
 
+A reset of the host (the RESET line of the bus, the RESET button on the board) does not reset the GS and the MP3 decoder. So an MP3 started by a NeoGS player keeps playing while the host reboots into its own ROM. The GS is reset by port `#33`, power-on and the internal reset of the Megabuzz (register `#F9`, the configurator). A player that feeds the decoder itself through `#F5`/`#F6` may play out what is left in the FIFO after a host reset.
+
 ### 🔌 GS CPU ports
 
 The ports are decoded by `A5..A0`. Ports that do not exist read as `#FF`.
 
 - `#0F` `GSCFG0` - read and write, reads back what was written. After a reset `#23`: the NeoGS loader leaves it so, and the Megabuzz starts the GS ROM right away.
   - bit 0 `NOROM`: `1` - RAM in all windows; `0` - "flash" in the windows `#0000`, `#8000`, `#C000`. There is no NeoGS flash, a copy of the GS ROM stands in for it, writes there are ignored.
-  - bit 1 `RAMRO`: only stored. Pages 0-1 (the GS ROM) are always write-protected.
+  - bit 1 `RAMRO`: with `NOROM=1`, `1` write-protects pages 0-1 (absolute `#0000`-`#7FFF`, the GS ROM), `0` allows writes. If the ROM was changed this way, the next GS reset (`#33`, a Megabuzz reset) copies the ROM from flash again, as on NeoGS. This takes ~0.12 s; the GS CPU stays in reset meanwhile, the ports `#BB`/`#B3` keep working.
   - bit 3 `EXPAG`: extended paging. `MPAG` (`#00`) sets the 16 KB page of `#8000`, `MPAGEX` (`#10`) the one of `#C000`; the page number is the byte rotated by one bit (`axxxxxxx` → `xxxxxxxa`).
   - bits 5..4 (Z80 clock), bit 2 (`8CHANS`), bit 6 (`PAN4CH`), bit 7 (`INV7B`): only stored. The Z80 always runs at 14 MHz, there are 4 channels.
 - `#10` `MPAGEX` - write, the page of `#C000` in the `EXPAG` mode.

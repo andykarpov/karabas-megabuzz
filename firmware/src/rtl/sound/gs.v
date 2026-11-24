@@ -2,9 +2,10 @@
 
 // General Sound with the NeoGS extensions of the GS CPU side
 // (NeoGS GS_info v0.4.2.2, the standard NeoGS FPGA firmware):
-//   #0F GSCFG0  reads back what was written; NOROM and EXPAG work, RAMRO,
-//               the clock bits, 8CHANS, PAN4CH, INV7B are only stored
-//               (pages 0-1 hold the GS ROM and stay write-protected)
+//   #0F GSCFG0  reads back what was written; NOROM, RAMRO and EXPAG work,
+//               the clock bits, 8CHANS, PAN4CH, INV7B are only stored.
+//               Pages 0-1 hold the GS ROM: writable with NOROM = 1 and RAMRO = 0,
+//               as on NeoGS (gs_top reloads the ROM from flash on the next reset)
 //   #10 MPAGEX  page of #C000 in the extended paging mode
 //   #11 SCTRL   _SDNCS, _MPNCS, _MPXRS, _MPHLF, _MDHLF (write: d7 = value, d5..d0 = mask)
 //   #12 SSTAT   _MPDRQ, _SDDET, _SDWP, _MCRDY
@@ -16,6 +17,7 @@
 module gs(
     input wire         CLK,
     input wire         RESET,
+    input wire         HOLD,    // the CPU side stays in reset, the host side runs (GS ROM reload)
     input wire         CE,
     input wire         NMI,     // NMI request from the host (#33)
 
@@ -90,6 +92,9 @@ module gs(
     // reset value of SCTRL: _SDNCS = 1, _MPNCS = 1, _MPXRS = 0, _MPHLF = 1
     localparam SCTRL_RESET  = 6'h0B;
 
+    // the CPU and its ports; the flags and the registers written by the host follow RESET only
+    wire cpu_reset = RESET | HOLD;
+
     // cs from host
     wire gs_sel = IOREQ & (A[7:4] == 4'hB && A[2:0] == 3'h3);
     wire gs_cs_n = ~gs_sel;
@@ -116,7 +121,7 @@ module gs(
     wire cpu_wait_n;
     reg int_n;
     t80s #(.Mode(0), .T2Write(1), .IOWait(1)) z80_unit (
-        .RESET_n (~RESET),
+        .RESET_n (~cpu_reset),
         .CLK     (CLK),
         .CEN     (CE),
         .WAIT_n  (cpu_wait_n),
@@ -140,7 +145,7 @@ module gs(
     reg [10:0] cnt;
     wire [10:0] cnt_next = cnt + INT_STEP;
     always @(posedge CLK) begin
-        if (RESET) begin
+        if (cpu_reset) begin
             cnt <= 0;
             int_n <= 1;
         end else if (CE) begin
@@ -177,6 +182,7 @@ module gs(
     // on the same edge as the falling /WE
     // NOROM = 0: windows 0, 2 and 3 read the "flash". There is no NeoGS flash here,
     // the GS ROM (pages 0-1) stands in for it and writes are ignored.
+    // NOROM = 1: RAMRO write-protects pages 0-1 (absolute #0000-#7FFF, the GS ROM).
     wire flash_win = ~norom & (cpu_a_bus[15] | ~cpu_a_bus[14]);
     wire [6:0] mem = (cpu_a_bus[15:14] == 2'b00) ? 7'd0 :                     // #0000 - #3FFF
                      (cpu_a_bus[15:14] == 2'b01) ? 7'd3 :                     // #4000 - #7FFF: page 3, the upper half of MPAG 1, as on GS and NeoGS
@@ -254,7 +260,7 @@ module gs(
     always @(posedge CLK) begin
         MC_WR <= 0;
         MD_WR <= 0;
-        if (RESET) begin
+        if (cpu_reset) begin
             io_done <= 0;
             SD_TX <= 8'hFF;
             sd_rd_latch <= 8'hFF;
@@ -288,7 +294,7 @@ module gs(
     // порты звука
     always @(posedge CLK)
     begin
-        if (RESET) begin
+        if (cpu_reset) begin
             port_xx00_reg <= 0;
             port_xx03_reg <= 0;
             gscfg0 <= GSCFG0_RESET;
@@ -358,7 +364,7 @@ module gs(
 
     assign MA = {mem, cpu_a_bus[13:0]};
     assign MDO = cpu_do_bus;
-    assign MWE_n = cpu_wr_n || cpu_mreq_n || flash_win || ~(mem[6] || mem[5] || mem[4] || mem[3] || mem[2] || mem[1]);
+    assign MWE_n = cpu_wr_n || cpu_mreq_n || flash_win || (gscfg0[1] && mem[6:1] == 6'd0);
     assign MRD_n = cpu_rd_n || cpu_mreq_n;
     assign MRFSH_n = cpu_rfsh_n;
     assign OE = host_rd;

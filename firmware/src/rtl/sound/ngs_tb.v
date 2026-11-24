@@ -73,6 +73,7 @@ module ngs_tb;
 
     reg reset = 1;
     reg gs_reset_in = 0;
+    reg gs_hold = 0;
     wire gs_reset = reset | gs_reset_in;
 
     integer errors = 0;
@@ -101,7 +102,7 @@ module ngs_tb;
     wire [7:0] gs_host_do;
 
     gs gs_inst(
-        .CLK(clk_bus), .RESET(gs_reset), .CE(ce), .NMI(1'b0),
+        .CLK(clk_bus), .RESET(gs_reset), .HOLD(gs_hold), .CE(ce), .NMI(1'b0),
         .A(host_a), .DI(host_d), .DO(gs_host_do), .OE(), .WR_n(host_wr_n), .RD_n(host_rd_n), .IOREQ(host_ioreq),
         .MA(ma), .MDI(8'h5A), .MDO(mdo), .MRFSH_n(), .MWE_n(mwe_n), .MRD_n(mrd_n),
         .SD_CS_n(gs_sd_cs_n), .SD_REQ_T(gs_sd_req_t), .SD_TX(gs_sd_tx), .SD_ACK_T(gs_sd_ack_t), .SD_RX(gs_sd_rx), .SD_DET_n(sd_det_n),
@@ -322,6 +323,11 @@ module ngs_tb;
     reg [15:0] w;
     integer sd_before, waits_seen;
 
+    // a write strobe of GS reached the memory
+    reg saw_we = 0;
+    always @(posedge clk_bus) if (!mwe_n) saw_we <= 1;
+    task gs_wr_mem(input [15:0] adr); begin saw_we = 0; gs_inst.z80_unit.mem_wr(adr, 8'hA5); end endtask
+
     initial begin
         $dumpfile("ngs_tb.vcd");
         $dumpvars(0, ngs_tb);
@@ -357,6 +363,30 @@ module ngs_tb;
         gs_inst.z80_unit.mem_rd(16'h4000, q); check(ma[20:14] == 7'd3, "NOROM=0: #4000 stays RAM (page 3)");
         gs_out(8'h0F, 8'h23);
         gs_out(8'h00, 8'h00);
+
+        // -------- RAMRO: pages 0-1 (the GS ROM) are written only with NOROM = 1, RAMRO = 0
+        gs_wr_mem(16'h0100); check(!saw_we, "RAMRO=1: #0100 write-protected");
+        gs_wr_mem(16'h8000); check(!saw_we, "RAMRO=1: #8000 (page 0) write-protected");
+        gs_wr_mem(16'h4000); check(saw_we && ma[20:14] == 7'd3, "RAMRO=1: #4000 (page 3) written");
+        gs_out(8'h0F, 8'h21);                  // NOROM, RAMRO = 0
+        gs_wr_mem(16'h0100); check(saw_we && ma[20:14] == 7'd0, "RAMRO=0: #0100 written");
+        gs_wr_mem(16'hC000); check(saw_we && ma[20:14] == 7'd1, "RAMRO=0: #C000 (page 1) written");
+        gs_out(8'h0F, 8'h20);                  // NOROM = 0: the "flash" stays read-only
+        gs_wr_mem(16'h0100); check(!saw_we, "NOROM=0: #0100 not written");
+        gs_wr_mem(16'h4000); check(saw_we, "NOROM=0: #4000 written");
+        gs_out(8'h0F, 8'h23);
+
+        // -------- HOLD (reload of the GS ROM): the CPU side is reset, the host side keeps its flags
+        gs_out(8'h0F, 8'h2B);
+        gs_hold = 1;
+        repeat (4) @(posedge clk_bus);
+        host_wr_b3(8'h3C);
+        repeat (4) @(posedge clk_bus);
+        gs_hold = 0;
+        repeat (4) @(posedge clk_bus);
+        gs_in(8'h0F, q);  check(q == 8'h23, "HOLD resets GSCFG0");
+        gs_in(8'h04, q);  check(q[7] == 1'b1, "host write during HOLD sets the data bit");
+        gs_in(8'h02, q);  check(q == 8'h3C, "host data written during HOLD");
 
         // -------- SD: GS alone
         sd_before = sd_bytes;
