@@ -358,6 +358,12 @@ module karabas_megabuzz(
 
     resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(ext_reset || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
 
+    // General Sound and the MP3 path do not follow the reset of the host (its RESET line and the reset button):
+    // a NeoGS player can leave an MP3 playing in the background, the host resets into its own ROM, and the
+    // NeoGS software resets the GS through #33 anyway. Power-on and the internal reset of the Megabuzz still reset them.
+    wire reset_gs;
+    resetter resetter_gs(.clk(clk_bus), .areset(areset), .reset_in(poweron_reset || soft_reset), .reset_out(reset_gs), .reset_short());
+
     assign midi_reset_n = ~reset;
 
     // bus_iorq_n is useless on zxevo :(
@@ -412,6 +418,7 @@ module karabas_megabuzz(
     wire [20:0] loader_ram_a;
     wire [7:0] loader_ram_do;
     wire loader_act, loader_ram_wr;
+    wire gs_rom_reload, gs_reload_act, loader_ram_hold;   // reload of a GS ROM changed by NeoGS software
     wire [15:0] cfg_byte;
     reg [15:0] new_cfg_byte = 16'hFFFF;
     reg cfg_write = 0;
@@ -451,7 +458,11 @@ module karabas_megabuzz(
         .NEW_CFG_WR       (cfg_write),
 
         .LOADER_ACTIVE    (loader_act),
-        .LOADER_RESET     (loader_reset)
+        .LOADER_RESET     (loader_reset),
+
+        .GS_RELOAD        (gs_rom_reload),
+        .GS_RELOAD_ACT    (gs_reload_act),
+        .RAM_HOLD         (loader_ram_hold)
     );
 
     // ------- i2s DAC --------------
@@ -637,6 +648,7 @@ module karabas_megabuzz(
     wire [20:0] gs_sram_a;
     wire gs_sram_oe, gs_sram_wr_n, gs_sram_rd_n;
     wire gs_hold, mmc_wait, mmc_reserve;
+    assign loader_ram_hold = gs_hold;  // the reload of the GS ROM goes through the SRAM arbiter like GS
 `ifdef MMC_ON_GS_SRAM
     wire mmc_req, mmc_we;
     wire [16:13] mmc_page;
@@ -704,7 +716,7 @@ module karabas_megabuzz(
     gs_top gs_inst(
         .clk_bus          (clk_bus),
         .ce              (ce_14m & ~gs_hold),
-        .reset            (reset),
+        .reset            (reset_gs),
         .host_reset       (gs33_rst_cnt != 0),
         .host_nmi         (gs33_nmi_cnt != 0),
         .gs_reset_out     (gs_reset_out),
@@ -731,6 +743,8 @@ module karabas_megabuzz(
         .loader_ram_a     (loader_ram_a),
         .loader_ram_do    (loader_ram_do),
         .loader_ram_wr    (loader_ram_wr),
+        .rom_reload       (gs_rom_reload),
+        .reload_act       (gs_reload_act),
 
         .sd_cs_n          (gs_sd_cs_n),
         .sd_req_t         (gs_sd_req_t),
@@ -810,7 +824,7 @@ module karabas_megabuzz(
     rv_vs1053 rv_vs1053_inst(
         .clk_bus          (clk_bus),
         .clk_cpu          (clk_cpu),
-        .reset            (reset | vs_use_chip),
+        .reset            (reset_gs | vs_use_chip),
         .rom_busy         (rv_rom_busy),
         .rom_a            (rv_rom_a),
         .rom_do           (rv_rom_do),
@@ -892,7 +906,7 @@ module karabas_megabuzz(
         .volume_ext       (rv_volume),
 `endif
         .clk              (clk_bus),
-        .reset            (reset),
+        .reset            (reset_gs),
 
         .vs_sclk          (vs_sclk),
         .vs_mosi          (vs_mosi),
@@ -939,7 +953,7 @@ module karabas_megabuzz(
     wire mute;
     audio_mute audio_mute(
         .clk              (clk_bus),
-        .on               (reset | (vs_use_chip & ~vs_reset_n)), // the chip stays in reset while neorv32 plays
+        .on               (reset_gs | (vs_use_chip & ~vs_reset_n)), // the chip stays in reset while neorv32 plays; not on a host reset (background MP3)
         .mute             (mute)
     );
 
@@ -1278,7 +1292,7 @@ module karabas_megabuzz(
     (ioreq_rd & port_zxuno_data & reg_vs) ? vs_bus_do : // VS1053 status
     (ioreq_rd & port_zxuno_data & reg_mb_cfg) ? ((cfg_addr == 0) ? cfg_byte[7:0] : cfg_byte[15:8]) : // Megabuzz CFG byte
     (ioreq_rd & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
-    (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | reset} : // Megabuzz CTL status (flash busy)
+    (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | gs_reload_act | reset} : // Megabuzz CTL status (flash busy)
     (ioreq_rd & port_zxuno_data & reg_mb_id) ? board_id : // Megabuzz board id
     (ioreq_rd & port_zxuno_data & reg_mb_coreid) ? coreid_char : // Megabuzz firmware id
     (ioreq_rd & port_fffd & !cfg_rom_active) ? ts_do : // TS
