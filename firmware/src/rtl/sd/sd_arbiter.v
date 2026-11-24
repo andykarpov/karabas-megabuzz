@@ -59,8 +59,11 @@ module sd_arbiter #(
     reg owner_gs;
 
     // ------------------------------------------------------------- GS SPI master
-    // SPI mode 0, SCK = clk / 10 (14 MHz): a byte takes 80 clocks (0.57 us),
-    // well within the 16 Z80 clocks NeoGS allows between exchanges
+    // SPI mode 0, SCK = clk / 12 (11.7 MHz, as zc_spi): a byte takes 96 clocks
+    // (0.69 us), within the 16 Z80 clocks NeoGS allows between exchanges.
+    // MISO is sampled at the end of the high phase, as zc_spi does: the card
+    // drives it after the falling edge, and sampling at the rising edge left
+    // only 36 ns for the pads, the board and the card's output delay.
     reg       gs_busy;
     reg [3:0] ph;
     reg [2:0] bitn;
@@ -85,20 +88,20 @@ module sd_arbiter #(
                 bitn    <= 0;
             end
         end else begin
-            ph <= (ph == 4'd9) ? 4'd0 : ph + 4'd1;
-            if (ph == 4'd4) begin
+            ph <= (ph == 4'd11) ? 4'd0 : ph + 4'd1;
+            if (ph == 4'd5) begin
                 gs_sclk <= 1;
-                sh <= {sh[6:0], sd_miso};
-            end else if (ph == 4'd9) begin
+            end else if (ph == 4'd11) begin
                 gs_sclk <= 0;
+                sh <= {sh[6:0], sd_miso};
                 bitn <= bitn + 3'd1;
                 if (bitn == 3'd7) begin
                     gs_busy  <= 0;
-                    gs_rx    <= sh;
+                    gs_rx    <= {sh[6:0], sd_miso};
                     gs_ack_t <= gs_req_s[1];
                     gs_mosi  <= 1;
                 end else begin
-                    gs_mosi <= sh[7];
+                    gs_mosi <= sh[6];
                 end
             end
         end

@@ -87,6 +87,9 @@ architecture rtl of flash is
     signal next_state : machine := init; -- state to return after some operations
 
     signal is_busy  : std_logic := '1';
+    -- after the release from power-down (ABh) a flash needs tRES1 (3 us on Winbond, up to 30 us
+    -- on some others) before the next command: 4096 clocks, ~146 us at 28 MHz
+    signal res_wait : std_logic_vector(11 downto 0) := (others => '1');
     signal is_ready : std_logic := '0';
 
 begin
@@ -140,6 +143,7 @@ begin
             prev_wr_n     <= '1';
             prev_er_n     <= '1';
             spi_busy_prev <= '0';
+            res_wait      <= (others => '1');
 
         elsif CLK'event and CLK = '1' then
 
@@ -157,8 +161,12 @@ begin
                         when 1 =>
                             spi_ena <= '0';
                         when 2 =>
-                            count := 0;
-                            state <= idle;
+                            if (res_wait /= x"000") then
+                                res_wait <= res_wait - 1;
+                            else
+                                count := 0;
+                                state <= idle;
+                            end if;
                         when others => null;
                     end case;
 

@@ -121,6 +121,9 @@ module ngs_tb;
 `else
     localparam USE_CHIP = 1'b1;
 `endif
+    // neorv32 status as rv_vs1053 gives it: the last header and the seconds decoded
+    reg [31:0] dec_hdat = 32'hFFFB9064;
+    reg [15:0] dec_time = 16'd42;
 
     ngs_mp3 ngs_mp3_inst(
         .clk(clk_bus), .reset(gs_reset), .present(1'b1), .use_chip(USE_CHIP),
@@ -130,7 +133,8 @@ module ngs_tb;
         .ext_fifo_wr(ext_fifo_wr), .ext_fifo_din(ext_fifo_din), .ext_fifo_ack(ext_fifo_ack), .ext_fifo_room(ext_fifo_room),
         .ext_soft_reset(ext_soft_reset), .ext_hard_reset(ext_hard_reset), .ext_vol_wr(ext_vol_wr), .ext_vol(ext_vol),
         .cur_volume(cur_volume), .sci_req(sci_req), .sci_rnw(sci_rnw), .sci_addr(sci_addr), .sci_wdata(sci_wdata),
-        .sci_busy(sci_busy), .sci_rdata(sci_rdata)
+        .sci_busy(sci_busy), .sci_rdata(sci_rdata),
+        .dec_hdat(dec_hdat), .dec_time(dec_time)
     );
 
     wire vs_sclk, vs_mosi, vs_cs_n, vs_dcs_n, vs_reset_n;
@@ -251,9 +255,12 @@ module ngs_tb;
             end
         end
     end
+    // MISO comes SD_TODLY after the falling edge: the card's output delay plus the
+    // FPGA pads and the board (sampling at the rising edge of a 14 MHz SCK failed on hw)
+    localparam SD_TODLY = 40;
     always @(negedge sd_sclk or negedge sd_cs_n) begin
         if (!sd_cs_n) begin
-            sd_miso <= sd_tx_sh[7 - sd_bits];
+            sd_miso <= #(SD_TODLY) sd_tx_sh[7 - sd_bits];
         end
     end
     always @(posedge sd_cs_n) sd_bits = 0;
@@ -458,6 +465,16 @@ module ngs_tb;
         repeat (2000) @(posedge clk_bus);
         check(cur_volume == 8'h10, "SCI VOL: the louder channel");
         sci_read(8'h00, w);  check(w[11] == 1'b1, "MODE reads with SM_SDINEW");
+`ifdef RV32
+        // decoder status from neorv32; a write to DECODE_TIME sets it
+        sci_read(8'h09, w);  check(w == 16'hFFFB, "SCI HDAT1 = header bits 31:16");
+        sci_read(8'h08, w);  check(w == 16'h9064, "SCI HDAT0 = header bits 15:0");
+        sci_read(8'h04, w);  check(w == 16'd42, "SCI DECODE_TIME = seconds decoded");
+        sci_write(8'h04, 16'h0000);
+        dec_time = 16'd45;
+        sci_read(8'h04, w);  check(w == 16'd3, "DECODE_TIME counts from the value written");
+        sci_read(8'h00, w);
+`endif
         sci_write(8'h00, w | 16'h0004);        // soft reset
         sci_write(8'h00, w & ~16'h0004);
 `ifndef RV32

@@ -63,9 +63,9 @@
 
 `openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f work16/karabas_megabuzz_a3.bit`
 
-5) Прошиваем 32kB образ ПЗУ GS по адресу 0x100000 (актуально для revA1 и новее, опционально для revA):
+5) Прошиваем 32kB образ ПЗУ GS по адресу 0x100000 (актуально для revA1 и новее, опционально для revA). `gs105b_mb.rom` - это ПЗУ GS 1.05b без долгого теста памяти шаблоном при старте (`rtl/sound/gs_rom_patch.py`): GS готов примерно через 1 с вместо 9 с:
 
-`openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f -o 0x100000 ../rtl/sound/gs105b.rom`
+`openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f -o 0x100000 ../rtl/sound/gs105b_mb.rom`
 
 6) Прошиваем 256 байт конфига по адресу 0x1F0000 (`cfg1.rom`, или `cfg2.rom` - без DivMMC; актуально для revA2 и новее, опционально для revA и revA1):
 
@@ -100,7 +100,7 @@
 
 Если влом юзать makefile, можно руками, пример прошивки битстрима для SLX25:
 
-`sudo openocd -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program work25/karabas_megabuzz_a2.bin 0; jtagspi_program ../rtl/sound/gs105b.rom 0x100000; jtagspi_program cfg1.rom 0x1F0000; xc6s_program xc6s.tap; exit"`
+`sudo openocd -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program work25/karabas_megabuzz_a2.bin 0; jtagspi_program ../rtl/sound/gs105b_mb.rom 0x100000; jtagspi_program cfg1.rom 0x1F0000; xc6s_program xc6s.tap; exit"`
 
 После программирования плата запустится.
 Покажет индикацию уровня сигнала от максимума до минимума.
