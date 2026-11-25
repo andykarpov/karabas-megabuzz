@@ -138,7 +138,8 @@ begin
 
             prev_new_cfg_wr <= NEW_CFG_WR;
             -- a config write that comes during a reload of the GS ROM waits for its end
-            if (NEW_CFG_WR = '1') then
+            -- NEW_CFG_WR stays 1 for the whole host I/O cycle: the rising edge only, or the config is written twice
+            if (NEW_CFG_WR = '1' and prev_new_cfg_wr = '0') then
                 cfg_wr_pend <= '1';
             end if;
 

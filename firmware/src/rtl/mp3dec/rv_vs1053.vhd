@@ -115,6 +115,7 @@ architecture rtl of rv_vs1053 is
   signal nco_acc  : unsigned(32 downto 0);
   signal pcm_lr   : std_ulogic_vector(31 downto 0);
   signal play_tgl : std_ulogic;
+  signal idle_cnt : unsigned(22 downto 0);   -- clk_cpu clocks with the PCM ring empty
   signal play_sync : std_ulogic_vector(2 downto 0) := "000";
 
   -- FIFO byte bridge --
@@ -275,6 +276,7 @@ begin
         byte_prev <= '0';
         play_tgl <= '0';
         pcm_lr <= (others => '0');
+        idle_cnt <= (others => '0');
         st_hdat <= (others => '0');
         st_time <= (others => '0');
       else
@@ -321,6 +323,17 @@ begin
         if (nco_acc(32) = '1') and (rp /= wp) then
           pcm_lr <= play_q;
           rp <= rp + 1;
+          play_tgl <= not play_tgl;
+        end if;
+
+        -- the ring empty for 2^22 clocks (60 ms): the player stopped feeding (exit, pause, host reset),
+        -- the last sample would stay on the output as DC and light the VU meters; output 0 instead
+        if (rp /= wp) then
+          idle_cnt <= (others => '0');
+        elsif (idle_cnt(22) = '0') then
+          idle_cnt <= idle_cnt + 1;
+        elsif (pcm_lr /= x"00000000") then
+          pcm_lr <= (others => '0');
           play_tgl <= not play_tgl;
         end if;
       end if;

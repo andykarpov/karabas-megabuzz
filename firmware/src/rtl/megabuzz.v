@@ -358,11 +358,21 @@ module karabas_megabuzz(
 
     resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(ext_reset || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
 
-    // General Sound and the MP3 path do not follow the reset of the host (its RESET line and the reset button):
-    // a NeoGS player can leave an MP3 playing in the background, the host resets into its own ROM, and the
-    // NeoGS software resets the GS through #33 anyway. Power-on and the internal reset of the Megabuzz still reset them.
+    // General Sound and the MP3 path follow the host reset (the RESET line, the reset button), as a plain GS
+    // and NeoGS with its reset jumper do: classic GS software has no #33 and expects a clean GS. But while an
+    // MP3 plays (the decoder took a byte from its FIFO in the last 0.6 s) a host reset leaves them alone, as
+    // NeoGS without the jumper does: an MP3 started by a NeoGS player plays on while the host reboots.
+    // Power-on and the internal reset of the Megabuzz always reset them.
+    wire vs_fifo_rd;
+    reg [23:0] mp3_idle = 24'hFFFFFF;
+    always @(posedge clk_bus)
+        if (vs_fifo_rd) mp3_idle <= 24'd0;
+        else if (~&mp3_idle) mp3_idle <= mp3_idle + 24'd1;
+    reg gs_keep = 1'b0;     // taken before the host reset starts: no MP3 data comes while it lasts
+    always @(posedge clk_bus)
+        if (~ext_reset) gs_keep <= ~&mp3_idle;
     wire reset_gs;
-    resetter resetter_gs(.clk(clk_bus), .areset(areset), .reset_in(poweron_reset || soft_reset), .reset_out(reset_gs), .reset_short());
+    resetter resetter_gs(.clk(clk_bus), .areset(areset), .reset_in((ext_reset & ~gs_keep) || poweron_reset || soft_reset), .reset_out(reset_gs), .reset_short());
 
     assign midi_reset_n = ~reset;
 
@@ -937,7 +947,8 @@ module karabas_megabuzz(
         .sci_addr         (sci_addr),
         .sci_wdata        (sci_wdata),
         .sci_busy         (sci_busy),
-        .sci_rdata        (sci_rdata)
+        .sci_rdata        (sci_rdata),
+        .fifo_rd          (vs_fifo_rd)
     );
 
     // midi activity detector
@@ -953,7 +964,7 @@ module karabas_megabuzz(
     wire mute;
     audio_mute audio_mute(
         .clk              (clk_bus),
-        .on               (reset_gs | (vs_use_chip & ~vs_reset_n)), // the chip stays in reset while neorv32 plays; not on a host reset (background MP3)
+        .on               (reset_gs | (vs_use_chip & ~vs_reset_n)), // the chip stays in reset while neorv32 plays
         .mute             (mute)
     );
 
