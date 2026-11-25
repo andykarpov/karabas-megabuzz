@@ -358,12 +358,6 @@ module karabas_megabuzz(
 
     resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(ext_reset || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
 
-    // General Sound and the MP3 path do not follow the reset of the host (its RESET line and the reset button):
-    // a NeoGS player can leave an MP3 playing in the background, the host resets into its own ROM, and the
-    // NeoGS software resets the GS through #33 anyway. Power-on and the internal reset of the Megabuzz still reset them.
-    wire reset_gs;
-    resetter resetter_gs(.clk(clk_bus), .areset(areset), .reset_in(poweron_reset || soft_reset), .reset_out(reset_gs), .reset_short());
-
     assign midi_reset_n = ~reset;
 
     // bus_iorq_n is useless on zxevo :(
@@ -716,7 +710,7 @@ module karabas_megabuzz(
     gs_top gs_inst(
         .clk_bus          (clk_bus),
         .ce              (ce_14m & ~gs_hold),
-        .reset            (reset_gs),
+        .reset            (reset),
         .host_reset       (gs33_rst_cnt != 0),
         .host_nmi         (gs33_nmi_cnt != 0),
         .gs_reset_out     (gs_reset_out),
@@ -824,7 +818,7 @@ module karabas_megabuzz(
     rv_vs1053 rv_vs1053_inst(
         .clk_bus          (clk_bus),
         .clk_cpu          (clk_cpu),
-        .reset            (reset_gs | vs_use_chip),
+        .reset            (reset | vs_use_chip),
         .rom_busy         (rv_rom_busy),
         .rom_a            (rv_rom_a),
         .rom_do           (rv_rom_do),
@@ -906,7 +900,7 @@ module karabas_megabuzz(
         .volume_ext       (rv_volume),
 `endif
         .clk              (clk_bus),
-        .reset            (reset_gs),
+        .reset            (reset),
 
         .vs_sclk          (vs_sclk),
         .vs_mosi          (vs_mosi),
@@ -953,7 +947,7 @@ module karabas_megabuzz(
     wire mute;
     audio_mute audio_mute(
         .clk              (clk_bus),
-        .on               (reset_gs | (vs_use_chip & ~vs_reset_n)), // the chip stays in reset while neorv32 plays; not on a host reset (background MP3)
+        .on               (reset | (vs_use_chip & ~vs_reset_n)), // the chip stays in reset while neorv32 plays
         .mute             (mute)
     );
 
