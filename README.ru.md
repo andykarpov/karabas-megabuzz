@@ -12,7 +12,7 @@
 ### Характеристики
 
 * Turbosound FM
-* General Sound 2 МБ (1.5 МБ на Rev.A1 при включённом DivMMC), с портами NeoGS для MP3 и SD-карты
+* General Sound 2 МБ (1.5 МБ на Rev.A1 при включённом DivMMC)
 * OPL3 на YMF-262-M
 * MIDI на Dream SAM2695
 * SAA1099
@@ -83,10 +83,6 @@
 * Rev.A3 на XC6SLX25: выбирается опцией `MP3 on RV32` в конфигураторе, если она выключена — чип VS1053.
 * Rev.A3 на XC6SLX16: чип VS1053.
 * Остальные платы на XC6SLX16: MP3 нет, декодер там не помещается.
-
-#### NeoGS
-
-У General Sound есть и порты NeoGS для MP3 и SD-карты на стороне его процессора, поэтому работают и NeoGS-плееры (Neo Player Light и другие). Они играют через тот же декодер, SD-карта общая с Z-Controller/DivMMC. Подробности в [PORTS.md](PORTS.md#-порты-neogs).
 
 ### Настройки
 
@@ -166,10 +162,10 @@
 
 | Ревизия платы | FPGA XC6SLX16 | FPGA XC6SLX25 |
 | :--- | :--- | :--- |
-| **Rev.A** | • [(Полный образ флешки)](firmware/src/syn/work16/karabas_megabuzz_full.bin)<br>• [(Bitstream)](firmware/src/syn/work16/karabas_megabuzz.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b_mb.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom) | • [(Полный образ флешки)](firmware/src/syn/work25/karabas_megabuzz_full.bin)<br>• [(Bitstream)](firmware/src/syn/work25/karabas_megabuzz.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b_mb.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom)<br>• [(MP3 firmware)](firmware/src/syn/mp3dec.bin) |
-| **Rev.A1** | • [(Полный образ флешки)](firmware/src/syn/work16/karabas_megabuzz_a1_full.bin)<br>• [(Bitstream)](firmware/src/syn/work16/karabas_megabuzz_a1.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b_mb.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom) | • [(Полный образ флешки)](firmware/src/syn/work25/karabas_megabuzz_a1_full.bin)<br>• [(Bitstream)](firmware/src/syn/work25/karabas_megabuzz_a1.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b_mb.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom)<br>• [(MP3 firmware)](firmware/src/syn/mp3dec.bin) |
-| **Rev.A2** | • [(Полный образ флешки)](firmware/src/syn/work16/karabas_megabuzz_a2_full.bin)<br>• [(Полный образ флешки без DivMMC)](firmware/src/syn/work16/karabas_megabuzz_a2_nommc_full.bin)<br>• [(Bitstream)](firmware/src/syn/work16/karabas_megabuzz_a2.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b_mb.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom) | • [(Полный образ флешки)](firmware/src/syn/work25/karabas_megabuzz_a2_full.bin)<br>• [(Полный образ флешки без DivMMC)](firmware/src/syn/work25/karabas_megabuzz_a2_nommc_full.bin)<br>• [(Bitstream)](firmware/src/syn/work25/karabas_megabuzz_a2.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b_mb.rom)<br>• [(CFG)](firmware/src/syn/cfg1_a2_rv32.rom)<br>• [(MP3 firmware)](firmware/src/syn/mp3dec.bin) |
-| **Rev.A3** | • [(Полный образ флешки)](firmware/src/syn/work16/karabas_megabuzz_a3_full.bin)<br>• [(Bitstream)](firmware/src/syn/work16/karabas_megabuzz_a3.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b_mb.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom) | • [(Полный образ флешки)](firmware/src/syn/work25/karabas_megabuzz_a3_full.bin)<br>• [(Bitstream)](firmware/src/syn/work25/karabas_megabuzz_a3.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b_mb.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom)<br>• [(MP3 firmware)](firmware/src/syn/mp3dec.bin) |
+| **Rev.A** | • [(Полный образ флешки)](firmware/src/syn/work16/karabas_megabuzz_full.bin)<br>• [(Bitstream)](firmware/src/syn/work16/karabas_megabuzz.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom) | • [(Полный образ флешки)](firmware/src/syn/work25/karabas_megabuzz_full.bin)<br>• [(Bitstream)](firmware/src/syn/work25/karabas_megabuzz.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom)<br>• [(MP3 firmware)](firmware/src/syn/mp3dec.bin) |
+| **Rev.A1** | • [(Полный образ флешки)](firmware/src/syn/work16/karabas_megabuzz_a1_full.bin)<br>• [(Bitstream)](firmware/src/syn/work16/karabas_megabuzz_a1.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom) | • [(Полный образ флешки)](firmware/src/syn/work25/karabas_megabuzz_a1_full.bin)<br>• [(Bitstream)](firmware/src/syn/work25/karabas_megabuzz_a1.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom)<br>• [(MP3 firmware)](firmware/src/syn/mp3dec.bin) |
+| **Rev.A2** | • [(Полный образ флешки)](firmware/src/syn/work16/karabas_megabuzz_a2_full.bin)<br>• [(Полный образ флешки без DivMMC)](firmware/src/syn/work16/karabas_megabuzz_a2_nommc_full.bin)<br>• [(Bitstream)](firmware/src/syn/work16/karabas_megabuzz_a2.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom) | • [(Полный образ флешки)](firmware/src/syn/work25/karabas_megabuzz_a2_full.bin)<br>• [(Полный образ флешки без DivMMC)](firmware/src/syn/work25/karabas_megabuzz_a2_nommc_full.bin)<br>• [(Bitstream)](firmware/src/syn/work25/karabas_megabuzz_a2.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b.rom)<br>• [(CFG)](firmware/src/syn/cfg1_a2_rv32.rom)<br>• [(MP3 firmware)](firmware/src/syn/mp3dec.bin) |
+| **Rev.A3** | • [(Полный образ флешки)](firmware/src/syn/work16/karabas_megabuzz_a3_full.bin)<br>• [(Bitstream)](firmware/src/syn/work16/karabas_megabuzz_a3.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom) | • [(Полный образ флешки)](firmware/src/syn/work25/karabas_megabuzz_a3_full.bin)<br>• [(Bitstream)](firmware/src/syn/work25/karabas_megabuzz_a3.bin)<br>• [(GS ROM)](firmware/src/rtl/sound/gs105b.rom)<br>• [(CFG)](firmware/src/syn/cfg1.rom)<br>• [(MP3 firmware)](firmware/src/syn/mp3dec.bin) |
 
 Разметка флешки: битстрим с `0x000000`, ПЗУ GS с `0x100000`, прошивка MP3 с `0x180000` (только XC6SLX25), настройки с `0x1F0000`.
 

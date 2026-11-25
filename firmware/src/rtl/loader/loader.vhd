@@ -6,8 +6,6 @@
 -- 2. Loader progress indicates via LOADER_ACTIVE=1
 -- 3. At the end, a LOADER_RESET=1 pulse will be triggered to re-boot the host
 -- 4. FSM is also waiting for the NEW_CFG_WR=1 to update the CFG byte from the host
--- 5. GS_RELOAD=1 copies the GS ROM image into RAM once more (GS_RELOAD_ACT=1 meanwhile,
---    LOADER_ACTIVE stays 0, no LOADER_RESET); RAM_HOLD=1 holds a RAM write until it ends
 --
 -- Copyright (c) 2019-2026 Andy Karpov <andy.karpov@gmail.com>
 --
@@ -62,11 +60,7 @@ entity loader is
         RV_WR         : out std_logic;
         RV_BUSY       : out std_logic;
         LOADER_ACTIVE : out std_logic;
-        LOADER_RESET  : out std_logic;
-        -- reload of the GS ROM only
-        GS_RELOAD     : in  std_logic                     := '0';
-        GS_RELOAD_ACT : out std_logic;
-        RAM_HOLD      : in  std_logic                     := '0'
+        LOADER_RESET  : out std_logic
     );
 end loader;
 
@@ -91,9 +85,6 @@ architecture rtl of loader is
 
     signal rv_phase : std_logic := '0';
     signal rv_load  : std_logic := '1';
-
-    signal reload_act  : std_logic := '0';
-    signal cfg_wr_pend : std_logic := '0';
 
     type   machine IS (
         ready,
@@ -130,18 +121,11 @@ begin
             prev_new_cfg_wr <= '0';
             rv_phase        <= '0';
             rv_load         <= '1';
-            reload_act      <= '0';
-            cfg_wr_pend     <= '0';
             RV_WR           <= '0';
             RV_DO           <= (others => '0');
         elsif CLK'event and CLK = '1' then
 
             prev_new_cfg_wr <= NEW_CFG_WR;
-            -- a config write that comes during a reload of the GS ROM waits for its end
-            -- NEW_CFG_WR stays 1 for the whole host I/O cycle: the rising edge only, or the config is written twice
-            if (NEW_CFG_WR = '1' and prev_new_cfg_wr = '0') then
-                cfg_wr_pend <= '1';
-            end if;
 
             case state is
 
@@ -150,11 +134,10 @@ begin
                         state <= ready;
                     elsif (cfg_read = '0') then
                         state <= cmd_read_cfg;
-                    -- the neorv32 image only on the first load (rv_load), a reload copies the GS ROM only
-                    elsif ((rv_phase = '0' or reload_act = '1') and read_cnt < SIZE_TO_READ) or
-                          (rv_phase = '1' and reload_act = '0' and rv_load = '1' and read_cnt < RV_SIZE_TO_READ) then
+                    elsif (rv_phase = '0' and read_cnt < SIZE_TO_READ) or
+                          (rv_phase = '1' and read_cnt < RV_SIZE_TO_READ) then
                         state <= cmd_read;
-                    elsif (rv_phase = '0' and reload_act = '0' and rv_load = '1' and RV_SIZE_TO_READ > 0) then
+                    elsif (rv_phase = '0' and RV_SIZE_TO_READ > 0) then
                         state <= rv_start;
                     else
                         state <= finish;
@@ -212,7 +195,7 @@ begin
                 when do_read =>         -- wait for spi transfer
                     FLASH_RD_N <= '1';
                     if (flash_ready = '1') then
-                        if (rv_phase = '1' and reload_act = '0') then
+                        if (rv_phase = '1') then
                             RV_WR <= '1';
                             RV_DO <= FLASH_DO;
                         else
@@ -225,23 +208,17 @@ begin
                     end if;
 
                 when do_next =>         -- increment address / page
-                    if (RAM_HOLD = '1' and reload_act = '1') then
-                        -- the SRAM is taken by the host (DivMMC on the GS SRAM): the write happens again after it
-                        state <= do_next;
-                    else
-                        RAM_WR   <= '0';    -- end ram write
-                        RV_WR    <= '0';
-                        read_cnt <= read_cnt + 1; -- increment read counter
-                        if (spi_a_bus = X"FF") then -- increment flash page
-                            spi_page_bus <= spi_page_bus + 1;
-                        end if;
-                        spi_a_bus <= spi_a_bus + 1; -- increment flash address 
-                        ram_a_bus <= ram_a_bus + 1; -- increment ram address
-                        state     <= ready;
+                    RAM_WR   <= '0';    -- end ram write
+                    RV_WR    <= '0';
+                    read_cnt <= read_cnt + 1; -- increment read counter
+                    if (spi_a_bus = X"FF") then -- increment flash page
+                        spi_page_bus <= spi_page_bus + 1;
                     end if;
+                    spi_a_bus <= spi_a_bus + 1; -- increment flash address 
+                    ram_a_bus <= ram_a_bus + 1; -- increment ram address
+                    state     <= ready;
 
                 when finish =>          -- finish of reading rom images fro flash to ram
-                    reload_act <= '0';
                     state <= finish2;
 
                 when finish2 =>         -- read all the required data from SPI flash
@@ -249,19 +226,10 @@ begin
                     rv_load    <= '0';
 
                     -- listening for cfg write command
-                    if (NEW_CFG_WR = '1' or cfg_wr_pend = '1') then
-                        cfg_wr_pend <= '0';
+                    if (NEW_CFG_WR = '1') then
                         cfg_cnt    <= (others => '0');
                         state      <= cmd_erase_cfg;
                         loader_act <= '1';
-                    -- the GS ROM once more
-                    elsif (GS_RELOAD = '1') then
-                        reload_act   <= '1';
-                        read_cnt     <= (others => '0');
-                        spi_page_bus <= FLASH_ADDR_START(23 downto 8);
-                        spi_a_bus    <= FLASH_ADDR_START(7 downto 0);
-                        ram_a_bus    <= RAM_ADDR_START;
-                        state        <= ready;
                     end if;
 
                 -- erase block to write a new cfg byte
@@ -333,7 +301,6 @@ begin
     RV_BUSY       <= rv_load;
     LOADER_ACTIVE <= loader_act;
     LOADER_RESET  <= reset_cnt(2);
-    GS_RELOAD_ACT <= reload_act;
     FLASH_A       <= spi_page_bus & spi_a_bus;
     RAM_A         <= ram_a_bus;
 

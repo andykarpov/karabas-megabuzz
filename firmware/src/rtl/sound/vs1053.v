@@ -31,10 +31,7 @@
 // - bit 7:6 - ear speaker (00 - off, 01 - low, 10 - mid, 11 - high)
 // - bit 5:3 - treble boost (000 - off, 111 - max +10.5dB) at 5kHz
 // - bit 2:0 - bass boost (000 - off, 111 - max + 14dB) at 60Hz
-//
-// The NeoGS side (ngs_mp3) has its own way in: a second write port of the
-// FIFO, soft/hard reset and volume requests, and single SCI requests to the
-// chip (served by the controller between data bursts).
+//  
 // ----------------------------------------------------------------------------
 /* verilator lint_off DECLFILENAME */
 module vs1053 (
@@ -57,24 +54,6 @@ module vs1053 (
     input  wire [1:0]  bus_a, // 00 - status, 01 - data, 10 - volume, 11 - effects
     input  wire [7:0]  bus_di,
     output wire [7:0]  bus_do,
-
-    // NeoGS side (ngs_mp3)
-    input  wire        ext_fifo_wr,     // held until ext_fifo_ack
-    input  wire [7:0]  ext_fifo_din,
-    output wire        ext_fifo_ack,
-    output wire        ext_fifo_room,   // at least 32 bytes free
-    input  wire        ext_soft_reset,  // pulses
-    input  wire        ext_hard_reset,
-    input  wire        ext_vol_wr,
-    input  wire [7:0]  ext_vol,
-    output wire [7:0]  cur_volume,
-    output wire        fifo_rd,         // the decoder (chip or neorv32) takes a byte from the FIFO
-    input  wire        sci_req,         // pulse, the chip only (use_chip)
-    input  wire        sci_rnw,
-    input  wire [7:0]  sci_addr,
-    input  wire [15:0] sci_wdata,
-    output wire        sci_busy,
-    output wire [15:0] sci_rdata,
 
     output wire        vs_sclk,
     input  wire        vs_miso,
@@ -108,9 +87,6 @@ module vs1053 (
     wire [7:0]  reg_volume;
     wire [7:0]  reg_effects;
     wire        ctrl_fifo_rd;
-    assign      cur_volume = reg_volume;
-    assign      fifo_rd = fifo_rd_en;
-    assign      ext_fifo_room = !fifo_full && (fifo_count < 12'd4063);
 
 `ifdef RV32
     wire        ctrl_rst = reset | ~use_chip;
@@ -134,13 +110,6 @@ module vs1053 (
         .bus_a(bus_a),
         .bus_di(bus_di),
         .bus_do(bus_do),
-        .ext_fifo_wr(ext_fifo_wr),
-        .ext_fifo_din(ext_fifo_din),
-        .ext_fifo_ack(ext_fifo_ack),
-        .ext_soft_reset(ext_soft_reset),
-        .ext_hard_reset(ext_hard_reset),
-        .ext_vol_wr(ext_vol_wr),
-        .ext_vol(ext_vol),
         .fifo_rd_en(fifo_rd_en),
         .fifo_data_out(fifo_data_out),
         .fifo_empty(fifo_empty),
@@ -161,13 +130,6 @@ module vs1053 (
         .fifo_data_out(fifo_data_out),
         .fifo_empty(fifo_empty),
         .fifo_count(fifo_count),
-        .fifo_full(fifo_full),
-        .sci_req(sci_req),
-        .sci_rnw(sci_rnw),
-        .sci_addr(sci_addr),
-        .sci_wdata(sci_wdata),
-        .sci_busy(sci_busy),
-        .sci_rdata(sci_rdata),
         .spi_start(spi_start),
         .spi_is_data(spi_is_data),
         .spi_rnw(spi_rnw),
@@ -369,14 +331,6 @@ module vs1053_host_interface (
     input  wire [7:0]  bus_di,
     output reg  [7:0]  bus_do,
 
-    input  wire        ext_fifo_wr,
-    input  wire [7:0]  ext_fifo_din,
-    output reg         ext_fifo_ack,
-    input  wire        ext_soft_reset,
-    input  wire        ext_hard_reset,
-    input  wire        ext_vol_wr,
-    input  wire [7:0]  ext_vol,
-
     input  wire        fifo_rd_en,
     output wire [7:0]  fifo_data_out,
     output wire        fifo_empty,
@@ -403,13 +357,12 @@ module vs1053_host_interface (
     // 4096 bytes FIFO
     reg fifo_wr_en;
     reg fifo_clear;
-    reg [7:0] fifo_din;
     fifo #(.DATA_WIDTH(8), .ADDR_WIDTH(12)) fifo(
         .clk(clk),
         .reset(fifo_clear),
         .rd(fifo_rd_en),
         .wr(fifo_wr_en),
-        .din(fifo_din),
+        .din(bus_di),
         .dout(fifo_data_out),
         .full(fifo_full),
         .empty(fifo_empty),
@@ -431,8 +384,6 @@ module vs1053_host_interface (
         if (rst) begin
             fifo_clear <= 1;
             fifo_wr_en <= 0;
-            fifo_din   <= 8'h00;
-            ext_fifo_ack <= 0;
             soft_reset_cmd <= 0;
             hard_reset_cmd <= 0;
             reg_volume     <= DEFAULT_VOLUME;
@@ -442,27 +393,6 @@ module vs1053_host_interface (
             hard_reset_cmd <= 0;
             fifo_wr_en <= 0;
             fifo_clear <= 0;
-            ext_fifo_ack <= 0;
-
-            // NeoGS side: one FIFO byte when the host does not write this clock
-            // (the ack pulse drops the request one clock later, hence ~ext_fifo_ack)
-            if (ext_fifo_wr && !ext_fifo_ack && !(wr_pulse && bus_a == 2'b01)) begin
-                if (!fifo_full) begin
-                    fifo_din     <= ext_fifo_din;
-                    fifo_wr_en   <= 1;
-                    ext_fifo_ack <= 1;
-                end
-            end
-            if (ext_soft_reset) begin
-                soft_reset_cmd <= 1;
-                fifo_clear <= 1;
-            end
-            if (ext_hard_reset) begin
-                hard_reset_cmd <= 1;
-                fifo_clear <= 1;
-            end
-            if (ext_vol_wr)
-                reg_volume <= ext_vol;
 
             if (wr_pulse) begin
                 case (bus_a)
@@ -478,7 +408,6 @@ module vs1053_host_interface (
                     end
                     2'b01: begin // Write data into FIFO
                         if (!fifo_full) begin
-                            fifo_din   <= bus_di;
                             fifo_wr_en <= 1;
                         end
                     end
@@ -508,15 +437,6 @@ module vs1053_controller (
     input  wire [7:0]  fifo_data_out,
     input  wire        fifo_empty,
     input  wire [11:0]  fifo_count,
-    input  wire        fifo_full,
-
-    // single SCI requests of the NeoGS side
-    input  wire        sci_req,
-    input  wire        sci_rnw,
-    input  wire [7:0]  sci_addr,
-    input  wire [15:0] sci_wdata,
-    output reg         sci_busy,
-    output reg  [15:0] sci_rdata,
 
     output reg         spi_start,
     output reg         spi_is_data,
@@ -598,13 +518,7 @@ module vs1053_controller (
     ST_WR_VOL          = 5'd21,
     ST_WAIT_WR_VOL     = 5'd22,
     ST_WR_AMODE        = 5'd23,
-    ST_WAIT_WR_AMODE   = 5'd24,
-    ST_SCI             = 5'd25,
-    ST_WAIT_SCI        = 5'd26;
-
-    reg        sci_rnw_r;
-    reg [7:0]  sci_addr_r;
-    reg [15:0] sci_wdata_r;
+    ST_WAIT_WR_AMODE   = 5'd24;
 
     always @(posedge clk or posedge rst) begin
         if (rst | hard_reset_cmd | soft_reset_cmd) begin
@@ -642,11 +556,6 @@ module vs1053_controller (
             cs_delay_counter <= 0;
             zero_cnt      <= 0;
             init_done     <= 0;
-            sci_busy      <= 0;
-            sci_rdata     <= 16'h0000;
-            sci_rnw_r     <= 0;
-            sci_addr_r    <= 0;
-            sci_wdata_r   <= 0;
         end else if (soft_reset_cmd) begin
             state         <= ST_SW_RESET;
             vs_reset_n    <= 1; // do not do any hw resets to avoid clicks
@@ -662,17 +571,9 @@ module vs1053_controller (
             cs_delay_counter <= 0;
             zero_cnt      <= 0;
             init_done     <= 0;
-            sci_busy      <= 0;
         end else begin
             fifo_rd_en <= 0;
             spi_start  <= 0;
-
-            if (sci_req && !sci_busy) begin
-                sci_busy    <= 1;
-                sci_rnw_r   <= sci_rnw;
-                sci_addr_r  <= sci_addr;
-                sci_wdata_r <= sci_wdata;
-            end
 
             case (state)
                 // hardware reset
@@ -868,12 +769,8 @@ module vs1053_controller (
 
                 // fifo read and send to vs1053
                 ST_IDLE: begin
-                    // prio 0: an SCI request of the NeoGS side
-                    if (sci_busy) begin
-                        state <= ST_SCI;
-
                     // prio 1: Effects was changed (Apply bass then mode)
-                    end else if (req_update_eff) begin
+                    if (req_update_eff) begin
                         state <= ST_WR_BASS;
 
                         // prio 2: Volume was changed
@@ -881,32 +778,9 @@ module vs1053_controller (
                         state <= ST_WR_VOL;
 
                         // prio 3: send audio data from FIFO
-                    // (up to 32 bytes: a stream tail or a 2-byte MIDI event must not get stuck)
-                    end else if (vs_dreq && !fifo_empty) begin
-                        byte_cnt <= (fifo_full || fifo_count >= 32) ? 6'd32 : fifo_count[5:0];
+                    end else if (vs_dreq && (fifo_count >= 32) && !fifo_empty) begin
+                        byte_cnt <= 6'd32;
                         state    <= ST_PREPARE_BYTE;
-                    end
-                end
-
-                ST_SCI: begin
-                    if (!spi_busy && vs_dreq) begin
-                        spi_start   <= 1;
-                        spi_rnw     <= sci_rnw_r;
-                        spi_is_data <= 0;
-                        spi_addr    <= sci_addr_r;
-                        spi_data_in <= sci_wdata_r;
-                        state       <= ST_WAIT_SCI;
-                    end
-                end
-
-                ST_WAIT_SCI: begin
-                    if (!spi_busy && !spi_start) begin
-                        if (sci_rnw_r)
-                            sci_rdata <= spi_data_out;
-                        sci_busy         <= 0;
-                        cs_delay_counter <= DLY_CS_FAST;
-                        next_state       <= ST_IDLE;
-                        state            <= ST_CS_PULSE_DELAY;
                     end
                 end
 

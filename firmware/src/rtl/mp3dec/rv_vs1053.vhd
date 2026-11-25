@@ -9,8 +9,6 @@
 --   0x20000004  r: bits 7:0 = volume register (#FB)
 --   0x20000008  r: play pointer; w: end of the committed PCM (both 12 bits, one more than the ring index)
 --   0x2000000C  w: NCO increment per CPU clock, 2^32 is one sample per clock
---   0x20000010  w: header of the last decoded frame (VS1053 HDAT1 = bits 31:16, HDAT0 = bits 15:0)
---   0x20000014  w: bits 15:0 = seconds decoded since the reset (VS1053 DECODE_TIME)
 --
 -- Domains: the CPU, the ring and the player run on clk_cpu (70 MHz), the FIFO and the mixer on clk_bus
 -- (28 MHz). A byte from the FIFO and a sample to the mixer cross with a toggle: the data is stable long before.
@@ -78,10 +76,7 @@ entity rv_vs1053 is
     reg_volume     : in  std_logic_vector(7 downto 0);
     -- audio, clk_bus
     audio_l        : out std_logic_vector(15 downto 0);
-    audio_r        : out std_logic_vector(15 downto 0);
-    -- decoder status for the SCI reads, clk_bus, 0 after a reset
-    hdat           : out std_logic_vector(31 downto 0);
-    decode_time    : out std_logic_vector(15 downto 0)
+    audio_r        : out std_logic_vector(15 downto 0)
   );
 end entity;
 
@@ -115,7 +110,6 @@ architecture rtl of rv_vs1053 is
   signal nco_acc  : unsigned(32 downto 0);
   signal pcm_lr   : std_ulogic_vector(31 downto 0);
   signal play_tgl : std_ulogic;
-  signal idle_cnt : unsigned(22 downto 0);   -- clk_cpu clocks with the PCM ring empty
   signal play_sync : std_ulogic_vector(2 downto 0) := "000";
 
   -- FIFO byte bridge --
@@ -136,11 +130,6 @@ architecture rtl of rv_vs1053 is
   signal reg_q : std_ulogic_vector(31 downto 0);
 
   signal audio_lr : std_ulogic_vector(31 downto 0) := (others => '0');
-  -- decoder status: written by the CPU, copied to clk_bus on a toggle
-  signal st_hdat, bus_hdat : std_ulogic_vector(31 downto 0) := (others => '0');
-  signal st_time, bus_time : std_ulogic_vector(15 downto 0) := (others => '0');
-  signal st_tgl   : std_ulogic := '0';
-  signal st_sync  : std_ulogic_vector(2 downto 0) := "000";
 
 begin
 
@@ -276,9 +265,6 @@ begin
         byte_prev <= '0';
         play_tgl <= '0';
         pcm_lr <= (others => '0');
-        idle_cnt <= (others => '0');
-        st_hdat <= (others => '0');
-        st_time <= (others => '0');
       else
         -- a new byte from the bus side --
         if (byte_sync(1) /= byte_prev) then
@@ -290,16 +276,10 @@ begin
         -- register access --
         if (stb = '1') and (is_reg = '1') then
           if (we = '1') then
-            if (adr(4 downto 2) = "010") then
+            if (adr(3 downto 2) = "10") then
               wp <= unsigned(dat_o(11 downto 0));
-            elsif (adr(4 downto 2) = "011") then
+            elsif (adr(3 downto 2) = "11") then
               nco_inc <= unsigned(dat_o);
-            elsif (adr(4 downto 2) = "100") then
-              st_hdat <= dat_o;
-              st_tgl <= not st_tgl;
-            elsif (adr(4 downto 2) = "101") then
-              st_time <= dat_o(15 downto 0);
-              st_tgl <= not st_tgl;
             end if;
           else
             case adr(3 downto 2) is
@@ -325,17 +305,6 @@ begin
           rp <= rp + 1;
           play_tgl <= not play_tgl;
         end if;
-
-        -- the ring empty for 2^22 clocks (60 ms): the player stopped feeding (exit, pause, host reset),
-        -- the last sample would stay on the output as DC and light the VU meters; output 0 instead
-        if (rp /= wp) then
-          idle_cnt <= (others => '0');
-        elsif (idle_cnt(22) = '0') then
-          idle_cnt <= idle_cnt + 1;
-        elsif (pcm_lr /= x"00000000") then
-          pcm_lr <= (others => '0');
-          play_tgl <= not play_tgl;
-        end if;
       end if;
     end if;
   end process;
@@ -348,7 +317,6 @@ begin
     if rising_edge(clk_bus) then
       ack_sync <= ack_sync(0) & ack_tgl;
       play_sync <= play_sync(1 downto 0) & play_tgl;
-      st_sync <= st_sync(1 downto 0) & st_tgl;
       fifo_rd <= '0';
 
       if (rst_bus = '1') then
@@ -357,15 +325,7 @@ begin
         byte_tgl  <= '0';
         ack_prev  <= '0';
         audio_lr  <= (others => '0');
-        bus_hdat  <= (others => '0');
-        bus_time  <= (others => '0');
       else
-        -- the status words are written long before the toggle gets here
-        if (st_sync(2) /= st_sync(1)) then
-          bus_hdat <= st_hdat;
-          bus_time <= st_time;
-        end if;
-
         case fifo_st is
           when "00" =>
             if (hold_full = '0') and (fifo_empty = '0') then
@@ -395,7 +355,5 @@ begin
 
   audio_l <= std_logic_vector(audio_lr(15 downto 0));
   audio_r <= std_logic_vector(audio_lr(31 downto 16));
-  hdat <= std_logic_vector(bus_hdat);
-  decode_time <= std_logic_vector(bus_time);
 
 end architecture;
