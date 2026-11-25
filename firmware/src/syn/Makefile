@@ -33,7 +33,6 @@ VERILOG_SOURCES_COMMON= ../rtl/megabuzz.v\
                         ../rtl/sound/audio_avg.v\
                         ../rtl/sound/audio_img_lpf.v\
                         ../rtl/sound/vs1053.v\
-                        ../rtl/sound/ngs_mp3.v\
                         ../rtl/sound/jt12/jt03.v\
                         ../rtl/sound/jt12/jt12_top.v\
                         ../rtl/sound/jt12/jt12_rst.v\
@@ -74,7 +73,6 @@ VERILOG_SOURCES_COMMON= ../rtl/megabuzz.v\
                         ../rtl/vu/vu_meter.v\
                         ../rtl/resetter.v\
                         ../rtl/sd/zc_dicmmc.v\
-                        ../rtl/sd/sd_arbiter.v\
                         ../rtl/ram/sprom.v\
                         ../rtl/ram/sram_arbiter.v\
                         ../rtl/ram/spram.v\
@@ -116,7 +114,7 @@ ISE_BIN      = $(XILINX)/bin/lin64
 ISE_ENV      = XILINX=$(XILINX) LD_LIBRARY_PATH=$(XILINX)/lib/lin64 PATH=$(ISE_BIN):$$PATH
 OPENOCD_BIN = /usr/bin/openocd
 
-GS_ROM = ../rtl/sound/gs105b_mb.rom
+GS_ROM = ../rtl/sound/gs105b.rom
 CFG1_ROM = cfg1.rom
 CFG2_ROM = cfg2.rom
 # A2 on the SLX25 has only the neorv32 MP3 decoder: its option is on from the start

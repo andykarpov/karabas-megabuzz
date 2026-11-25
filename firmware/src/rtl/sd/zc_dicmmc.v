@@ -39,10 +39,6 @@ module zc_divmmc(
     inout wire sd_do,
     inout wire sd_di,
     output wire sd_cs_n,
-    // the SD card is shared with the GS (sd_arbiter): exchanges start only with spi_grant
-    input wire spi_grant,
-    output wire spi_req,
-    output wire spi_active,
 
     output wire [7:0] dout,
     output wire divmmc_mem,
@@ -81,22 +77,17 @@ module zc_divmmc(
 
     wire zc_sclk, zc_mosi;
     wire [7:0] zc_do_bus;
-    wire zc_spi_wait;
-    assign spi_req = zc_wr_en | zc_rd_en;
-    // the host waits while the card belongs to the GS
-    assign busy = zc_spi_wait | (spi_req & ~spi_grant);
     zc_spi zc_spi(
         .clk_sys(clk_mem),
         .ena(zc_ena),
-        .tx(zc_wr_en & spi_grant),
-        .rx(zc_rd_en & spi_grant),
+        .tx(zc_wr_en),
+        .rx(zc_rd_en),
         .din(bus_d),
         .dout(zc_do_bus),
         .spi_clk(zc_sclk),
         .spi_di(sd_do),
         .spi_do(zc_mosi),
-        .spi_wait(zc_spi_wait),
-        .active(spi_active)
+        .spi_wait(busy)
     );
 
     assign sd_cs_n	= zc_cs_n;
@@ -266,14 +257,12 @@ module zc_spi
     output wire       spi_clk,
     input wire        spi_di,
     output wire       spi_do,
-    output reg        spi_wait,
-    output wire       active    // a byte exchange is running
+    output reg        spi_wait
 );
 
     assign    spi_clk = counter[0];
     assign    spi_do  = io_byte[7]; // data is shifted up during transfer
     assign    dout    = data;
-    assign    active  = ~counter[4];
 
     reg [4:0] counter = 5'b10000; // tx/rx counter is idle
     reg [7:0] io_byte, data;

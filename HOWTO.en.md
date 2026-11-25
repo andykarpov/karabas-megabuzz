@@ -63,9 +63,9 @@ The Makefile has no targets for openFPGALoader, so flash by hand. All commands r
 
 `openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f work16/karabas_megabuzz_a3.bit`
 
-5) Write the 32 KB GS ROM at 0x100000 (needed on revA1 and newer, optional on revA). `gs105b_mb.rom` is GS ROM 1.05b without the long RAM pattern test at start (`rtl/sound/gs_rom_patch.py`): the GS is ready in about 1 s instead of 9 s:
+5) Write the 32 KB GS ROM at 0x100000 (needed on revA1 and newer, optional on revA):
 
-`openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f -o 0x100000 ../rtl/sound/gs105b_mb.rom`
+`openFPGALoader -c usb-blaster --fpga-part xc6slx16ftg256 -f -o 0x100000 ../rtl/sound/gs105b.rom`
 
 6) Write the 256 bytes of configuration at 0x1F0000 (`cfg1.rom`, or `cfg2.rom` without DivMMC; needed on revA2 and newer, optional on revA and revA1):
 
@@ -99,7 +99,7 @@ The targets use the already built `.bin` from `work16/` or `work25/`. If it is m
 
 To do it by hand instead of with the Makefile, for example the bitstream for the SLX25:
 
-`sudo openocd -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program work25/karabas_megabuzz_a2.bin 0; jtagspi_program ../rtl/sound/gs105b_mb.rom 0x100000; jtagspi_program cfg1.rom 0x1F0000; xc6s_program xc6s.tap; exit"`
+`sudo openocd -f ocd.cfg -c "init; jtagspi_init 0 bscan_spi_xc6slx25.bit; jtagspi_program work25/karabas_megabuzz_a2.bin 0; jtagspi_program ../rtl/sound/gs105b.rom 0x100000; jtagspi_program cfg1.rom 0x1F0000; xc6s_program xc6s.tap; exit"`
 
 After programming the board starts.
 It sweeps the level indicators from maximum to minimum.

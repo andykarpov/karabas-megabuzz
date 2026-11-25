@@ -358,22 +358,6 @@ module karabas_megabuzz(
 
     resetter resetter(.clk(clk_bus), .areset(areset), .reset_in(ext_reset || poweron_reset || soft_reset), .reset_out(reset), .reset_short(reset_short));
 
-    // General Sound and the MP3 path follow the host reset (the RESET line, the reset button), as a plain GS
-    // and NeoGS with its reset jumper do: classic GS software has no #33 and expects a clean GS. But while an
-    // MP3 plays (the decoder took a byte from its FIFO in the last 0.6 s) a host reset leaves them alone, as
-    // NeoGS without the jumper does: an MP3 started by a NeoGS player plays on while the host reboots.
-    // Power-on and the internal reset of the Megabuzz always reset them.
-    wire vs_fifo_rd;
-    reg [23:0] mp3_idle = 24'hFFFFFF;
-    always @(posedge clk_bus)
-        if (vs_fifo_rd) mp3_idle <= 24'd0;
-        else if (~&mp3_idle) mp3_idle <= mp3_idle + 24'd1;
-    reg gs_keep = 1'b0;     // taken before the host reset starts: no MP3 data comes while it lasts
-    always @(posedge clk_bus)
-        if (~ext_reset) gs_keep <= ~&mp3_idle;
-    wire reset_gs;
-    resetter resetter_gs(.clk(clk_bus), .areset(areset), .reset_in((ext_reset & ~gs_keep) || poweron_reset || soft_reset), .reset_out(reset_gs), .reset_short());
-
     assign midi_reset_n = ~reset;
 
     // bus_iorq_n is useless on zxevo :(
@@ -428,7 +412,6 @@ module karabas_megabuzz(
     wire [20:0] loader_ram_a;
     wire [7:0] loader_ram_do;
     wire loader_act, loader_ram_wr;
-    wire gs_rom_reload, gs_reload_act, loader_ram_hold;   // reload of a GS ROM changed by NeoGS software
     wire [15:0] cfg_byte;
     reg [15:0] new_cfg_byte = 16'hFFFF;
     reg cfg_write = 0;
@@ -468,11 +451,7 @@ module karabas_megabuzz(
         .NEW_CFG_WR       (cfg_write),
 
         .LOADER_ACTIVE    (loader_act),
-        .LOADER_RESET     (loader_reset),
-
-        .GS_RELOAD        (gs_rom_reload),
-        .GS_RELOAD_ACT    (gs_reload_act),
-        .RAM_HOLD         (loader_ram_hold)
+        .LOADER_RESET     (loader_reset)
     );
 
     // ------- i2s DAC --------------
@@ -658,7 +637,6 @@ module karabas_megabuzz(
     wire [20:0] gs_sram_a;
     wire gs_sram_oe, gs_sram_wr_n, gs_sram_rd_n;
     wire gs_hold, mmc_wait, mmc_reserve;
-    assign loader_ram_hold = gs_hold;  // the reload of the GS ROM goes through the SRAM arbiter like GS
 `ifdef MMC_ON_GS_SRAM
     wire mmc_req, mmc_we;
     wire [16:13] mmc_page;
@@ -699,37 +677,10 @@ module karabas_megabuzz(
     assign gs_sram_di = mem_d;
 `endif
 
-    // NeoGS #33 from the host (write only): d7..d5 = 100 resets the GS, 010 sends it an NMI, 001 (LED) is ignored
-    wire port_gs33_wr = ioreq_wr & (bus_a[7:0] == 8'h33) & gs_en & ~loader_act;
-    reg port_gs33_wr_d = 0;
-    reg [5:0] gs33_rst_cnt = 0, gs33_nmi_cnt = 0;
-    always @(posedge clk_bus) begin
-        port_gs33_wr_d <= port_gs33_wr;
-        if (port_gs33_wr & ~port_gs33_wr_d & (bus_d[7:5] == 3'b100))
-            gs33_rst_cnt <= 6'd63;
-        else if (gs33_rst_cnt != 0)
-            gs33_rst_cnt <= gs33_rst_cnt - 6'd1;
-        if (port_gs33_wr & ~port_gs33_wr_d & (bus_d[7:5] == 3'b010))
-            gs33_nmi_cnt <= 6'd63;
-        else if (gs33_nmi_cnt != 0)
-            gs33_nmi_cnt <= gs33_nmi_cnt - 6'd1;
-    end
-
-    // NeoGS SD (sd_arbiter) and MP3 (ngs_mp3) signals of the GS side
-    wire gs_reset_out;
-    wire gs_sd_cs_n, gs_sd_req_t, gs_sd_ack_t;
-    wire [7:0] gs_sd_tx, gs_sd_rx;
-    wire ngs_mc_ncs, ngs_mp_xrs, ngs_mc_wr, ngs_md_wr;
-    wire [7:0] ngs_io_do, ngs_mc_read;
-    wire ngs_mc_busy, ngs_mc_rd_wait, ngs_mc_ready, ngs_md_busy, ngs_md_dreq;
-
     gs_top gs_inst(
         .clk_bus          (clk_bus),
         .ce              (ce_14m & ~gs_hold),
-        .reset            (reset_gs),
-        .host_reset       (gs33_rst_cnt != 0),
-        .host_nmi         (gs33_nmi_cnt != 0),
-        .gs_reset_out     (gs_reset_out),
+        .reset            (reset),
 
         .a                (bus_a),
         .di               (bus_d),
@@ -753,27 +704,6 @@ module karabas_megabuzz(
         .loader_ram_a     (loader_ram_a),
         .loader_ram_do    (loader_ram_do),
         .loader_ram_wr    (loader_ram_wr),
-        .rom_reload       (gs_rom_reload),
-        .reload_act       (gs_reload_act),
-
-        .sd_cs_n          (gs_sd_cs_n),
-        .sd_req_t         (gs_sd_req_t),
-        .sd_tx            (gs_sd_tx),
-        .sd_ack_t         (gs_sd_ack_t),
-        .sd_rx            (gs_sd_rx),
-        .sd_det_n         (sd_det_n),
-
-        .mc_ncs           (ngs_mc_ncs),
-        .mp_xrs           (ngs_mp_xrs),
-        .mc_wr            (ngs_mc_wr),
-        .md_wr            (ngs_md_wr),
-        .io_do            (ngs_io_do),
-        .mc_read          (ngs_mc_read),
-        .mc_busy          (ngs_mc_busy),
-        .mc_rd_wait       (ngs_mc_rd_wait),
-        .mc_ready         (ngs_mc_ready),
-        .md_busy          (ngs_md_busy),
-        .md_dreq          (ngs_md_dreq),
 
         .out_l            (gs_out_l),
         .out_r            (gs_out_r)
@@ -816,8 +746,6 @@ module karabas_megabuzz(
     wire [7:0] vs_bus_di, vs_bus_do;
 
     wire signed [15:0] rv_audio_l, rv_audio_r;
-    wire [31:0] rv_hdat;        // header of the last frame decoded by neorv32 (SCI HDAT1:HDAT0)
-    wire [15:0] rv_decode_time; // seconds decoded by neorv32 (SCI DECODE_TIME)
 `ifdef RV32
     // A3 has both decoders, config bit 11 selects one (0 = the chip); A2 only has neorv32
 `ifdef HW_A3
@@ -834,7 +762,7 @@ module karabas_megabuzz(
     rv_vs1053 rv_vs1053_inst(
         .clk_bus          (clk_bus),
         .clk_cpu          (clk_cpu),
-        .reset            (reset_gs | vs_use_chip),
+        .reset            (reset | vs_use_chip),
         .rom_busy         (rv_rom_busy),
         .rom_a            (rv_rom_a),
         .rom_do           (rv_rom_do),
@@ -846,9 +774,7 @@ module karabas_megabuzz(
         .hard_reset_cmd   (rv_hard_reset),
         .reg_volume       (rv_volume),
         .audio_l          (rv_audio_l),
-        .audio_r          (rv_audio_r),
-        .hdat             (rv_hdat),
-        .decode_time      (rv_decode_time)
+        .audio_r          (rv_audio_r)
     );
 `else
     wire vs_use_chip = 1'b1;
@@ -856,54 +782,7 @@ module karabas_megabuzz(
     wire vs_adc_en = vs1053_en;
     assign rv_audio_l = 16'd0;
     assign rv_audio_r = 16'd0;
-    assign rv_hdat = 32'd0;
-    assign rv_decode_time = 16'd0;
 `endif
-
-    // NeoGS MP3 ports of the GS -> the same FIFO and decoder as the ZXUNO registers
-    wire ext_fifo_wr, ext_fifo_ack, ext_fifo_room, ext_soft_reset, ext_hard_reset, ext_vol_wr;
-    wire [7:0] ext_fifo_din, ext_vol, vs_cur_volume;
-    wire sci_req, sci_rnw, sci_busy;
-    wire [7:0] sci_addr;
-    wire [15:0] sci_wdata, sci_rdata;
-
-    ngs_mp3 ngs_mp3_inst(
-        .clk              (clk_bus),
-        .reset            (gs_reset_out),
-        .present          (vs1053_en),
-        .use_chip         (vs_use_chip),
-
-        .mcncs            (ngs_mc_ncs),
-        .mpxrs            (ngs_mp_xrs),
-        .mc_wr            (ngs_mc_wr),
-        .mc_byte          (ngs_io_do),
-        .mc_read          (ngs_mc_read),
-        .mc_busy          (ngs_mc_busy),
-        .mc_rd_wait       (ngs_mc_rd_wait),
-        .mc_ready         (ngs_mc_ready),
-        .md_wr            (ngs_md_wr),
-        .md_byte          (ngs_io_do),
-        .md_busy          (ngs_md_busy),
-        .md_dreq          (ngs_md_dreq),
-
-        .ext_fifo_wr      (ext_fifo_wr),
-        .ext_fifo_din     (ext_fifo_din),
-        .ext_fifo_ack     (ext_fifo_ack),
-        .ext_fifo_room    (ext_fifo_room),
-        .ext_soft_reset   (ext_soft_reset),
-        .ext_hard_reset   (ext_hard_reset),
-        .ext_vol_wr       (ext_vol_wr),
-        .ext_vol          (ext_vol),
-        .cur_volume       (vs_cur_volume),
-        .sci_req          (sci_req),
-        .sci_rnw          (sci_rnw),
-        .sci_addr         (sci_addr),
-        .sci_wdata        (sci_wdata),
-        .sci_busy         (sci_busy),
-        .sci_rdata        (sci_rdata),
-        .dec_hdat         (rv_hdat),
-        .dec_time         (rv_decode_time)
-    );
 
     vs1053 vs1053(
 `ifdef RV32
@@ -916,7 +795,7 @@ module karabas_megabuzz(
         .volume_ext       (rv_volume),
 `endif
         .clk              (clk_bus),
-        .reset            (reset_gs),
+        .reset            (reset),
 
         .vs_sclk          (vs_sclk),
         .vs_mosi          (vs_mosi),
@@ -931,24 +810,7 @@ module karabas_megabuzz(
         .bus_rd_n         (vs_bus_rd_n),
         .bus_a            (vs_bus_addr),
         .bus_di           (vs_bus_di),
-        .bus_do           (vs_bus_do),
-
-        .ext_fifo_wr      (ext_fifo_wr),
-        .ext_fifo_din     (ext_fifo_din),
-        .ext_fifo_ack     (ext_fifo_ack),
-        .ext_fifo_room    (ext_fifo_room),
-        .ext_soft_reset   (ext_soft_reset),
-        .ext_hard_reset   (ext_hard_reset),
-        .ext_vol_wr       (ext_vol_wr),
-        .ext_vol          (ext_vol),
-        .cur_volume       (vs_cur_volume),
-        .sci_req          (sci_req),
-        .sci_rnw          (sci_rnw),
-        .sci_addr         (sci_addr),
-        .sci_wdata        (sci_wdata),
-        .sci_busy         (sci_busy),
-        .sci_rdata        (sci_rdata),
-        .fifo_rd          (vs_fifo_rd)
+        .bus_do           (vs_bus_do)
     );
 
     // midi activity detector
@@ -964,7 +826,7 @@ module karabas_megabuzz(
     wire mute;
     audio_mute audio_mute(
         .clk              (clk_bus),
-        .on               (reset_gs | (vs_use_chip & ~vs_reset_n)), // the chip stays in reset while neorv32 plays
+        .on               (reset | (vs_use_chip & ~vs_reset_n)), // the chip stays in reset while neorv32 plays
         .mute             (mute)
     );
 
@@ -1026,7 +888,6 @@ module karabas_megabuzz(
     );
 
     // divmmc + zc
-    wire host_sd_clk, host_sd_mosi, host_sd_cs_n, host_sd_grant, host_sd_req, host_sd_active;
     wire [7:0] zc_do_bus, divmmc_dout;
     wire zc_busy, divmmc_mem, divmmc_zxrom_block;
     zc_divmmc zc_divmmc(
@@ -1065,45 +926,16 @@ module karabas_megabuzz(
         .ram_wr_n         (mmc_mem_wr_n),
 `endif
 
-        .sd_clk           (host_sd_clk),
+        .sd_clk           (sd_clk),
         .sd_do            (sd_do),
-        .sd_di            (host_sd_mosi),
-        .sd_cs_n          (host_sd_cs_n),
-        .spi_grant        (host_sd_grant),
-        .spi_req          (host_sd_req),
-        .spi_active       (host_sd_active),
+        .sd_di            (sd_di),
+        .sd_cs_n          (sd_cs_n),
 
         .dout             (zc_do_bus),
         .divmmc_mem       (divmmc_mem),
         .divmmc_dout      (divmmc_dout),
         .divmmc_zxrom_block(divmmc_zxrom_block),
         .busy             (zc_busy)
-    );
-
-    // one SD card for the host (ZC / DivMMC) and the GS (NeoGS ports)
-    sd_arbiter sd_arbiter_inst(
-        .clk              (clk_mem),
-        .reset            (areset),
-        .host_en          (divmmc_en | zc_en),
-
-        .host_cs_n        (host_sd_cs_n),
-        .host_sclk        (host_sd_clk),
-        .host_mosi        (host_sd_mosi),
-        .host_req         (host_sd_req),
-        .host_active      (host_sd_active),
-        .host_grant       (host_sd_grant),
-
-        .gs_reset         (gs_reset_out),
-        .gs_cs_n          (gs_sd_cs_n),
-        .gs_req_t         (gs_sd_req_t),
-        .gs_tx            (gs_sd_tx),
-        .gs_ack_t         (gs_sd_ack_t),
-        .gs_rx            (gs_sd_rx),
-
-        .sd_cs_n          (sd_cs_n),
-        .sd_sclk          (sd_clk),
-        .sd_mosi          (sd_di),
-        .sd_miso          (sd_do)
     );
 
     // vu meter
@@ -1237,24 +1069,14 @@ module karabas_megabuzz(
 
     wire reg_mb_coreid = (zxuno_reg == 8'hFF);
     wire coreid_rd = ioreq_rd & port_zxuno_data & reg_mb_coreid;
-    // Next char once the read ends. coreid_rd holds the raw /RD and address, so an edge detector
-    // on it could see the end of the read in one flip-flop and not in the other, skip the step
-    // and repeat a char ("2026--11-23"). Instead remember the read and step when the
-    // synchronized ioreq drops: with ioreq low coreid_rd is 0 whatever /RD does.
     reg [5:0] coreid_idx = 6'd0;
-    reg coreid_rd_seen = 1'b0;
+    reg coreid_rd_r = 1'b0;
     always @(posedge clk_bus) begin
-        if (port_zxuno_reg & ioreq_wr) begin
+        coreid_rd_r <= coreid_rd;
+        if (port_zxuno_reg & ioreq_wr)
             coreid_idx <= 6'd0;
-            coreid_rd_seen <= 1'b0;
-        end
-        else if (coreid_rd)
-            coreid_rd_seen <= 1'b1;
-        else if (~ioreq & coreid_rd_seen) begin
-            coreid_rd_seen <= 1'b0;
-            if (coreid_idx != ID_LEN)
-                coreid_idx <= coreid_idx + 6'd1;
-        end
+        else if (coreid_rd_r & ~coreid_rd & (coreid_idx != ID_LEN))  // next char once the read ends
+            coreid_idx <= coreid_idx + 6'd1;
     end
     wire [7:0] coreid_char = (coreid_idx < ID_LEN) ? ID_STR[8*(ID_LEN-1-coreid_idx) +: 8] : 8'h00;
 
@@ -1303,7 +1125,7 @@ module karabas_megabuzz(
     (ioreq_rd & port_zxuno_data & reg_vs) ? vs_bus_do : // VS1053 status
     (ioreq_rd & port_zxuno_data & reg_mb_cfg) ? ((cfg_addr == 0) ? cfg_byte[7:0] : cfg_byte[15:8]) : // Megabuzz CFG byte
     (ioreq_rd & port_zxuno_data & reg_mb_rom) ? {7'd0, cfg_rom_active} : // Megabuzz ROM bank status
-    (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | gs_reload_act | reset} : // Megabuzz CTL status (flash busy)
+    (ioreq_rd & port_zxuno_data & reg_mb_ctl) ? {7'd0, flash_busy | loader_act | reset} : // Megabuzz CTL status (flash busy)
     (ioreq_rd & port_zxuno_data & reg_mb_id) ? board_id : // Megabuzz board id
     (ioreq_rd & port_zxuno_data & reg_mb_coreid) ? coreid_char : // Megabuzz firmware id
     (ioreq_rd & port_fffd & !cfg_rom_active) ? ts_do : // TS
