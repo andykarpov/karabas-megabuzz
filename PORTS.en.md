@@ -134,7 +134,7 @@ Bits 7..5 are compared exactly:
 - `010` (`#40`) - NMI to the GS CPU
 - `001` (`#20`) - the NeoGS LED, ignored
 
-The GS and the MP3 decoder are reset together with the host (the RESET line of the bus, the RESET button on the board), as on a plain GS: classic software does not know port `#33` and expects a clean GS after a reset. The GS is also reset by port `#33`, power-on and the internal reset of the Megabuzz (register `#F9`, the configurator).
+The GS and the MP3 decoder are reset together with the host (the RESET line of the bus, the RESET button on the board), as a plain GS and NeoGS with its reset jumper are: classic software (zplayer, demos) does not know port `#33` and expects a clean GS after a reset. The exception is an MP3 that plays (the decoder took data from its FIFO in the last 0.6 s): then a host reset leaves them alone, as NeoGS without the jumper does, and an MP3 started by a NeoGS player plays on. Power-on, port `#33` and the internal reset of the Megabuzz (register `#F9`, the configurator) always reset the GS. A decoder left without data after a host reset outputs silence after 60 ms.
 
 ### 🔌 GS CPU ports
 

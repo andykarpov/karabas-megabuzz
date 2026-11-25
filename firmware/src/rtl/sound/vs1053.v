@@ -68,6 +68,7 @@ module vs1053 (
     input  wire        ext_vol_wr,
     input  wire [7:0]  ext_vol,
     output wire [7:0]  cur_volume,
+    output wire        fifo_rd,         // the decoder (chip or neorv32) takes a byte from the FIFO
     input  wire        sci_req,         // pulse, the chip only (use_chip)
     input  wire        sci_rnw,
     input  wire [7:0]  sci_addr,
@@ -108,6 +109,7 @@ module vs1053 (
     wire [7:0]  reg_effects;
     wire        ctrl_fifo_rd;
     assign      cur_volume = reg_volume;
+    assign      fifo_rd = fifo_rd_en;
     assign      ext_fifo_room = !fifo_full && (fifo_count < 12'd4063);
 
 `ifdef RV32
